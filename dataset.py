@@ -1,21 +1,56 @@
-import os
+## Okay working
+
+import re
 import json
-
-from torch.utils.data import Dataset
-from torchvision.datasets.utils import download_url
-
+import os
 from PIL import Image
 
-from data.utils import pre_caption
+import torch
+from torch.utils.data import DataLoader, Dataset
+import torchvision.transforms as transforms
+from torchvision.datasets.utils import download_url
 
-class flickr30k_train(Dataset):
-    def __init__(self, transform, image_root, ann_root, max_words=30, prompt=''):        
+
+
+def pre_caption(caption,max_words=128):
+    caption = re.sub(
+        r"([.!\"()*#:;~])",       
+        ' ',
+        caption.lower(),
+    )
+    caption = re.sub(
+        r"\s{2,}",
+        ' ',
+        caption,
+    )
+    caption = caption.rstrip('\n') 
+    caption = caption.strip(' ')
+
+    #truncate caption
+    caption_words = caption.split(' ')
+    if len(caption_words)>max_words:
+        caption = ' '.join(caption_words[:max_words])
+            
+    return caption
+
+class flickr30k(Dataset):
+    def __init__(self, transform, image_root, ann_root, split, max_words=128, prompt=''):        
         '''
         image_root (string): Root directory of images (e.g. data/)
         ann_root (string): directory to store the annotation file
+        split (string): one of "train" or "test"
         '''        
-        url = 'https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_train.json'
+        train = 'https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_train.json'
+        test = 'https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_test.json'
         filename = 'flickr30k_train.json'
+
+        self.split = split
+        assert self.split in ("train","test")
+
+        if self.split == "train":
+            url = train
+        else:
+            url = test
 
         download_url(url,ann_root)
         
@@ -44,50 +79,13 @@ class flickr30k_train(Dataset):
         image = Image.open(image_path).convert('RGB')   
         image = self.transform(image)
         
-        caption = self.prompt+pre_caption(ann['caption'], self.max_words) 
+        caption = self.prompt+pre_caption(ann['caption'], self.max_words)
+        
+        #return image, caption, self.img_ids[ann['image_id']] 
+        return image, caption
 
-        return image, caption, self.img_ids[ann['image_id']] 
+def get_dataset(transform,split):
     
-    
-class flickr30k_retrieval_eval(Dataset):
-    def __init__(self, transform, image_root, ann_root, split, max_words=30):  
-        '''
-        image_root (string): Root directory of images (e.g. flickr30k/)
-        ann_root (string): directory to store the annotation file
-        split (string): val or test
-        '''
-        urls = {'val':'https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_val.json',
-                'test':'https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_test.json'}
-        filenames = {'val':'flickr30k_val.json','test':'flickr30k_test.json'}
-        
-        download_url(urls[split],ann_root)
-        
-        self.annotation = json.load(open(os.path.join(ann_root,filenames[split]),'r'))
-        self.transform = transform
-        self.image_root = image_root
-        
-        self.text = []
-        self.image = []
-        self.txt2img = {}
-        self.img2txt = {}
-        
-        txt_id = 0
-        for img_id, ann in enumerate(self.annotation):
-            self.image.append(ann['image'])
-            self.img2txt[img_id] = []
-            for i, caption in enumerate(ann['caption']):
-                self.text.append(pre_caption(caption,max_words))
-                self.img2txt[img_id].append(txt_id)
-                self.txt2img[txt_id] = img_id
-                txt_id += 1
-                                    
-    def __len__(self):
-        return len(self.annotation)
-    
-    def __getitem__(self, index):    
-        
-        image_path = os.path.join(self.image_root, self.annotation[index]['image'])        
-        image = Image.open(image_path).convert('RGB')    
-        image = self.transform(image)  
+    return flickr30k(transform=transform,image_root="",ann_root="./flickr30k",split=split)
 
-        return image, index    
+    
