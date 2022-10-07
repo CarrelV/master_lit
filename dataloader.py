@@ -1,6 +1,7 @@
 ## Okay working
 
 from dataset import get_dataset
+import os
 
 import torch
 from torch.utils.data import DataLoader
@@ -27,7 +28,9 @@ def collate_custom(batch):
     return imgs, caps
 
 def get_dataloader(batch_size,shuffle,num_workers,split):
- 
+    
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    
     if split == "train":
         dataset = get_dataset(transform=transform_train,split="train")
         return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers,collate_fn=collate_custom)

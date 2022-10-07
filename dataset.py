@@ -1,18 +1,14 @@
-## Okay working
-
 import re
 import json
 import os
 from PIL import Image
 
-import torch
-from torch.utils.data import DataLoader, Dataset
-import torchvision.transforms as transforms
+from torch.utils.data import  Dataset
 from torchvision.datasets.utils import download_url
 
+import config as CFG
 
-
-def pre_caption(caption,max_words=128):
+def pre_caption(caption,max_words=CFG.max_length):
     caption = re.sub(
         r"([.!\"()*#:;~])",       
         ' ',
@@ -34,7 +30,7 @@ def pre_caption(caption,max_words=128):
     return caption
 
 class flickr30k(Dataset):
-    def __init__(self, transform, image_root, ann_root, split, max_words=128, prompt=''):        
+    def __init__(self, transform, image_root, ann_root, split, max_words=CFG.max_length, prompt=CFG.prompt):        
         '''
         image_root (string): Root directory of images (e.g. data/)
         ann_root (string): directory to store the annotation file
@@ -42,15 +38,16 @@ class flickr30k(Dataset):
         '''        
         train = 'https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_train.json'
         test = 'https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_test.json'
-        filename = 'flickr30k_train.json'
 
         self.split = split
         assert self.split in ("train","test")
 
         if self.split == "train":
             url = train
+            filename = 'flickr30k_train.json'
         else:
             url = test
+            filename = 'flickr30k_test.json'
 
         download_url(url,ann_root)
         
@@ -86,6 +83,6 @@ class flickr30k(Dataset):
 
 def get_dataset(transform,split):
     
-    return flickr30k(transform=transform,image_root="",ann_root="./flickr30k",split=split)
+    return flickr30k(transform=transform,image_root=CFG.image_root,ann_root=CFG.ann_root,split=split)
 
     
