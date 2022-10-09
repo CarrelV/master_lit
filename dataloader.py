@@ -20,6 +20,7 @@ transform_test = transforms.Compose([
             transforms.Normalize((0.444, 0.421, 0.385), 
                                  (0.285, 0.277, 0.286))])
 
+# Not used since I switched to a dict for the DataSet 
 def collate_custom(batch):
  
     imgs = torch.stack([item[0] for item in batch])
@@ -33,9 +34,9 @@ def get_dataloader(batch_size,shuffle,num_workers,split):
     
     if split == "train":
         dataset = get_dataset(transform=transform_train,split="train")
-        return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers,collate_fn=collate_custom)
+        return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers)
     elif split == "test":
         dataset = get_dataset(transform=transform_test,split="test")
-        return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers,collate_fn=collate_custom)
+        return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers)
     else:
         print("Wrong split")

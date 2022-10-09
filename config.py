@@ -27,11 +27,15 @@ num_projection_layers = 1
 projection_dim = 256 
 dropout = 0.1
 
+temperature = 1.0
+
+
 ########## Training Configuration ##########
 
-batch_size = 8
+batch_size = 2
 num_workers = 0
-
+shuffle = False
+split = "train"
 
 
 
@@ -51,7 +55,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 
-temperature = 1.0
 
 
 '''

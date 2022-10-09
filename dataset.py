@@ -78,8 +78,7 @@ class flickr30k(Dataset):
         
         caption = self.prompt+pre_caption(ann['caption'], self.max_words)
         
-        #return image, caption, self.img_ids[ann['image_id']] 
-        return image, caption
+        return {"image" :image, "caption":caption}
 
 def get_dataset(transform,split):
     
