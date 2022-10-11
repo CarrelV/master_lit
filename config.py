@@ -32,14 +32,17 @@ temperature = 1.0
 
 ########## Training Configuration ##########
 
-batch_size = 1024
+# At home, 1024 with frozen tower is okay
+# test when doing on cluster
+batch_size = 2048
 num_workers = 0
 shuffle = False
 split = "train"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-epochs = 2
+# 
+epochs = 200
 
 image_encoder_lr = 1e-4
 text_encoder_lr = 1e-5
@@ -49,3 +52,9 @@ weight_decay = 1e-3
 #LR scheduler
 patience = 2
 factor = 0.5
+
+
+########## DDP Configuration ##########
+
+# at home = 1, cluster = 2 (or 4, check)
+gpu_number = 2
