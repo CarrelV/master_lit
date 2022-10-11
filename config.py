@@ -32,29 +32,20 @@ temperature = 1.0
 
 ########## Training Configuration ##########
 
-batch_size = 2
+batch_size = 2048
 num_workers = 0
 shuffle = False
 split = "train"
 
-
-
-###
-'''debug = True
-
-
-lr = 1e-3
-weight_decay = 1e-3
-patience = 2
-factor = 0.5
-epochs = 5
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+epochs = 2
 
+image_encoder_lr = 1e-4
+text_encoder_lr = 1e-5
+head_lr = 1e-3
+weight_decay = 1e-3
 
-
-
-
-
-
-'''
+#LR scheduler
+patience = 2
+factor = 0.5
