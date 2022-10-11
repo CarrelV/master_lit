@@ -1,7 +1,7 @@
 # Specific
 flickr30k-images/
-
-
+wandb/*
+*.pt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
