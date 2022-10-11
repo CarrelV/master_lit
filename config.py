@@ -32,7 +32,7 @@ temperature = 1.0
 
 ########## Training Configuration ##########
 
-batch_size = 2048
+batch_size = 1024
 num_workers = 0
 shuffle = False
 split = "train"

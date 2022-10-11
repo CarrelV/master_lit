@@ -151,10 +151,13 @@ if __name__ == "__main__":
     
     
     # suppose we have 2 gpus
-    world_size = 2    
+    world_size = 1   
     mp.spawn(
         main_DDP,
-        args=(world_size),
+        args=(world_size,),
         nprocs=world_size
     )
+
+    # Use for single GPU training
+    
     #main()
