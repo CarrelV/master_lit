@@ -1,0 +1,23 @@
+import torch.distributed as dist
+import os
+
+
+def setup(rank, world_size):
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '12355'
+    dist.init_process_group("nccl", rank=rank, world_size=world_size)
+
+
+def cleanup():
+    dist.destroy_process_group()
+
+'''
+# in case we load a DDP model checkpoint to a non-DDP model
+model_dict = OrderedDict()
+pattern = re.compile('module.')
+for k,v in state_dict.items():
+    if re.search("module", k):
+        model_dict[re.sub(pattern, '', k)] = v
+    else:
+        model_dict = state_dict
+model.load_state_dict(model_dict)'''

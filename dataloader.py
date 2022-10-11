@@ -6,6 +6,8 @@ import os
 import torch
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
+from torch.utils.data.distributed import DistributedSampler
+
 
 transform_train = transforms.Compose([
             transforms.RandomCrop(224,pad_if_needed=True),
@@ -32,7 +34,7 @@ def collate_custom(batch):
 
 def get_dataloader(tokenizer,batch_size,shuffle,num_workers,split):
     
-    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    #os.environ["TOKENIZERS_PARALLELISM"] = "false"
     
     if split == "train":
         dataset = get_dataset(tokenizer=tokenizer,transform=transform_train,split="train")
@@ -40,5 +42,23 @@ def get_dataloader(tokenizer,batch_size,shuffle,num_workers,split):
     elif split == "test":
         dataset = get_dataset(tokenizer=tokenizer,transform=transform_test,split="test")
         return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers)
+    else:
+        print("Wrong split")
+
+def get_DDP_dataloader(tokenizer,rank,world_size,batch_size,shuffle,num_workers,split,pin_memory=False):
+    
+    #os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    
+    if split == "train":
+        
+        dataset = get_dataset(tokenizer=tokenizer,transform=transform_train,split="train")
+        sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=shuffle, drop_last=False)
+        return DataLoader(dataset=dataset,batch_size=batch_size,pin_memory=pin_memory,shuffle=shuffle,num_workers=num_workers,sampler=sampler)
+    
+    elif split == "test":
+        dataset = get_dataset(tokenizer=tokenizer,transform=transform_test,split="test")
+        sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=shuffle, drop_last=False)
+        return DataLoader(dataset=dataset,batch_size=batch_size,pin_memory=pin_memory,shuffle=shuffle,num_workers=num_workers,sampler=sampler)
+    
     else:
         print("Wrong split")
