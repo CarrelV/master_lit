@@ -3,6 +3,7 @@ import json
 import os
 from PIL import Image
 
+import torch
 from torch.utils.data import  Dataset
 from torchvision.datasets.utils import download_url
 
@@ -30,7 +31,7 @@ def pre_caption(caption,max_words=CFG.max_length):
     return caption
 
 class flickr30k(Dataset):
-    def __init__(self, transform, image_root, ann_root, split, max_words=CFG.max_length, prompt=CFG.prompt):        
+    def __init__(self, tokenizer,transform,image_root, ann_root, split, max_words=CFG.max_length, prompt=CFG.prompt):        
         '''
         image_root (string): Root directory of images (e.g. data/)
         ann_root (string): directory to store the annotation file
@@ -38,6 +39,8 @@ class flickr30k(Dataset):
         '''        
         train = 'https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_train.json'
         test = 'https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_test.json'
+
+        self.tokenizer = tokenizer
 
         self.split = split
         assert self.split in ("train","test")
@@ -78,10 +81,12 @@ class flickr30k(Dataset):
         
         caption = self.prompt+pre_caption(ann['caption'], self.max_words)
         
-        return {"image" :image, "caption":caption}
+        caption_encoded = self.tokenizer(caption,padding="max_length",max_length=self.max_words)
 
-def get_dataset(transform,split):
+        return {"image" :image, "input_ids": torch.as_tensor(caption_encoded["input_ids"]), "attention_mask": torch.as_tensor(caption_encoded["attention_mask"])}
+
+def get_dataset(tokenizer,transform,split):
     
-    return flickr30k(transform=transform,image_root=CFG.image_root,ann_root=CFG.ann_root,split=split)
+    return flickr30k(tokenizer=tokenizer,transform=transform,image_root=CFG.image_root,ann_root=CFG.ann_root,split=split)
 
     

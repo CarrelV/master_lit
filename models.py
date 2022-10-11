@@ -1,6 +1,5 @@
 import config as CFG
 
-import torch.nn.functional as F
 import torch
 import torch.nn as nn
 from transformers import BertModel, BertConfig
@@ -50,7 +49,8 @@ class ImageEncoder(nn.Module):
 
     def forward(self, image):
         
-        return self.model(image)
+        output = self.model(image)
+        return output["pooler_output"]
 
 
 ###################### PROJECTION HEAD on top ####################################
@@ -88,6 +88,7 @@ class CLIPModel(nn.Module):
         temperature=CFG.temperature,
         image_embedding=CFG.image_embedding,
         text_embedding=CFG.text_embedding,
+        trainable=CFG.trainable
     ):
         super().__init__()
         self.image_encoder = ImageEncoder()
@@ -95,35 +96,27 @@ class CLIPModel(nn.Module):
         self.image_projection = ProjectionHead(embedding_dim=image_embedding)
         self.text_projection = ProjectionHead(embedding_dim=text_embedding)
         self.temperature = temperature
+        self.trainable = trainable
 
     
     def forward(self, batch):
         # Getting Image and Text Features (output of towers)
-        image_features = self.image_encoder(batch["image"])
-        text_features = self.text_encoder(
-            input_ids=batch["input_ids"], attention_mask=batch["attention_mask"]
-        )
+
+        if not self.trainable:
+            with torch.no_grad():
+                image_features = self.image_encoder(batch["image"])
+                text_features = self.text_encoder(input_ids=batch["input_ids"], attention_mask=batch["attention_mask"])
+        
+        else:
+            image_features = self.image_encoder(batch["image"])
+            text_features = self.text_encoder(input_ids=batch["input_ids"], attention_mask=batch["attention_mask"])
+
         # Getting Image and Text Embeddings (with same dimension) (output of proj heads)
         image_embeddings = self.image_projection(image_features)
         text_embeddings = self.text_projection(text_features)
 
-        # Calculating the Loss
         logits = (text_embeddings @ image_embeddings.T) / self.temperature
-        images_similarity = image_embeddings @ image_embeddings.T
-        texts_similarity = text_embeddings @ text_embeddings.T
-        targets = F.softmax(
-            (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
-        )
-        texts_loss = cross_entropy(logits, targets, reduction='none')
-        images_loss = cross_entropy(logits.T, targets.T, reduction='none')
-        loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
-        return {"loos" : loss, "loos mean": loss.mean()}
 
-
-def cross_entropy(preds, targets, reduction='none'):
-    log_softmax = nn.LogSoftmax(dim=-1)
-    loss = (-targets * log_softmax(preds)).sum(1)
-    if reduction == "none":
-        return loss
-    elif reduction == "mean":
-        return loss.mean()
+        return {"image_embed": image_embeddings, "text_embed": text_embeddings, "logits": logits}
+        
+        
