@@ -52,7 +52,7 @@ def get_DDP_dataloader(tokenizer,rank,world_size,batch_size,shuffle,num_workers,
     if split == "train":
         
         dataset = get_dataset(tokenizer=tokenizer,transform=transform_train,split="train")
-        sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=shuffle, drop_last=False)
+        sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=shuffle, drop_last=True)
         return DataLoader(dataset=dataset,batch_size=batch_size,pin_memory=pin_memory,shuffle=shuffle,num_workers=num_workers,sampler=sampler)
     
     elif split == "test":

@@ -7,34 +7,35 @@ import torch.nn as nn
 class CLIPLoss(nn.Module):
     def __init__(self):
         super().__init__()
-        self.temperature = CFG.temperature
+        self.logit_scale = nn.Parameter(torch.ones([]) * CFG.temperature)
         
 
     def forward(self, outputs):
         
         image_embeddings = outputs["image_embed"]
         text_embeddings = outputs["text_embed"]
-        logits = outputs["logits"]
-
-        images_similarity = image_embeddings @ image_embeddings.T
-        texts_similarity = text_embeddings @ text_embeddings.T
-        targets = F.softmax(
-            (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
-        )
         
-        texts_loss = cross_entropy(logits, targets, reduction='none')
-        images_loss = cross_entropy(logits.T, targets.T, reduction='none')
-        loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
+
+        # normalized features
+        image_embeds = image_embeddings / image_embeddings.norm(p=2, dim=-1, keepdim=True)
+        text_embeds = text_embeddings / text_embeddings.norm(p=2, dim=-1, keepdim=True)
+
+        # cosine similarity as logits
+        logit_scale = self.logit_scale.exp()
+        logits_per_text = torch.matmul(text_embeds, image_embeds.t()) * logit_scale
+        logits_per_image = logits_per_text.t()
+
+        loss = clip_loss(logits_per_text)
         
-        
-        return {"loss" : loss, "loss mean": loss.mean(), "text_loss" : texts_loss.mean(), "image_loss": images_loss.mean()}
+        return {"loss" : loss, "logits_per_text" : logits_per_text, "logits_per_image": logits_per_image}
 
 
 
-def cross_entropy(preds, targets, reduction='none'):
-    log_softmax = nn.LogSoftmax(dim=-1)
-    loss = (-targets * log_softmax(preds)).sum(1)
-    if reduction == "none":
-        return loss
-    elif reduction == "mean":
-        return loss.mean()
+def contrastive_loss(logits: torch.Tensor) -> torch.Tensor:
+    return nn.functional.cross_entropy(logits, torch.arange(len(logits), device=logits.device))
+
+
+def clip_loss(similarity: torch.Tensor) -> torch.Tensor:
+    caption_loss = contrastive_loss(similarity)
+    image_loss = contrastive_loss(similarity.t())
+    return (caption_loss + image_loss) / 2.0

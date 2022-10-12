@@ -115,8 +115,6 @@ class CLIPModel(nn.Module):
         image_embeddings = self.image_projection(image_features)
         text_embeddings = self.text_projection(text_features)
 
-        logits = (text_embeddings @ image_embeddings.T) / self.temperature
-
-        return {"image_embed": image_embeddings, "text_embed": text_embeddings, "logits": logits}
+        return {"image_embed": image_embeddings, "text_embed": text_embeddings}
         
         

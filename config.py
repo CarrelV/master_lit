@@ -36,7 +36,8 @@ temperature = 1.0
 # test when doing on cluster
 batch_size = 2048
 num_workers = 0
-shuffle = False
+shuffle_train = False
+shuffle_test = False
 split = "train"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -50,8 +51,7 @@ head_lr = 1e-3
 weight_decay = 1e-3
 
 #LR scheduler
-patience = 2
-factor = 0.5
+T_max = 10
 
 
 ########## DDP Configuration ##########

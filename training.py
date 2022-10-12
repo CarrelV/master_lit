@@ -55,7 +55,7 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer):
 
         # Gather data and report
         count = batch["image"].size(0)
-        loss_meter.update(loss["loss mean"],loss["text_loss"],loss["image_loss"], count)
+        loss_meter.update(loss["loss"],loss["logits_per_text"],loss["logits_per_image"], count)
 
         wandb.log({"loss": loss_meter.avg_loss,"text loss": loss_meter.avg_text_l,"image loss": loss_meter.avg_img_l, "lr" : get_lr(optimizer)  } )
         tqdm_object.set_postfix(train_loss=loss_meter.avg_loss.item())
