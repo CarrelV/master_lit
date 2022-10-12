@@ -40,7 +40,7 @@ shuffle_train = False
 shuffle_test = False
 split = "train"
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 # 
 epochs = 200

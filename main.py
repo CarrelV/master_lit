@@ -28,8 +28,9 @@ def main():
     tokenizer = get_tokenizer(CFG.text_model_name)
     dataloader_train = get_dataloader(tokenizer=tokenizer,batch_size=CFG.batch_size,shuffle=CFG.shuffle,num_workers=CFG.num_workers,split=CFG.split)
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = CLIPModel().to(CFG.device)
+    model = CLIPModel().to(device)
     loss_fn = CLIPLoss()
     
     if CFG.trainable == False:
