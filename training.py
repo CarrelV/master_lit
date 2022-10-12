@@ -29,7 +29,7 @@ def get_lr(optimizer):
         return param_group["lr"]
 
         
-def train_one_epoch(model, loss_fn, train_loader, optimizer):
+def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
     
     loss_meter = AvgMeter()
 
@@ -37,7 +37,7 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer):
     
     for batch in tqdm_object:
         
-        batch = {k: v.to(CFG.device) for k, v in batch.items()}
+        batch = {k: v.to(device) for k, v in batch.items()}
         
         # Zero your gradients for every batch!
         optimizer.zero_grad()
@@ -47,7 +47,7 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer):
         
         #compute loss and its gradients
         loss = loss_fn(output)
-        loss["loss mean"].backward()
+        loss["loss"].backward()
 
         # Adjust learning weights
         optimizer.step()

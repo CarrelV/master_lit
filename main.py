@@ -26,7 +26,7 @@ def main():
            group="group_test")
     
     tokenizer = get_tokenizer(CFG.text_model_name)
-    dataloader_train = get_dataloader(tokenizer=tokenizer,batch_size=CFG.batch_size,shuffle=CFG.shuffle,num_workers=CFG.num_workers,split=CFG.split)
+    dataloader_train = get_dataloader(tokenizer=tokenizer,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split=CFG.split)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -58,7 +58,7 @@ def main():
         
         print(f"Epoch: {epoch + 1}")
         model.train()
-        train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer)
+        train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,device)
         
         current_loss = train_loss.avg_loss.item()
 
@@ -87,7 +87,7 @@ def main_DDP(rank,world_size):
     
     # prepare the dataloader
     tokenizer = get_tokenizer(CFG.text_model_name)
-    dataloader_train = get_DDP_dataloader(tokenizer=tokenizer,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle,num_workers=CFG.num_workers,split=CFG.split)
+    dataloader_train = get_DDP_dataloader(tokenizer=tokenizer,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split=CFG.split)
 
 
     model = CLIPModel().to(rank)
@@ -132,7 +132,7 @@ def main_DDP(rank,world_size):
         # if we are using DistributedSampler, we have to tell it which epoch this is
         dataloader_train.sampler.set_epoch(epoch)
 
-        train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer)    
+        train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,rank)    
         
         current_loss = train_loss.avg_loss.item()
 
@@ -159,13 +159,13 @@ if __name__ == "__main__":
 
     
     # world_size is the number of GPU available
-    world_size = CFG.gpu_number   
-    mp.spawn(
-        main_DDP,
-        args=(world_size,),
-        nprocs=world_size
-    )
+    #world_size = CFG.gpu_number   
+    #mp.spawn(
+    #    main_DDP,
+    #    args=(world_size,),
+    #    nprocs=world_size
+    #)
 
     # Use for single GPU training
 
-    #main()
+    main()
