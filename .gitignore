@@ -1,6 +1,6 @@
 # Specific
 flickr30k-images/
-wandb/*
+wandb/
 *.pt
 
 # Byte-compiled / optimized / DLL files
