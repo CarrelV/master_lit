@@ -2,6 +2,7 @@ import re
 import json
 import os
 from PIL import Image
+import random 
 
 import torch
 from torch.utils.data import  Dataset
@@ -60,26 +61,43 @@ class flickr30k(Dataset):
         self.max_words = max_words      
         self.prompt = prompt
         
-        self.img_ids = {}  
+        
+        self.img_ids = {} 
+        
+        ## Totally bad way to merge the caption, cba to redo
         n = 0
+        last_img_id = None
+        current_img_id = None
         for ann in self.annotation:
+            current_img_id = ann["image_id"]
             img_id = ann['image_id']
-            if img_id not in self.img_ids.keys():
-                self.img_ids[img_id] = n
-                n += 1    
+            if current_img_id != last_img_id:
+                self.img_ids[n] = ann
+                self.img_ids[n]["caption"] = [self.img_ids[n]["caption"]]
+                last_img_id = current_img_id
+                n += 1
+            else: 
+                ls = self.img_ids[n-1]["caption"]
+                ls.append(ann["caption"])               
+                self.img_ids[n-1]["caption"] = ls
+            
+            
+            
+
+        self.annotation = None
         
     def __len__(self):
-        return len(self.annotation)
+        return len(self.img_ids)
     
     def __getitem__(self, index):    
         
-        ann = self.annotation[index]
+        item = self.img_ids[index]
         
-        image_path = os.path.join(self.image_root,ann['image'])        
+        image_path = os.path.join(self.image_root,item['image'])        
         image = Image.open(image_path).convert('RGB')   
         image = self.transform(image)
         
-        caption = self.prompt+pre_caption(ann['caption'], self.max_words)
+        caption = self.prompt+pre_caption(random.choice(item['caption']), self.max_words)
         
         caption_encoded = self.tokenizer(caption,padding="max_length",max_length=self.max_words)
 
