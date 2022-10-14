@@ -32,10 +32,9 @@ temperature = 1.0
 
 ########## Training Configuration ##########
 
-# At home, 1024 with frozen tower is okay
-#batch_size = 1024
-# test when doing on cluster
-batch_size = 2048
+# 1024 with frozen tower is okay
+batch_size = 1024
+
 
 
 
