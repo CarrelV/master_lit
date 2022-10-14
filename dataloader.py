@@ -39,6 +39,9 @@ def get_dataloader(tokenizer,batch_size,shuffle,num_workers,split):
     if split == "train":
         dataset = get_dataset(tokenizer=tokenizer,transform=transform_train,split="train")
         return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers)
+    elif split == "val":
+        dataset = get_dataset(tokenizer=tokenizer,transform=transform_test,split="val")
+        return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers)
     elif split == "test":
         dataset = get_dataset(tokenizer=tokenizer,transform=transform_test,split="test")
         return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers)
@@ -53,12 +56,16 @@ def get_DDP_dataloader(tokenizer,rank,world_size,batch_size,shuffle,num_workers,
         
         dataset = get_dataset(tokenizer=tokenizer,transform=transform_train,split="train")
         sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=shuffle, drop_last=True)
-        return DataLoader(dataset=dataset,batch_size=batch_size,pin_memory=pin_memory,shuffle=shuffle,num_workers=num_workers,sampler=sampler)
+        return DataLoader(dataset=dataset,batch_size=batch_size,pin_memory=pin_memory,shuffle=False,num_workers=num_workers,sampler=sampler)
+    
+    elif split == "val":
+        dataset = get_dataset(tokenizer=tokenizer,transform=transform_test,split="val")
+        sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=shuffle, drop_last=False)
+        return DataLoader(dataset=dataset,batch_size=batch_size,pin_memory=pin_memory,shuffle=False,num_workers=num_workers,sampler=sampler)
     
     elif split == "test":
         dataset = get_dataset(tokenizer=tokenizer,transform=transform_test,split="test")
         sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=shuffle, drop_last=False)
-        return DataLoader(dataset=dataset,batch_size=batch_size,pin_memory=pin_memory,shuffle=shuffle,num_workers=num_workers,sampler=sampler)
-    
+        return DataLoader(dataset=dataset,batch_size=batch_size,pin_memory=pin_memory,shuffle=False,num_workers=num_workers,sampler=sampler)
     else:
         print("Wrong split")

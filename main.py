@@ -3,7 +3,7 @@ from dataloader import get_dataloader, get_DDP_dataloader
 from tokenizer import get_tokenizer
 from models import CLIPModel
 from losses import CLIPLoss
-from training import train_one_epoch
+from training import train_one_epoch, valid_one_epoch
 from utils import setup,cleanup
 
 import torch.multiprocessing as mp
@@ -17,6 +17,7 @@ from transformers import logging
 
 def main():
 
+    logging.set_verbosity_error()
     wandb.init(project="master_test_1",
            config={
                "batch_size": CFG.batch_size,
@@ -26,7 +27,9 @@ def main():
            group="group_test")
     
     tokenizer = get_tokenizer(CFG.text_model_name)
-    dataloader_train = get_dataloader(tokenizer=tokenizer,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split=CFG.split)
+    dataloader_train = get_dataloader(tokenizer=tokenizer,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train")
+    dataloader_valid = get_dataloader(tokenizer=tokenizer,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="val")
+
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -60,13 +63,18 @@ def main():
         model.train()
         train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,device)
         
-        current_loss = train_loss.avg_loss.item()
+        model.eval()
 
-        if current_loss < best_loss:
-            torch.save(model.state_dict(), "best.pt")
-            print("Saved Best Model!")
+        with torch.no_grad():
+            valid_loss = valid_one_epoch(model,loss_fn,dataloader_valid,device)
+
+        if valid_loss.avg_loss < best_loss:
+            best_loss = valid_loss.avg_loss
+            torch.save(model.image_projection.state_dict(), "img_proj_best.pt")
+            torch.save(model.text_projection.state_dict(), "text_proj_best.pt")
+            #print("Saved Best Model!")
         
-        lr_scheduler.step(train_loss.avg_loss)
+        lr_scheduler.step()
 
 
 
@@ -74,6 +82,7 @@ def main():
 ## Seems to be working when testing locally with GPU = 1. Maybe hacky/wrong fix? Will test tomorrow on the cluster
 def main_DDP(rank,world_size):
 
+    logging.set_verbosity_error()
     wandb.init(project="master_test_1",
            config={
                "batch_size": CFG.batch_size,
@@ -87,7 +96,8 @@ def main_DDP(rank,world_size):
     
     # prepare the dataloader
     tokenizer = get_tokenizer(CFG.text_model_name)
-    dataloader_train = get_DDP_dataloader(tokenizer=tokenizer,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split=CFG.split)
+    dataloader_train = get_DDP_dataloader(tokenizer=tokenizer,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train")
+    dataloader_valid = get_DDP_dataloader(tokenizer=tokenizer,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="val")
 
 
     model = CLIPModel().to(rank)
@@ -131,17 +141,24 @@ def main_DDP(rank,world_size):
         
         # if we are using DistributedSampler, we have to tell it which epoch this is
         dataloader_train.sampler.set_epoch(epoch)
+        dataloader_valid.sampler.set_epoch(epoch)
 
         train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,rank)    
         
-        current_loss = train_loss.avg_loss.item()
+        model.eval()
 
-        if current_loss < best_loss:
+        with torch.no_grad():
+            valid_loss = valid_one_epoch(model,loss_fn,dataloader_valid,rank)
+
+       
+
+        if valid_loss.avg_loss < best_loss:
+            best_loss = valid_loss.avg_loss
             torch.save(model.module.image_projection.state_dict(), "img_proj_best.pt")
             torch.save(model.module.text_projection.state_dict(), "img_proj_best.pt")
-            print("Saved new Best Model! (only both projection heads)")
+            #print("Saved new Best Model! (only both projection heads)")
         
-        lr_scheduler.step(train_loss.avg_loss)
+        lr_scheduler.step()
 
     cleanup()
 
@@ -155,17 +172,17 @@ def main_DDP(rank,world_size):
 if __name__ == "__main__":
 
     
-    logging.set_verbosity_error()
+    
 
     
     # world_size is the number of GPU available
-    #world_size = CFG.gpu_number   
-    #mp.spawn(
-    #    main_DDP,
-    #    args=(world_size,),
-    #    nprocs=world_size
-    #)
+    world_size = CFG.gpu_number   
+    mp.spawn(
+        main_DDP,
+        args=(world_size,),
+        nprocs=world_size
+    )
 
     # Use for single GPU training
 
-    main()
+    #main()

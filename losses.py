@@ -27,7 +27,8 @@ class CLIPLoss(nn.Module):
 
         loss = clip_loss(logits_per_text)
         
-        return {"loss" : loss, "logits_per_text" : logits_per_text, "logits_per_image": logits_per_image}
+        return loss
+        #return {"loss" : loss, "logits_per_text" : logits_per_text, "logits_per_image": logits_per_image}
 
 
 

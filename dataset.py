@@ -38,20 +38,22 @@ class flickr30k(Dataset):
         ann_root (string): directory to store the annotation file
         split (string): one of "train" or "test"
         '''        
-        train = 'https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_train.json'
-        test = 'https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_test.json'
+      
 
         self.tokenizer = tokenizer
 
         self.split = split
-        assert self.split in ("train","test")
+        assert self.split in ("train","val","test")
 
         if self.split == "train":
-            url = train
-            filename = 'flickr30k_train.json'
+            url = "https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_train.json"
+            filename = "flickr30k_train.json"
+        elif self.split == "val":
+            url = "https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_val.json"
+            filename = "flickr30k_val.json"
         else:
-            url = test
-            filename = 'flickr30k_test.json'
+            url = "https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_test.json"
+            filename = "flickr30k_test.json"
 
         download_url(url,ann_root)
         
@@ -65,24 +67,30 @@ class flickr30k(Dataset):
         self.img_ids = {} 
         
         ## Totally bad way to merge the caption, cba to redo
-        n = 0
-        last_img_id = None
-        current_img_id = None
-        for ann in self.annotation:
-            current_img_id = ann["image_id"]
-            img_id = ann['image_id']
-            if current_img_id != last_img_id:
+
+        if self.split == "train":
+            n = 0
+            last_img_id = None
+            current_img_id = None
+            for ann in self.annotation:
+                current_img_id = ann["image_id"]
+
+                if current_img_id != last_img_id:
+                    self.img_ids[n] = ann
+                    self.img_ids[n]["caption"] = [self.img_ids[n]["caption"]]
+                    last_img_id = current_img_id
+                    n += 1
+                else: 
+                    ls = self.img_ids[n-1]["caption"]
+                    ls.append(ann["caption"])               
+                    self.img_ids[n-1]["caption"] = ls
+                
+                
+        else:
+            n = 0
+            for ann in self.annotation:
                 self.img_ids[n] = ann
-                self.img_ids[n]["caption"] = [self.img_ids[n]["caption"]]
-                last_img_id = current_img_id
                 n += 1
-            else: 
-                ls = self.img_ids[n-1]["caption"]
-                ls.append(ann["caption"])               
-                self.img_ids[n-1]["caption"] = ls
-            
-            
-            
 
         self.annotation = None
         
