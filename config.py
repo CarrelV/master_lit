@@ -48,7 +48,7 @@ split = "train"
 
 
 # 
-epochs = 100
+epochs = 500
 
 image_encoder_lr = 1e-4
 text_encoder_lr = 1e-5
