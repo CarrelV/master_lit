@@ -12,22 +12,22 @@ from utils import read_imagenet_class
 def test_0shot():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    ds = ImageNetV2Dataset(transform=transform_test)
+    test_loader = DataLoader(ds, batch_size=CFG.test_batch_size, num_workers=CFG.num_workers)
+
+    tokenizer = get_tokenizer(CFG.text_model_name)
 
     model = CLIPModel().to(device)
 
     checkpoint_image = torch.load(CFG.image_checkpoint)
     checkpoint_text = torch.load(CFG.text_checkpoint)
 
-    tokenizer = get_tokenizer(CFG.text_model_name)
-
-
     model.image_projection.load_state_dict(checkpoint_image)
     model.text_projection.load_state_dict(checkpoint_text)
 
 
-    ds = ImageNetV2Dataset(transform=transform_test)
-    test_loader = DataLoader(ds, batch_size=CFG.test_batch_size, num_workers=CFG.num_workers)
-
+    
 
     imagenet_prompt ='a photo of a {}.'
 

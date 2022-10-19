@@ -68,7 +68,7 @@ gpu_number = 2
 
 ########## Test Configuration ##########
 
-image_checkpoint = "img_proj_best.pt"
-text_checkpoint = "text_proj_best.pt"
+image_checkpoint = "weights/img_proj_best.pt"
+text_checkpoint = "weights/text_proj_best.pt"
 
 test_batch_size = 32

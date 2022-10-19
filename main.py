@@ -70,8 +70,8 @@ def main():
 
         if valid_loss.avg_loss < best_loss:
             best_loss = valid_loss.avg_loss
-            torch.save(model.image_projection.state_dict(), "img_proj_best.pt")
-            torch.save(model.text_projection.state_dict(), "text_proj_best.pt")
+            torch.save(model.image_projection.state_dict(), "weights/img_proj_best.pt")
+            torch.save(model.text_projection.state_dict(), "weights/text_proj_best.pt")
             #print("Saved Best Model!")
         
         lr_scheduler.step()
@@ -176,13 +176,13 @@ if __name__ == "__main__":
 
     
     # world_size is the number of GPU available
-    world_size = CFG.gpu_number   
-    mp.spawn(
-        main_DDP,
-        args=(world_size,),
-        nprocs=world_size
-    )
+    #world_size = CFG.gpu_number   
+    #mp.spawn(
+    #    main_DDP,
+    #    args=(world_size,),
+    #    nprocs=world_size
+    #)
 
     # Use for single GPU training
 
-    #main()
+    main()
