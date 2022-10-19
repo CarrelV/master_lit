@@ -21,3 +21,14 @@ for k,v in state_dict.items():
     else:
         model_dict = state_dict
 model.load_state_dict(model_dict)'''
+
+
+def read_imagenet_class():
+    classes = []
+    with open(r"imagenet_classes.txt", 'r') as fp:
+        for line in fp:
+        
+            x = line[:-1]
+
+            classes.append(x)
+    return classes

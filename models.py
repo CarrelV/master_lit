@@ -98,6 +98,34 @@ class CLIPModel(nn.Module):
         self.temperature = temperature
         self.trainable = trainable
 
+    def encode_text(self,text):
+        if not self.trainable:
+            with torch.no_grad():
+                text_features = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
+        
+        else:
+            text_features = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
+
+        # Getting Image and Text Embeddings (with same dimension) (output of proj heads)
+        text_embeddings = self.text_projection(text_features)
+
+        return  text_embeddings
+
+    def encode_image(self,image):
+        if not self.trainable:
+            with torch.no_grad():
+                image_features = self.image_encoder(image)
+
+        
+        else:
+            image_features = self.image_encoder(image)
+
+
+        # Getting Image and Text Embeddings (with same dimension) (output of proj heads)
+        image_embeddings = self.image_projection(image_features)
+
+
+        return image_embeddings
     
     def forward(self, batch):
         # Getting Image and Text Features (output of towers)

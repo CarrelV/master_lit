@@ -2,7 +2,7 @@
 flickr30k-images/
 wandb/
 *.pt
-
+ImageNetV2-matched-frequency/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
