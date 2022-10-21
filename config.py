@@ -32,6 +32,7 @@ temperature = 1.0
 
 ########## Training Configuration ##########
 
+training_run_number = 0
 # At home, 1024 with frozen tower is okay
 #batch_size = 1024
 # test when doing on cluster
@@ -68,7 +69,9 @@ gpu_number = 2
 
 ########## Test Configuration ##########
 
-image_checkpoint = "weights/img_proj_best.pt"
-text_checkpoint = "weights/text_proj_best.pt"
+checkpoint_number = 0
 
-test_batch_size = 32
+image_checkpoint = f"weights/img_proj_best_{checkpoint_number}.pt"
+text_checkpoint = f"weights/text_proj_best_{checkpoint_number}.pt"
+
+test_batch_size = 1

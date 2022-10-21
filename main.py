@@ -1,6 +1,6 @@
 import config as CFG
 from dataloader import get_dataloader, get_DDP_dataloader
-from tokenizer import get_tokenizer
+from tokenizer import get_tokenizer,get_feature_extractor
 from models import CLIPModel
 from losses import CLIPLoss
 from training import train_one_epoch, valid_one_epoch
@@ -27,8 +27,10 @@ def main():
            group="group_test")
     
     tokenizer = get_tokenizer(CFG.text_model_name)
-    dataloader_train = get_dataloader(tokenizer=tokenizer,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train")
-    dataloader_valid = get_dataloader(tokenizer=tokenizer,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="val")
+    feature_extractor = get_feature_extractor(CFG.vision_model_name)
+
+    dataloader_train = get_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train")
+    dataloader_valid = get_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="val")
 
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -102,8 +104,10 @@ def main_DDP(rank,world_size):
     
     # prepare the dataloader
     tokenizer = get_tokenizer(CFG.text_model_name)
-    dataloader_train = get_DDP_dataloader(tokenizer=tokenizer,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train")
-    dataloader_valid = get_DDP_dataloader(tokenizer=tokenizer,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="val")
+    feature_extractor = get_feature_extractor(CFG.vision_model_name)
+
+    dataloader_train = get_DDP_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train")
+    dataloader_valid = get_DDP_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="val")
 
 
     model = CLIPModel().to(rank)
@@ -160,15 +164,15 @@ def main_DDP(rank,world_size):
 
         if valid_loss.avg_loss < best_loss:
             best_loss = valid_loss.avg_loss
-            torch.save(model.module.image_projection.state_dict(), "weights/img_proj_best.pt")
-            torch.save(model.module.text_projection.state_dict(), "weights/text_proj_best.pt")
+            torch.save(model.module.image_projection.state_dict(), f"weights/img_proj_best_{CFG.training_run_number}.pt")
+            torch.save(model.module.text_projection.state_dict(), f"weights/text_proj_best_{CFG.training_run_number}.pt")
         
             #print("Saved new Best Model! (only both projection heads)")
         
         lr_scheduler.step()
 
-    torch.save(model.module.image_projection.state_dict(), "weights/img_proj_last.pt")
-    torch.save(model.module.text_projection.state_dict(), "weights/text_proj_last.pt")
+    torch.save(model.module.image_projection.state_dict(), f"weights/img_proj_last_{CFG.training_run_number}.pt")
+    torch.save(model.module.text_projection.state_dict(), f"weights/text_proj_last_{CFG.training_run_number}.pt")
 
     cleanup()
 
@@ -183,16 +187,16 @@ if __name__ == "__main__":
 
     
     
-
+    '''
     
-    # world_size is the number of GPU available
+    # world_size is the number of GPU available'''
     world_size = CFG.gpu_number   
     mp.spawn(
         main_DDP,
         args=(world_size,),
         nprocs=world_size
     )
-
+    
     # Use for single GPU training
 
     #main()
