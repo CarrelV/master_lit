@@ -45,12 +45,13 @@ class ImageEncoder(nn.Module):
         for p in self.model.parameters():
             p.requires_grad = trainable
 
-        
+        self.target_token_idx = 0
 
     def forward(self, image):
         
         output = self.model(image)
-        return output["pooler_output"]
+        last_hidden_state = output.last_hidden_state
+        return last_hidden_state[:, self.target_token_idx, :]
 
 
 ###################### PROJECTION HEAD on top ####################################

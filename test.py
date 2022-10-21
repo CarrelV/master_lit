@@ -2,18 +2,21 @@ import torch
 from imagenetv2_pytorch import ImageNetV2Dataset
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+from transformers import logging
 
 from models import CLIPModel
 import config as CFG
-from tokenizer import get_tokenizer
-from dataloader import transform_test,get_dataloader
+from tokenizer import get_tokenizer,get_feature_extractor
+from dataloader import transform_ImageNet,get_dataloader
 from utils import read_imagenet_class
 
 def test():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    logging.set_verbosity_error()
+
     
-    
+    feature_extractor = get_feature_extractor(CFG.vision_model_name)
 
     tokenizer = get_tokenizer(CFG.text_model_name)
 
@@ -26,16 +29,16 @@ def test():
     model.text_projection.load_state_dict(checkpoint_text)
 
 
-    imagenet_0shot(model=model,tokenizer=tokenizer,device=device)
+    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
-    flickr_retrieval(model=model,tokenizer=tokenizer,device=device)
+    flickr_retrieval(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
 ######################## IMAGENET 0 SHOT ###############
 
 
-def imagenet_0shot(model,tokenizer,device):
+def imagenet_0shot(model,tokenizer,feature_extractor,device):
 
-    ds = ImageNetV2Dataset(transform=transform_test)
+    ds = ImageNetV2Dataset(transform=transform_ImageNet)
     test_loader = DataLoader(ds, batch_size=CFG.test_batch_size, num_workers=CFG.num_workers)
 
     imagenet_prompt ='a photo of a {}.'
@@ -51,7 +54,9 @@ def imagenet_0shot(model,tokenizer,device):
             target = target.to(device)
             
             # predict
-            image_features = model.encode_image(images)
+            image_encoded = feature_extractor(images.squeeze(0).cpu(),"pt").to(device)
+
+            image_features = model.encode_image(image_encoded["pixel_values"])
             image_features /= image_features.norm(dim=-1, keepdim=True)
             logits = 100. * image_features @ text_zeroshot_weight
 
@@ -134,10 +139,10 @@ def t2i(sim: torch.Tensor):
     return 100 * top1 / len(order[0]), 100 * top5 / len(order[0]) ,100 * top10 / len(order[0])
 
 
-def flickr_retrieval(model,tokenizer,device):
+def flickr_retrieval(model,tokenizer,feature_extractor,device):
 
 
-    train_loader = get_dataloader(tokenizer=tokenizer,batch_size=CFG.batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
+    train_loader = get_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
 
     with torch.no_grad():
 
