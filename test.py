@@ -3,11 +3,12 @@ from imagenetv2_pytorch import ImageNetV2Dataset
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import logging
+import torchvision.transforms as transforms
 
 from models import CLIPModel
 import config as CFG
 from tokenizer import get_tokenizer,get_feature_extractor
-from dataloader import transform_ImageNet,get_dataloader
+from dataloader import get_dataloader
 from utils import read_imagenet_class
 
 def test():
@@ -28,15 +29,24 @@ def test():
     model.image_projection.load_state_dict(checkpoint_image)
     model.text_projection.load_state_dict(checkpoint_text)
 
+    model.eval()
 
     imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
-    flickr_retrieval(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
+    #flickr_retrieval(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
 ######################## IMAGENET 0 SHOT ###############
 
 
+
 def imagenet_0shot(model,tokenizer,feature_extractor,device):
+
+    transform_ImageNet = transforms.Compose([
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize((0.444, 0.421, 0.385), 
+                                 (0.285, 0.277, 0.286)),
+            ])
 
     ds = ImageNetV2Dataset(transform=transform_ImageNet)
     test_loader = DataLoader(ds, batch_size=CFG.test_batch_size, num_workers=CFG.num_workers)
@@ -50,13 +60,16 @@ def imagenet_0shot(model,tokenizer,feature_extractor,device):
     with torch.no_grad():
         top1, top5, n = 0., 0., 0.
         for images, target in tqdm(test_loader):
+         
+            images = feature_extractor(images.squeeze(0),return_tensors="pt")
+            
+            images = images["pixel_values"]
+            
             images = images.to(device)
             target = target.to(device)
             
             # predict
-            image_encoded = feature_extractor(images.squeeze(0).cpu(),"pt").to(device)
-
-            image_features = model.encode_image(image_encoded["pixel_values"])
+            image_features = model.encode_image(images)
             image_features /= image_features.norm(dim=-1, keepdim=True)
             logits = 100. * image_features @ text_zeroshot_weight
 
@@ -161,10 +174,10 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
 
             
 
-            similarities = image_features @ text_features.T
+            sim_i2t = 100. * image_features @ text_features.T
 
-            i2t_r1,i2t_r5,i2t_r10 = i2t(similarities)
-            t2i_r1,t2i_r5,t2i_r10 = t2i(similarities)
+            i2t_r1,i2t_r5,i2t_r10 = i2t(sim_i2t)
+            t2i_r1,t2i_r5,t2i_r10 = t2i(sim_i2t)
 
             print("Image 2 Text Retrieval on Flickr30k:")
             print(f"Top-1 accuracy: {i2t_r1:.2f}")

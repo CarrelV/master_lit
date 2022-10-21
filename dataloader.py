@@ -18,14 +18,8 @@ transform_test = transforms.Compose([
             transforms.CenterCrop(224),
             ])
 
-transform_ImageNet = transforms.Compose([
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize((0.444, 0.421, 0.385), 
-                                 (0.285, 0.277, 0.286))
-            ])
 
-            
+
 # Not used since I switched to a dict for the DataSet 
 def collate_custom(batch):
  
