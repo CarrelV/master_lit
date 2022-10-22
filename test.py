@@ -33,7 +33,7 @@ def test():
 
     imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
-    #flickr_retrieval(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
+    flickr_retrieval(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
 ######################## IMAGENET 0 SHOT ###############
 
@@ -114,43 +114,6 @@ def accuracy(output, target, topk=(1,)):
 
 #########################  FLICKR I2T and T2I RETRIEVAL ########################
 
-def i2t(sim: torch.Tensor):
-    
-    order = sim.argsort()
-    
-    top1 = 0
-    top5 = 0
-    top10 = 0
-
-    for i in range(len(order[0])):
-        if i == order[i,0]:
-            top1 += 1
-        if i in order[i,0:5]:
-            top5 += 1
-        if i in order[i,:10]:
-            top10 += 1
-
-    return 100 * top1 / len(order[0]), 100 * top5 / len(order[0]) , 100 * top10 / len(order[0])
-
-def t2i(sim: torch.Tensor):
-    
-    sim = sim.T
-    order = sim.argsort()
-    
-    top1 = 0
-    top5 = 0
-    top10 = 0
-
-    for i in range(len(order[0])):
-        if i == order[i,0]:
-            top1 += 1
-        if i in order[i,0:5]:
-            top5 += 1
-        if i in order[i,:10]:
-            top10 += 1
-
-    return 100 * top1 / len(order[0]), 100 * top5 / len(order[0]) ,100 * top10 / len(order[0])
-
 
 def flickr_retrieval(model,tokenizer,feature_extractor,device):
 
@@ -159,6 +122,7 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
 
     with torch.no_grad():
 
+        top1_i2t, top5_i2t,top1_t2i,top5_t2i, n = 0., 0., 0. ,0. ,0.
         for batch in train_loader:
 
             image = batch["image"].to(device)
@@ -176,19 +140,37 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
 
             sim_i2t = 100. * image_features @ text_features.T
 
-            i2t_r1,i2t_r5,i2t_r10 = i2t(sim_i2t)
-            t2i_r1,t2i_r5,t2i_r10 = t2i(sim_i2t)
+            target = torch.eye(sim_i2t.shape[0])
+            
+            print("sim_i2t shape")
+            print(sim_i2t.shape)
+            print("target")
+            print(target.shape)
 
-            print("Image 2 Text Retrieval on Flickr30k:")
-            print(f"Top-1 accuracy: {i2t_r1:.2f}")
-            print(f"Top-5 accuracy: {i2t_r5:.2f}")
-            print(f"Top-10 accuracy: {i2t_r10:.2f}")
+            # measure accuracy
+            acc1, acc5 = accuracy(sim_i2t, target, topk=(1, 5))
+            top1_i2t += acc1
+            top5_i2t += acc5
 
-            print("Text 2 Image Retrieval on Flickr30k:")
-            print(f"Top-1 accuracy: {t2i_r1:.2f}")
-            print(f"Top-5 accuracy: {t2i_r5:.2f}")
-            print(f"Top-10 accuracy: {t2i_r10:.2f}")
+            acc1, acc5 = accuracy(sim_i2t.T, target, topk=(1, 5))
+            top1_t2i += acc1
+            top5_t2i += acc5
 
+            n += image.size(0)
+
+    top1_i2t = (top1_i2t / n) * 100
+    top5_i2t = (top5_i2t / n) * 100 
+
+    print("Image 2 Text Retrieval on Flickr30k:")
+    print(f"Top-1 accuracy: {top1_i2t:.2f}")
+    print(f"Top-5 accuracy: {top5_i2t:.2f}")
+
+    top1_t2i = (top1_t2i / n) * 100
+    top5_t2i = (top5_t2i / n) * 100 
+
+    print("Text 2 Image Retrieval on Flickr30k:")
+    print(f"Top-1 accuracy: {top1_t2i:.2f}")
+    print(f"Top-5 accuracy: {top5_t2i:.2f}")
 
 
 
