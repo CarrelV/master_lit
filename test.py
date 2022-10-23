@@ -107,10 +107,7 @@ def compute_text_weight_zeroshot(model,tokenizer,device,classnames, template):
         zeroshot_weights = torch.stack(zeroshot_weights, dim=1).to(device)
     return zeroshot_weights
 
-def accuracy(output, target, topk=(1,)):
-    indices = output.topk(max(topk), 1, True, True)[1].t()
-    correct = indices.eq(target.view(1, -1).expand_as(indices))
-    return [float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy()) for k in topk]
+
 
 #########################  FLICKR I2T and T2I RETRIEVAL ########################
 
@@ -142,14 +139,15 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
 
             target = torch.eye(sim_i2t.shape[0]).to(device)
             
-            
+            target = target.argmax(dim=0)
+
 
             # measure accuracy
-            acc1, acc5 = retrieval_accuracy(sim_i2t, target, topk=(1, 5))
+            acc1, acc5 = accuracy(sim_i2t, target, topk=(1, 5))
             top1_i2t += acc1
             top5_i2t += acc5
 
-            acc1, acc5 = retrieval_accuracy(sim_i2t.T, target, topk=(1, 5))
+            acc1, acc5 = accuracy(sim_i2t.T, target, topk=(1, 5))
             top1_t2i += acc1
             top5_t2i += acc5
 
@@ -169,16 +167,13 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
     print(f"Top-1 accuracy: {top1_t2i:.2f}")
     print(f"Top-5 accuracy: {top5_t2i:.2f}")
 
+    
+############################ ACCURACY #######################
 
-
-def retrieval_accuracy(output, target, topk=(1,)):
-    target = target.argmax(dim=0)
+def accuracy(output, target, topk=(1,)):
     indices = output.topk(max(topk), 1, True, True)[1].t()
     correct = indices.eq(target.expand_as(indices))
     return [float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy()) for k in topk]
-
-
-
 
 
 
