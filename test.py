@@ -108,8 +108,8 @@ def compute_text_weight_zeroshot(model,tokenizer,device,classnames, template):
     return zeroshot_weights
 
 def accuracy(output, target, topk=(1,)):
-    pred = output.topk(max(topk), 1, True, True)[1].t()
-    correct = pred.eq(target.view(1, -1).expand_as(pred))
+    indices = output.topk(max(topk), 1, True, True)[1].t()
+    correct = indices.eq(target.view(1, -1).expand_as(indices))
     return [float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy()) for k in topk]
 
 #########################  FLICKR I2T and T2I RETRIEVAL ########################
@@ -118,12 +118,12 @@ def accuracy(output, target, topk=(1,)):
 def flickr_retrieval(model,tokenizer,feature_extractor,device):
 
 
-    train_loader = get_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
+    test_loader = get_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
 
     with torch.no_grad():
 
         top1_i2t, top5_i2t,top1_t2i,top5_t2i, n = 0., 0., 0. ,0. ,0.
-        for batch in train_loader:
+        for batch in test_loader:
 
             image = batch["image"].to(device)
             text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
@@ -140,19 +140,16 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
 
             sim_i2t = 100. * image_features @ text_features.T
 
-            target = torch.eye(sim_i2t.shape[0])
+            target = torch.eye(sim_i2t.shape[0]).to(device)
             
-            print("sim_i2t shape")
-            print(sim_i2t.shape)
-            print("target")
-            print(target.shape)
+            
 
             # measure accuracy
-            acc1, acc5 = accuracy(sim_i2t, target, topk=(1, 5))
+            acc1, acc5 = retrieval_accuracy(sim_i2t, target, topk=(1, 5))
             top1_i2t += acc1
             top5_i2t += acc5
 
-            acc1, acc5 = accuracy(sim_i2t.T, target, topk=(1, 5))
+            acc1, acc5 = retrieval_accuracy(sim_i2t.T, target, topk=(1, 5))
             top1_t2i += acc1
             top5_t2i += acc5
 
@@ -174,7 +171,11 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
 
 
 
-
+def retrieval_accuracy(output, target, topk=(1,)):
+    target = target.argmax(dim=0)
+    indices = output.topk(max(topk), 1, True, True)[1].t()
+    correct = indices.eq(target.expand_as(indices))
+    return [float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy()) for k in topk]
 
 
 
