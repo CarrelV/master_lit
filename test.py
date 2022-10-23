@@ -5,7 +5,7 @@ from tqdm import tqdm
 from transformers import logging
 import torchvision.transforms as transforms
 
-from models import CLIPModel
+from models import CLIPProjection
 import config as CFG
 from tokenizer import get_tokenizer,get_feature_extractor
 from dataloader import get_dataloader
@@ -21,7 +21,7 @@ def test():
 
     tokenizer = get_tokenizer(CFG.text_model_name)
 
-    model = CLIPModel().to(device)
+    model = CLIPProjection().to(device)
 
     checkpoint_image = torch.load(CFG.image_checkpoint)
     checkpoint_text = torch.load(CFG.text_checkpoint)
@@ -167,7 +167,7 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
     print(f"Top-1 accuracy: {top1_t2i:.2f}")
     print(f"Top-5 accuracy: {top5_t2i:.2f}")
 
-    
+
 ############################ ACCURACY #######################
 
 def accuracy(output, target, topk=(1,)):

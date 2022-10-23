@@ -1,7 +1,7 @@
 import config as CFG
 from dataloader import get_dataloader, get_DDP_dataloader
 from tokenizer import get_tokenizer,get_feature_extractor
-from models import CLIPModel
+from models import CLIPProjection
 from losses import CLIPLoss
 from training import train_one_epoch, valid_one_epoch
 from utils import setup,cleanup
@@ -35,7 +35,7 @@ def main():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = CLIPModel().to(device)
+    model = CLIPProjection().to(device)
     loss_fn = CLIPLoss()
     
     if CFG.trainable == False:
@@ -110,7 +110,7 @@ def main_DDP(rank,world_size):
     dataloader_valid = get_DDP_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="val")
 
 
-    model = CLIPModel().to(rank)
+    model = CLIPProjection().to(rank)
 
     # wrap the model with DDP
     # device_ids tell DDP where is your model

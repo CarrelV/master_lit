@@ -83,7 +83,7 @@ class ProjectionHead(nn.Module):
 ###################### COMPLETE MODEL ####################################
 
 
-class CLIPModel(nn.Module):
+class CLIPProjection(nn.Module):
     def __init__(
         self,
         temperature=CFG.temperature,
