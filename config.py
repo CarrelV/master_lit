@@ -37,7 +37,7 @@ K = 1024
 m=0.999
 ########## Training Configuration ##########
 # "classic", "moco", "ape"
-model_used = "classic"
+model_used = "moco"
 training_run_number = 1
 # With frozen towers, batch size 1024 is okay
 #batch_size = 1024
