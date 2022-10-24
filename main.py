@@ -87,7 +87,7 @@ def main():
             train_loss = train_one_epoch(model, loss_train, dataloader_train, optimizer,device)
 
         elif CFG.model_used == "moco":
-            train_loss = train_one_MOCO_epoch(model, loss_train, dataloader_train, optimizer,device)
+            train_loss = train_one_MOCO_epoch(model, loss_train, dataloader_train, optimizer,device,ddp = False)
         
         elif CFG.model_used == "ape":
             print("Model not implemented yet")
@@ -218,7 +218,7 @@ def main_DDP(rank,world_size):
             train_loss = train_one_epoch(model, loss_train, dataloader_train, optimizer,rank)
 
         elif CFG.model_used == "moco":
-            train_loss = train_one_MOCO_epoch(model, loss_train, dataloader_train, optimizer,rank)
+            train_loss = train_one_MOCO_epoch(model, loss_train, dataloader_train, optimizer,rank, ddp = True)
         
         elif CFG.model_used == "ape":
             print("Model not implemented yet")
@@ -241,16 +241,16 @@ def main_DDP(rank,world_size):
             best_loss = valid_loss.avg_loss
             if CFG.trainable:
                 # Save the two towers
-                torch.save(model.image_encoder.state_dict(), f"weights/{CFG.model_used}_img_enc_best_{CFG.training_run_number}.pt")
-                torch.save(model.text_encoder.state_dict(), f"weights/{CFG.model_used}_text_enc_best_{CFG.training_run_number}.pt")
+                torch.save(model.module.image_encoder.state_dict(), f"weights/{CFG.model_used}_img_enc_best_{CFG.training_run_number}.pt")
+                torch.save(model.module.text_encoder.state_dict(), f"weights/{CFG.model_used}_text_enc_best_{CFG.training_run_number}.pt")
                 # And the two projection heads
-                torch.save(model.image_projection.state_dict(), f"weights/{CFG.model_used}_img_proj_best_{CFG.training_run_number}.pt")
-                torch.save(model.text_projection.state_dict(), f"weights/{CFG.model_used}_text_proj_best_{CFG.training_run_number}.pt")
+                torch.save(model.module.image_projection.state_dict(), f"weights/{CFG.model_used}_img_proj_best_{CFG.training_run_number}.pt")
+                torch.save(model.module.text_projection.state_dict(), f"weights/{CFG.model_used}_text_proj_best_{CFG.training_run_number}.pt")
 
             else:
                 #Only save projection heads
-                torch.save(model.image_projection.state_dict(), f"weights/{CFG.model_used}_img_proj_best_{CFG.training_run_number}.pt")
-                torch.save(model.text_projection.state_dict(), f"weights/{CFG.model_used}_text_proj_best_{CFG.training_run_number}.pt")
+                torch.save(model.module.image_projection.state_dict(), f"weights/{CFG.model_used}_img_proj_best_{CFG.training_run_number}.pt")
+                torch.save(model.module.text_projection.state_dict(), f"weights/{CFG.model_used}_text_proj_best_{CFG.training_run_number}.pt")
 
                 #print("Saved Best Model!")
         

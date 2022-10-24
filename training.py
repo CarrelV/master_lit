@@ -64,7 +64,7 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
     return loss_meter
 
 
-def train_one_MOCO_epoch(model, loss_fn, train_loader, optimizer,device):
+def train_one_MOCO_epoch(model, loss_fn, train_loader, optimizer,device,ddp):
     
     loss_meter = AvgMeter()
 
@@ -79,20 +79,36 @@ def train_one_MOCO_epoch(model, loss_fn, train_loader, optimizer,device):
         # Update the momentum encoder
         # Generate key for this batch, and update the queue
         with torch.no_grad():
+            if ddp:
+                model.module._momentum_update_key_encoders()
 
-            model._momentum_update_key_encoders()
+                
+                key_image_features = model.module.key_encode_image(image)
+                key_text_features = model.module.key_encode_text(text)
 
-            
-            key_image_features = model.key_encode_image(image)
-            key_text_features = model.key_encode_text(text)
+                key_image_features = key_image_features / key_image_features.norm(dim=-1, keepdim=True)
+                key_text_features = key_text_features / key_text_features.norm(dim=-1, keepdim=True)
 
-            key_image_features = key_image_features / key_image_features.norm(dim=-1, keepdim=True)
-            key_text_features = key_text_features / key_text_features.norm(dim=-1, keepdim=True)
+                model.module._dequeue_and_enqueue(key_image_features,key_text_features)
 
-            model._dequeue_and_enqueue(key_image_features,key_text_features)
+                # Now the keys are the updated queue
+                keys_for_this_batch = {"image_embed" : model.module.image_queue.to(device), "text_embed": model.module.text_queue.to(device)}
+            else:    
+                model._momentum_update_key_encoders()
+
+                
+                key_image_features = model.key_encode_image(image)
+                key_text_features = model.key_encode_text(text)
+
+                key_image_features = key_image_features / key_image_features.norm(dim=-1, keepdim=True)
+                key_text_features = key_text_features / key_text_features.norm(dim=-1, keepdim=True)
+
+                model._dequeue_and_enqueue(key_image_features,key_text_features)
+
+                # Now the keys are the updated queue
+                keys_for_this_batch = {"image_embed" : model.image_queue.to(device), "text_embed": model.text_queue.to(device)}
         
-        # Now the keys are the updated queue
-        keys_for_this_batch = {"image_embed" : model.image_queue.to(device), "text_embed": model.text_queue.to(device)}
+        
         
         
         # Zero your gradients for every batch!
