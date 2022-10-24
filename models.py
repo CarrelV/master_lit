@@ -5,6 +5,7 @@ import torch.nn as nn
 from transformers import BertModel, BertConfig
 from transformers import ViTModel, ViTConfig
 
+from copy import deepcopy
 
 ###################### TEXT TOWER ####################################
 
@@ -80,7 +81,7 @@ class ProjectionHead(nn.Module):
         return x
 
 
-###################### COMPLETE MODEL ####################################
+###################### CLIP Model with projection Head on both tower ####################################
 
 
 class CLIPProjection(nn.Module):
@@ -107,7 +108,7 @@ class CLIPProjection(nn.Module):
         else:
             text_features = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
 
-        # Getting Image and Text Embeddings (with same dimension) (output of proj heads)
+        # Getting Text Embeddings (output of proj heads)
         text_embeddings = self.text_projection(text_features)
 
         return  text_embeddings
@@ -122,28 +123,150 @@ class CLIPProjection(nn.Module):
             image_features = self.image_encoder(image)
 
 
-        # Getting Image and Text Embeddings (with same dimension) (output of proj heads)
+        # Getting Image Embeddings (output of proj heads)
         image_embeddings = self.image_projection(image_features)
 
 
         return image_embeddings
     
-    def forward(self, batch):
-        # Getting Image and Text Features (output of towers)
-
-        if not self.trainable:
-            with torch.no_grad():
-                image_features = self.image_encoder(batch["image"])
-                text_features = self.text_encoder(input_ids=batch["input_ids"], attention_mask=batch["attention_mask"])
-        
-        else:
-            image_features = self.image_encoder(batch["image"])
-            text_features = self.text_encoder(input_ids=batch["input_ids"], attention_mask=batch["attention_mask"])
-
-        # Getting Image and Text Embeddings (with same dimension) (output of proj heads)
-        image_embeddings = self.image_projection(image_features)
-        text_embeddings = self.text_projection(text_features)
+    def forward(self, image,text):
+      
+        image_embeddings = self.encode_image(image)
+        text_embeddings = self.encode_text(text)
 
         return {"image_embed": image_embeddings, "text_embed": text_embeddings}
         
         
+# Same as CLIP Projection, but implementing MOCO to be able to finetune both Text and Image tower as well, and keep a lot
+# of negative contrastive exemples despite the smaller batch size
+
+class CLIPProjMoco(nn.Module):
+    def __init__(
+        self,
+        temperature=CFG.temperature,
+        image_embedding=CFG.image_embedding,
+        text_embedding=CFG.text_embedding,
+        proj_dim = CFG.projection_dim,
+        trainable=CFG.trainable,
+        K=CFG.K,
+        m=0.999
+    ):
+        super().__init__()
+        self.image_encoder = ImageEncoder()
+        self.text_encoder = TextEncoder()
+        self.image_projection = ProjectionHead(embedding_dim=image_embedding)
+        self.text_projection = ProjectionHead(embedding_dim=text_embedding)
+        self.proj_dim = proj_dim
+        self.temperature = temperature
+        self.trainable = trainable
+
+        # MOCO parameters
+        self.K = K
+        self.m = m
+
+        # Init key encoders
+        self.image_key_encoder = deepcopy(self.image_encoder)
+        for param_k in self.image_key_encoder.parameters():param_k.requires_grad = False
+
+        self.text_key_encoder = deepcopy(self.text_encoder)
+        for param_k in self.image_key_encoder.parameters(): param_k.requires_grad = False
+
+        self.image_key_projection = deepcopy(self.image_projection)
+        for param_k in self.image_key_projection.parameters(): param_k.requires_grad = False
+
+        self.text_key_projection = deepcopy(self.text_projection)
+        for param_k in self.text_key_projection.parameters():param_k.requires_grad = False
+
+        # Init Queues
+        self.image_queue = torch.randn(self.K,self.proj_dim)
+        self.text_queue = torch.randn(self.K,self.proj_dim)
+
+        self.queue_ptr = 0
+
+    def encode_text(self,text):
+        if not self.trainable:
+            with torch.no_grad():
+                text_features = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
+        
+        else:
+            text_features = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
+
+        # Getting Text Embeddings (output of proj heads)
+        text_embeddings = self.text_projection(text_features)
+
+        return  text_embeddings
+    
+    def key_encode_text(self,text):
+        if not self.trainable:
+            with torch.no_grad():
+                text_features = self.text_key_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
+        
+        else:
+            text_features = self.text_key_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
+
+        # Getting Text Embeddings (output of proj heads)
+        text_embeddings = self.text_key_projection(text_features)
+
+        return  text_embeddings
+
+    def encode_image(self,image):
+        if not self.trainable:
+            with torch.no_grad():
+                image_features = self.image_encoder(image)
+
+        
+        else:
+            image_features = self.image_encoder(image)
+
+
+        # Getting Image Embeddings (output of proj heads)
+        image_embeddings = self.image_projection(image_features)
+
+
+        return image_embeddings
+
+    def key_encode_image(self,image):
+        if not self.trainable:
+            with torch.no_grad():
+                image_features = self.image_key_encoder(image)
+
+        
+        else:
+            image_features = self.image_key_encoder(image)
+
+
+        # Getting Image Embeddings (output of proj heads)
+        image_embeddings = self.image_key_projection(image_features)
+
+
+        return image_embeddings
+
+    ## Update all key parameters (both encoders and projection module)
+    def _momentum_update_key_encoders(self):
+        for param_q, param_k in zip(self.image_encoder.parameters(), self.image_key_encoder.parameters()):
+            param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
+            
+        for param_q, param_k in zip(self.text_encoder.parameters(), self.text_key_encoder.parameters()):
+            param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
+    
+        for param_q, param_k in zip(self.image_projection.parameters(), self.image_key_projection.parameters()):
+            param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
+            
+        for param_q, param_k in zip(self.text_projection.parameters(), self.text_key_projection.parameters()):
+            param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
+    
+    # Add new minibatch _k to queue and remove the oldest minibatch in queue
+    def _dequeue_and_enqueue(self, image_k, text_k):
+        bs = image_k.size(0)
+        assert self.K % bs == 0  # for simplicity
+        self.image_queue[self.queue_ptr:self.queue_ptr+bs, :] = image_k
+        self.text_queue[self.queue_ptr:self.queue_ptr+bs, :] = text_k
+        self.queue_ptr = (self.queue_ptr + bs) % self.K  # move pointer
+
+
+    def forward(self, image,text):
+      
+        image_embeddings = self.encode_image(image)
+        text_embeddings = self.encode_text(text)
+
+        return {"image_embed": image_embeddings, "text_embed": text_embeddings}

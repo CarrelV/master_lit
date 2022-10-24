@@ -20,7 +20,7 @@ vision_model_name = "facebook/dino-vits16"
 image_embedding = 384
 
 pretrained = True # for both image encoder and text encoder
-trainable = False # for both image encoder and text encoder
+trainable = True # for both image encoder and text encoder
 
 # for projection head; used for both image and text encoders
 num_projection_layers = 1
@@ -29,14 +29,20 @@ dropout = 0.1
 
 temperature = 1.0
 
+########### MOCO Parameters ################
 
+# length of the queue, set to 1024 to have same as batch size when frozen towers
+K = 1024
+
+m=0.999
 ########## Training Configuration ##########
-
-training_run_number = 0
-# At home, 1024 with frozen tower is okay
+# "classic", "moco", "ape"
+model_used = "moco"
+training_run_number = 1
+# With frozen towers, batch size 1024 is okay
 #batch_size = 1024
-# test when doing on cluster
-batch_size = 1024
+# When both towers are finetunes, batch size is necessary 
+batch_size = 64
 
 
 
