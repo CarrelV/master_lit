@@ -41,8 +41,8 @@ def main():
 
     
     elif CFG.model_used == "moco":
-        model = CLIPProjMoco()
-        loss_train = CLIPMoCOLoss()
+        model = CLIPProjMoco().to(device)
+        loss_train = CLIPMoCOLoss().to(device)
     
     elif CFG.model_used == "ape":
         print("Model not implemented yet")
@@ -153,12 +153,12 @@ def main_DDP(rank,world_size):
 
     if CFG.model_used == "classic":
         model = CLIPProjection().to(rank)
-        loss_train = CLIPLoss().to(rank)
+        loss_train = CLIPLoss()
 
     
     elif CFG.model_used == "moco":
         model = CLIPProjMoco().to(rank)
-        loss_train = CLIPMoCOLoss().to(rank)
+        loss_train = CLIPMoCOLoss()
     
     elif CFG.model_used == "ape":
         print("Model not implemented yet")
