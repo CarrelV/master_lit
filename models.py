@@ -131,8 +131,18 @@ class CLIPProjection(nn.Module):
     
     def forward(self, image,text):
       
-        image_embeddings = self.encode_image(image)
-        text_embeddings = self.encode_text(text)
+        if not self.trainable:
+            with torch.no_grad():
+                image_features = self.image_encoder(image)
+                text_features = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
+        
+        else:
+            image_features = self.image_encoder(image)
+            text_features = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
+
+        # Getting Image and Text Embeddings (with same dimension) (output of proj heads)
+        image_embeddings = self.image_projection(image_features)
+        text_embeddings = self.text_projection(text_features)
 
         return {"image_embed": image_embeddings, "text_embed": text_embeddings}
         
