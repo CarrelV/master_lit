@@ -102,7 +102,7 @@ def main():
         model.eval()
 
         with torch.no_grad():
-            valid_loss = valid_one_epoch(model,valid_loss,dataloader_valid,device)
+            valid_loss = valid_one_epoch(model,loss_validation,dataloader_valid,device)
 
         if valid_loss.avg_loss < best_loss:
             best_loss = valid_loss.avg_loss
@@ -233,7 +233,7 @@ def main_DDP(rank,world_size):
         model.eval()
 
         with torch.no_grad():
-            valid_loss = valid_one_epoch(model,valid_loss,dataloader_valid,rank)
+            valid_loss = valid_one_epoch(model,loss_validation,dataloader_valid,rank)
 
        
 

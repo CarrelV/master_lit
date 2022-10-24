@@ -259,8 +259,9 @@ class CLIPProjMoco(nn.Module):
     
     # Add new minibatch _k to queue and remove the oldest minibatch in queue
     def _dequeue_and_enqueue(self, image_k, text_k):
+        
         bs = image_k.size(0)
-        assert self.K % bs == 0  # for simplicity
+        #assert self.K % bs == 0  # for simplicity
         self.image_queue[self.queue_ptr:self.queue_ptr+bs, :] = image_k
         self.text_queue[self.queue_ptr:self.queue_ptr+bs, :] = text_k
         self.queue_ptr = (self.queue_ptr + bs) % self.K  # move pointer
