@@ -41,8 +41,8 @@ def main():
 
     
     elif CFG.model_used == "moco":
-        model = CLIPProjMoco().to(device)
-        loss_train = CLIPMoCOLoss().to(device)
+        model = CLIPProjMoco()
+        loss_train = CLIPMoCOLoss()
     
     elif CFG.model_used == "ape":
         print("Model not implemented yet")
