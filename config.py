@@ -20,7 +20,7 @@ vision_model_name = "facebook/dino-vits16"
 image_embedding = 384
 
 pretrained = True # for both image encoder and text encoder
-trainable = True # for both image encoder and text encoder
+trainable = False # for both image encoder and text encoder
 
 # for projection head; used for both image and text encoders
 num_projection_layers = 1
