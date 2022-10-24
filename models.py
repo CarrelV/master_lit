@@ -261,10 +261,11 @@ class CLIPProjMoco(nn.Module):
     def _dequeue_and_enqueue(self, image_k, text_k):
         
         bs = image_k.size(0)
+        move_pointer = CFG.batch_size
         #assert self.K % bs == 0  # for simplicity
         self.image_queue[self.queue_ptr:self.queue_ptr+bs, :] = image_k
         self.text_queue[self.queue_ptr:self.queue_ptr+bs, :] = text_k
-        self.queue_ptr = (self.queue_ptr + bs) % self.K  # move pointer
+        self.queue_ptr = (self.queue_ptr + move_pointer) % self.K  # move pointer to avoid smaller batch at the end 
 
 
     def forward(self, image,text):
