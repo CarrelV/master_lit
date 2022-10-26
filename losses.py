@@ -15,14 +15,15 @@ class CLIPLoss(nn.Module):
         image_embeddings = outputs["image_embed"]
         text_embeddings = outputs["text_embed"]
         
+        logit_scale = self.logit_scale.exp()
 
         # normalized features
         image_embeds = image_embeddings / image_embeddings.norm(p=2, dim=-1, keepdim=True)
         text_embeds = text_embeddings / text_embeddings.norm(p=2, dim=-1, keepdim=True)
 
         # cosine similarity as logits
-        logit_scale = self.logit_scale.exp()
-        logits_per_text = torch.matmul(text_embeds, image_embeds.t()) * logit_scale
+        
+        logits_per_text = text_embeds @ image_embeds.t() * logit_scale
         logits_per_image = logits_per_text.t()
         
         labels = torch.arange(len(logits_per_image)).to(logits_per_image.device)
@@ -48,16 +49,16 @@ class CLIPMoCOLoss(nn.Module):
         logit_scale = self.logit_scale.exp()
 
         # normalized features
-        image_embeds = image_embeddings / image_embeddings.norm(p=2, dim=-1, keepdim=True)
-        text_embeds = text_embeddings / text_embeddings.norm(p=2, dim=-1, keepdim=True)
+        image_embeds = image_embeddings / image_embeddings.norm(dim=-1, keepdim=True)
+        text_embeds = text_embeddings / text_embeddings.norm(dim=-1, keepdim=True)
 
-        key_image_embeds = key_image_embeddings / key_image_embeddings.norm(p=2, dim=-1, keepdim=True)
-        key_text_embeds = key_text_embeddings / key_text_embeddings.norm(p=2, dim=-1, keepdim=True)
-
+        key_image_embeds = key_image_embeddings / key_image_embeddings.norm(dim=-1, keepdim=True)
+        key_text_embeds = key_text_embeddings / key_text_embeddings.norm(dim=-1, keepdim=True)
+        
         # cosine similarity as logits
         
-        logits_per_text = torch.matmul(text_embeds, key_image_embeds.t()) * logit_scale
-        logits_per_image = torch.matmul(image_embeds, key_text_embeds.t()) * logit_scale
+        logits_per_text = text_embeds @ key_image_embeds.t() * logit_scale
+        logits_per_image = image_embeds @ key_text_embeds.t() * logit_scale
 
         labels = torch.arange(len(logits_per_image)).to(logits_per_image.device)
 

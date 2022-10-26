@@ -76,32 +76,21 @@ def train_one_MOCO_epoch(model, loss_fn, train_loader, optimizer,device,ddp):
         image = batch["image"].to(device)
         text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
         
-        # Update the momentum encoder
         # Generate key for this batch, and update the queue
         with torch.no_grad():
             if ddp:
-                model.module._momentum_update_key_encoders()
-
                 
-                key_image_features = model.module.key_encode_image(image)
-                key_text_features = model.module.key_encode_text(text)
-
-                key_image_features = key_image_features / key_image_features.norm(dim=-1, keepdim=True)
-                key_text_features = key_text_features / key_text_features.norm(dim=-1, keepdim=True)
+                key_image_features = model.module.key_encode_image(image).to(device)
+                key_text_features = model.module.key_encode_text(text).to(device)
 
                 model.module._dequeue_and_enqueue(key_image_features,key_text_features)
 
                 # Now the keys are the updated queue
                 keys_for_this_batch = {"image_embed" : model.module.image_queue.to(device), "text_embed": model.module.text_queue.to(device)}
             else:    
-                model._momentum_update_key_encoders()
 
-                
-                key_image_features = model.key_encode_image(image)
-                key_text_features = model.key_encode_text(text)
-
-                key_image_features = key_image_features / key_image_features.norm(dim=-1, keepdim=True)
-                key_text_features = key_text_features / key_text_features.norm(dim=-1, keepdim=True)
+                key_image_features = model.key_encode_image(image).to(device)
+                key_text_features = model.key_encode_text(text).to(device)
 
                 model._dequeue_and_enqueue(key_image_features,key_text_features)
 
@@ -125,6 +114,13 @@ def train_one_MOCO_epoch(model, loss_fn, train_loader, optimizer,device,ddp):
         # Adjust learning weights
         optimizer.step()
 
+        
+        # Update the momentum encoder
+        with torch.no_grad():
+            if ddp:
+                model.module._momentum_update_key_encoders()
+            else:    
+                model._momentum_update_key_encoders()
         
 
         # Gather data and report
@@ -167,6 +163,50 @@ def valid_one_epoch(model,loss_fn,valid_loader,device):
         
         #compute loss and its gradients
         loss = loss_fn(output)
+
+        # Gather data and report
+        count = batch["image"].size(0)
+        loss_meter.update(loss, count)
+
+        wandb.log({"valid loss": loss_meter.avg_loss} )
+        tqdm_object.set_postfix(valid_loss=loss_meter.avg_loss.item())
+
+    return loss_meter
+
+
+def valid_one_MOCO_epoch(model,loss_fn,valid_loader,device,ddp):
+
+    loss_meter = AvgMeter()
+
+    tqdm_object = tqdm(valid_loader, total=len(valid_loader))
+    
+    for batch in tqdm_object:
+
+        image = batch["image"].to(device)
+        text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
+
+        # Generate key for this batch, but don't update the queue, 
+        with torch.no_grad():
+            if ddp:
+                
+                
+                key_image_features = model.module.key_encode_image(image)
+                key_text_features = model.module.key_encode_text(text)
+
+                # Now the keys are only the new batch
+                keys_for_this_batch = {"image_embed" : key_image_features.to(device), "text_embed": key_text_features.to(device)}
+            else:
+                key_image_features = model.key_encode_image(image)
+                key_text_features = model.key_encode_text(text)
+
+                # Now the keys are only the new batch
+                keys_for_this_batch = {"image_embed" : key_image_features.to(device), "text_embed": key_text_features.to(device)}
+        
+        #compute prediction for the batch
+        output = model(image,text)
+        
+        #compute loss and its gradients
+        loss = loss_fn(output,keys_for_this_batch)
 
         # Gather data and report
         count = batch["image"].size(0)

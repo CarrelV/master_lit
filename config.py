@@ -67,7 +67,7 @@ T_max = 10
 ########## DDP Configuration ##########
 
 # at home = 1, cluster = 2 (or 4, check)
-gpu_number = 2
+gpu_number = 1
 
 
 

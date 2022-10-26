@@ -1,6 +1,6 @@
 import torch.distributed as dist
 import os
-
+import torch
 
 def setup(rank, world_size):
     os.environ['MASTER_ADDR'] = 'localhost'
@@ -32,3 +32,4 @@ def read_imagenet_class():
 
             classes.append(x)
     return classes
+

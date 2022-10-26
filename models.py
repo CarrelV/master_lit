@@ -7,6 +7,7 @@ from transformers import ViTModel, ViTConfig
 
 from copy import deepcopy
 
+
 ###################### TEXT TOWER ####################################
 
 class TextEncoder(nn.Module):
@@ -159,7 +160,7 @@ class CLIPProjMoco(nn.Module):
         proj_dim = CFG.projection_dim,
         trainable=CFG.trainable,
         K=CFG.K,
-        m=0.999
+        m=0.9
     ):
         super().__init__()
         self.image_encoder = ImageEncoder()
@@ -191,7 +192,6 @@ class CLIPProjMoco(nn.Module):
         self.image_queue = torch.randn(self.K,self.proj_dim)
         self.text_queue = torch.randn(self.K,self.proj_dim)
 
-        self.queue_ptr = 0
 
     def encode_text(self,text):
         if not self.trainable:
@@ -245,28 +245,36 @@ class CLIPProjMoco(nn.Module):
 
     ## Update all key parameters (both encoders and projection module)
     def _momentum_update_key_encoders(self):
-        for param_q, param_k in zip(self.image_encoder.parameters(), self.image_key_encoder.parameters()):
-            param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
-            
-        for param_q, param_k in zip(self.text_encoder.parameters(), self.text_key_encoder.parameters()):
-            param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
-    
-        for param_q, param_k in zip(self.image_projection.parameters(), self.image_key_projection.parameters()):
-            param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
-            
-        for param_q, param_k in zip(self.text_projection.parameters(), self.text_key_projection.parameters()):
-            param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
+        with torch.no_grad():
+            for param_q, param_k in zip(self.image_encoder.parameters(), self.image_key_encoder.parameters()):
+                param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
+                
+            for param_q, param_k in zip(self.text_encoder.parameters(), self.text_key_encoder.parameters()):
+                param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
+        
+            for param_q, param_k in zip(self.image_projection.parameters(), self.image_key_projection.parameters()):
+                param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
+                
+            for param_q, param_k in zip(self.text_projection.parameters(), self.text_key_projection.parameters()):
+                param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
     
     # Add new minibatch _k to queue and remove the oldest minibatch in queue
     def _dequeue_and_enqueue(self, image_k, text_k):
-        
-        bs = image_k.size(0)
-        move_pointer = CFG.batch_size
+        with torch.no_grad():
+
+            
+            iq = self.push_to_tensor(self.image_queue,image_k.cpu())
+            self.image_queue = iq
+            tq = self.push_to_tensor(self.text_queue,text_k.cpu())
+            self.text_queue = tq
+        '''move_pointer = CFG.batch_size
         #assert self.K % bs == 0  # for simplicity
         self.image_queue[self.queue_ptr:self.queue_ptr+bs, :] = image_k
         self.text_queue[self.queue_ptr:self.queue_ptr+bs, :] = text_k
         self.queue_ptr = (self.queue_ptr + move_pointer) % self.K  # move pointer to avoid smaller batch at the end 
-
+'''
+    def push_to_tensor(self,tensor, x):
+        return torch.cat((x,tensor[:-1]))
 
     def forward(self, image,text):
         if not self.trainable:

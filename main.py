@@ -3,7 +3,7 @@ from dataloader import get_dataloader, get_DDP_dataloader
 from tokenizer import get_tokenizer,get_feature_extractor
 from models import CLIPProjMoco, CLIPProjection
 from losses import CLIPLoss, CLIPMoCOLoss
-from training import train_one_epoch, valid_one_epoch,train_one_MOCO_epoch
+from training import train_one_epoch, valid_one_epoch,train_one_MOCO_epoch,valid_one_MOCO_epoch
 from utils import setup,cleanup
 
 import torch.multiprocessing as mp
@@ -37,12 +37,12 @@ def main():
 
     if CFG.model_used == "classic":
         model = CLIPProjection().to(device)
-        loss_train = CLIPLoss().to(device)
+        loss_fn = CLIPLoss().to(device)
 
     
     elif CFG.model_used == "moco":
         model = CLIPProjMoco().to(device)
-        loss_train = CLIPMoCOLoss().to(device)
+        loss_fn = CLIPMoCOLoss().to(device)
     
     elif CFG.model_used == "ape":
         print("Model not implemented yet")
@@ -53,7 +53,7 @@ def main():
         print("Model not implemented yet")
         return
 
-    loss_validation = CLIPLoss().to(device)
+    
     
     if CFG.trainable == False:
         params = [
@@ -69,6 +69,7 @@ def main():
                 model.image_projection.parameters(), model.text_projection.parameters()
             ), "lr": CFG.head_lr, "weight_decay": CFG.weight_decay}
         ]
+    
     optimizer = torch.optim.AdamW(params, weight_decay=0.)
     lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer,T_max=CFG.T_max)
     
@@ -84,10 +85,10 @@ def main():
         model.train()
 
         if CFG.model_used == "classic":
-            train_loss = train_one_epoch(model, loss_train, dataloader_train, optimizer,device)
+            train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,device)
 
         elif CFG.model_used == "moco":
-            train_loss = train_one_MOCO_epoch(model, loss_train, dataloader_train, optimizer,device,ddp = False)
+            train_loss = train_one_MOCO_epoch(model, loss_fn, dataloader_train, optimizer,device,ddp = False)
         
         elif CFG.model_used == "ape":
             print("Model not implemented yet")
@@ -102,7 +103,7 @@ def main():
         model.eval()
 
         with torch.no_grad():
-            valid_loss = valid_one_epoch(model,loss_validation,dataloader_valid,device)
+            valid_loss = valid_one_epoch(model,loss_fn,dataloader_valid,device)
 
         if valid_loss.avg_loss < best_loss:
             best_loss = valid_loss.avg_loss
@@ -153,12 +154,12 @@ def main_DDP(rank,world_size):
 
     if CFG.model_used == "classic":
         model = CLIPProjection().to(rank)
-        loss_train = CLIPLoss()
+        loss_fn = CLIPLoss()
 
     
     elif CFG.model_used == "moco":
         model = CLIPProjMoco().to(rank)
-        loss_train = CLIPMoCOLoss()
+        loss_fn = CLIPMoCOLoss()
     
     elif CFG.model_used == "ape":
         print("Model not implemented yet")
@@ -169,7 +170,6 @@ def main_DDP(rank,world_size):
         print("Model not implemented yet")
         return
 
-    loss_validation = CLIPLoss().to(rank)
 
     # wrap the model with DDP
     # device_ids tell DDP where is your model
@@ -215,11 +215,23 @@ def main_DDP(rank,world_size):
 
 
         if CFG.model_used == "classic":
-            train_loss = train_one_epoch(model, loss_train, dataloader_train, optimizer,rank)
+            train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,rank)
+            
+            ## VALIDATION
+            model.eval()
 
-        elif CFG.model_used == "moco":
-            train_loss = train_one_MOCO_epoch(model, loss_train, dataloader_train, optimizer,rank, ddp = True)
+            with torch.no_grad():
+                valid_loss = valid_one_epoch(model,loss_fn,dataloader_valid,rank)
         
+        
+        elif CFG.model_used == "moco":
+            train_loss = train_one_MOCO_epoch(model, loss_fn, dataloader_train, optimizer,rank, ddp = True)
+
+            ## VALIDATION
+            model.eval()
+
+            with torch.no_grad():
+                valid_loss = valid_one_MOCO_epoch(model,loss_fn,dataloader_valid,rank,ddp = True)
         elif CFG.model_used == "ape":
             print("Model not implemented yet")
             return 
@@ -227,15 +239,6 @@ def main_DDP(rank,world_size):
         else:
             print("Model not implemented yet")
             return
-
-        
-        ## VALIDATION
-        model.eval()
-
-        with torch.no_grad():
-            valid_loss = valid_one_epoch(model,loss_validation,dataloader_valid,rank)
-
-       
 
         if valid_loss.avg_loss < best_loss:
             best_loss = valid_loss.avg_loss
