@@ -22,16 +22,36 @@ vision_model_name = "facebook/dino-vits16"
 image_embedding = 384
 
 
-# Baseline: all random init, pretrained all
-# All the other will have both backbones pretrained, and Image backbone frozen
-# Baseline2: Text back frozen, head proj
-# LiT: Text back finetune, head proj/small MLP 
-# APE: Text back frozen, head big MLP
-# APE2: Text back finetune, head big MLP ? (more than what they propose?)
 
-configuration = "baseline"
+#############################################################################
+#                                                                           #
+#                        Only stuff to Modify                               #
+#                                                                           #
+#############################################################################
+
+## See at the end the different possibilities
+configuration = "LiT"
+
+# Increment if retraining the same configuration one more time
+training_run_number = 1
+
+# 1024 when both backbone are frozen
+# 64 when both backbone are finetuned
+#  when only the text backbone is finetuned 
+batch_size = 256
+
+warming_epochs = 5
+epochs = 20
+
+# 1 at home, 2 on cluster
+gpu_number = 1
 
 
+#############################################################################
+#                                                                           #
+#                            END MODIFICATION                               #
+#                                                                           #
+#############################################################################
 
 
 # for projection head; used for both image and text encoders
@@ -47,13 +67,7 @@ K = 4096
 
 m=0.999
 ########## Training Configuration ##########
-# "classic", "moco", "ape"
-model_used = "moco"
-training_run_number = 1
-# With frozen towers, batch size 1024 is okay
-#batch_size = 1024
-# When both towers are finetunes, batch size is necessary 
-batch_size = 1024
+
 
 
 
@@ -66,8 +80,7 @@ split = "train"
 
 
 # 
-warming_epochs = 5
-epochs = 20
+
 
 image_encoder_lr = 1e-5
 text_encoder_lr = 1e-4
@@ -81,7 +94,6 @@ weight_decay = 1e-3
 ########## DDP Configuration ##########
 
 # at home = 1, cluster = 2 (or 4, check)
-gpu_number = 1
 
 
 
@@ -104,6 +116,8 @@ if configuration == "bad_baseline":
     #Model training
     text_backbone_finetune = True 
     image_backbone_finetune = True
+    
+    text_head_config = "simple_proj"
 
 elif configuration == "baseline":
     #Model weight init
@@ -114,6 +128,8 @@ elif configuration == "baseline":
     text_backbone_finetune = False
     image_backbone_finetune = False
 
+    text_head_config = "simple_proj"
+
 elif configuration == "costly_baseline":
     #Model weight init
     text_backbone_pretrained = True 
@@ -121,7 +137,9 @@ elif configuration == "costly_baseline":
 
     #Model training
     text_backbone_finetune = True
-    image_backbone_finetune = True
+    image_backbone_finetune = False
+
+    text_head_config = "simple_proj"
 
 elif configuration == "LiT":
     #Model weight init
@@ -132,7 +150,9 @@ elif configuration == "LiT":
     text_backbone_finetune = True
     image_backbone_finetune = False
 
-elif configuration == "APE":
+    text_head_config = "small_mlp"
+
+elif configuration == "APE_small":
     #Model weight init
     text_backbone_pretrained = True 
     image_backbone_pretrained = True
@@ -141,7 +161,10 @@ elif configuration == "APE":
     text_backbone_finetune = False
     image_backbone_finetune = False
 
-elif configuration == "APE2":
+    text_head_config = "large_mlp"
+
+#Using both the LiT finetuning scheme and the bigger APE MLP
+elif configuration == "APE_lit":
     #Model weight init
     text_backbone_pretrained = True 
     image_backbone_pretrained = True
@@ -149,3 +172,5 @@ elif configuration == "APE2":
     #Model training
     text_backbone_finetune = True
     image_backbone_finetune = False
+
+    text_head_config = "large_mlp"

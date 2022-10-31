@@ -82,6 +82,83 @@ class ProjectionHead(nn.Module):
         return x
 
 
+###################### SMALL MLP HEAD ####################################
+
+# Serves as small MLP for LiT version
+class SmallMLPHead(nn.Module):
+    def __init__(
+        self,
+        embedding_dim,
+        projection_dim=CFG.projection_dim,
+        dropout=CFG.dropout
+    ):
+        super().__init__()
+        self.fc1 = nn.Linear(embedding_dim, 2048)
+        self.relu1 = nn.ReLU()
+        self.dropout1 = nn.Dropout(dropout)
+        self.fc2 = nn.Linear(2048, 2048)
+        self.relu2 = nn.ReLU()
+        self.dropout2 = nn.Dropout(dropout)
+        self.fc3 = nn.Linear(2048, projection_dim)
+        self.layer_norm = nn.LayerNorm(projection_dim)
+    
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu1(x)
+        x = self.dropout1(x)
+        x = self.fc2(x)
+        x = self.relu2(x)
+        x = self.dropout2(x)
+        x = self.fc3(x)
+        x = self.layer_norm(x)
+        return x
+
+
+###################### LARGE MLP HEAD ####################################
+
+# Serves as large MLP for APE paper and also the APE/LiT combination (additional)
+class LargeMLPHead(nn.Module):
+    def __init__(
+        self,
+        embedding_dim,
+        projection_dim=CFG.projection_dim,
+        dropout=CFG.dropout
+    ):
+        super().__init__()
+        self.fc1 = nn.Linear(embedding_dim, 2048)
+        self.relu1 = nn.ReLU()
+        self.dropout1 = nn.Dropout(dropout)
+        self.fc2 = nn.Linear(2048, 2048)
+        self.relu2 = nn.ReLU()
+        self.dropout2 = nn.Dropout(dropout)
+        self.fc3 = nn.Linear(2048, 2048)
+        self.relu3 = nn.ReLU()
+        self.dropout3 = nn.Dropout(dropout)
+        self.fc4 = nn.Linear(2048, 2048)
+        self.relu4 = nn.ReLU()
+        self.dropout4 = nn.Dropout(dropout)
+        self.fc5 = nn.Linear(2048, projection_dim)
+        self.layer_norm = nn.LayerNorm(projection_dim)
+    
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu1(x)
+        x = self.dropout1(x)
+        x = self.fc2(x)
+        x = self.relu2(x)
+        x = self.dropout2(x)
+        x = self.fc3(x)
+        x = self.relu3(x)
+        x = self.dropout3(x)
+        x = self.fc4(x)
+        x = self.relu4(x)
+        x = self.dropout4(x)
+        x = self.fc5(x)
+        x = self.layer_norm(x)
+        return x
+
+
+
 ##################### MOCO version for CLIP style Model ####################################
         
 # Same as CLIP Projection, but implementing MOCO to be able to finetune both Text and Image tower as well, and keep a lot
@@ -90,7 +167,7 @@ class ProjectionHead(nn.Module):
 class CLIPMoco(nn.Module):
     def __init__(
         self,
-        configuration = CFG.configuration,
+        text_head_config = CFG.text_head_config,
         temperature=CFG.temperature,
         image_embedding=CFG.image_embedding,
         text_embedding=CFG.text_embedding,
@@ -101,14 +178,18 @@ class CLIPMoco(nn.Module):
         m=0.9
     ):
         super().__init__()
-        self.configuration = configuration
+        self.text_head_config = text_head_config
         
         self.image_encoder = ImageEncoder()
         self.text_encoder = TextEncoder()
         
         self.image_projection = ProjectionHead(embedding_dim=image_embedding)
-        if self.configuration == "baseline":
+        if self.text_head_config == "simple_proj":
             self.text_projection = ProjectionHead(embedding_dim=text_embedding)
+        elif self.text_head_config == "small_mlp":
+            self.text_projection = SmallMLPHead(embedding_dim=text_embedding)
+        elif self.text_head_config == "large_mlp":
+            self.text_projection = LargeMLPHead(embedding_dim=text_embedding)
 
         self.proj_dim = proj_dim
         self.temperature = temperature
