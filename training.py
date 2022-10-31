@@ -26,6 +26,133 @@ def get_lr(optimizer):
         return param_group["lr"]
 
 
+
+def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
+    
+    loss_meter = AvgMeter()
+
+    tqdm_object = tqdm(train_loader, total=len(train_loader))
+   
+    
+    for batch in tqdm_object:
+
+        image = batch["image"].to(device)
+        text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
+        
+        # Generate key for this batch, and update the queue outside of the forward pass
+        with torch.no_grad():
+           
+            # Update the momentum encoder
+            model.module._momentum_update_key_encoders()
+
+            # Compute the keys
+            key_image_features = model.module.key_encode_image(image).to(device)
+            key_text_features = model.module.key_encode_text(text).to(device)
+
+            # Get the queue 
+            key_image_from_queue = model.module.image_queue.clone().detach().to(device)
+            key_text_from_queue = model.module.text_queue.clone().detach().to(device)
+
+
+            # Now the keys are the cat of new and stored queue
+            keys_for_this_batch = {"image_embed" : torch.cat([key_image_features, key_image_from_queue], dim=0), "text_embed": torch.cat([key_text_features, key_text_from_queue], dim=0)}
+       
+        
+        
+        # Zero your gradients for every batch!
+        optimizer.zero_grad()
+        
+        #compute prediction for the batch
+        output = model(image,text)
+        
+        
+        #compute loss and its gradients
+        loss = loss_fn(output,keys_for_this_batch)
+        loss.backward()
+
+        # Adjust learning weights
+        optimizer.step()
+
+        # Dequeue and enqueue the new keys
+        with torch.no_grad():
+            
+            model.module._dequeue_and_enqueue(key_image_features,key_text_features)
+
+        # Gather data and report
+        count = batch["image"].size(0)
+        loss_meter.update(loss, count)
+
+        wandb.log({"minibatch loss": loss_meter.avg_loss, "minibatch lr" : get_lr(optimizer)  } )
+        tqdm_object.set_postfix(train_loss=loss_meter.avg_loss.item())
+        
+        
+    return loss_meter
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################## VALIDATION EPOCH #################################
+
+
+
+def valid_one_epoch(model,loss_fn,valid_loader,device):
+
+    loss_meter = AvgMeter()
+
+    tqdm_object = tqdm(valid_loader, total=len(valid_loader))
+    
+    for batch in tqdm_object:
+
+        image = batch["image"].to(device)
+        text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
+
+        # Generate key for this batch, but don't update queue nor momentum update 
+        with torch.no_grad():
+            
+            # Compute the keys
+            key_image_features = model.module.key_encode_image(image).to(device)
+            key_text_features = model.module.key_encode_text(text).to(device)
+
+            # Get the queue 
+            key_image_from_queue = model.module.image_queue.clone().detach().to(device)
+            key_text_from_queue = model.module.text_queue.clone().detach().to(device)
+
+            # Now the keys are the cat of new and stored queue
+            keys_for_this_batch = {"image_embed" : torch.cat([key_image_features, key_image_from_queue], dim=0), "text_embed": torch.cat([key_text_features, key_text_from_queue], dim=0)}
+            
+        #compute prediction for the batch
+        output = model(image,text)
+        
+        #compute loss and its gradients
+        loss = loss_fn(output,keys_for_this_batch)
+
+        # Gather data and report
+        count = batch["image"].size(0)
+        loss_meter.update(loss, count)
+
+        wandb.log({"minibatch valid loss": loss_meter.avg_loss} )
+        tqdm_object.set_postfix(valid_loss=loss_meter.avg_loss.item())
+
+    return loss_meter
+
+
+
+
+
+
+# TODO delete once MOCO works
+
+'''
 ### Classic training epoch
         
 def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
@@ -63,90 +190,6 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
         
     return loss_meter
 
-
-def train_one_MOCO_epoch(model, loss_fn, train_loader, optimizer,device,ddp):
-    
-    loss_meter = AvgMeter()
-
-    tqdm_object = tqdm(train_loader, total=len(train_loader))
-   
-    
-    for batch in tqdm_object:
-
-        image = batch["image"].to(device)
-        text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
-        
-        # Generate key for this batch, and update the queue
-        with torch.no_grad():
-            if ddp:
-                
-                key_image_features = model.module.key_encode_image(image).to(device)
-                key_text_features = model.module.key_encode_text(text).to(device)
-
-                model.module._dequeue_and_enqueue(key_image_features,key_text_features)
-
-                # Now the keys are the updated queue
-                keys_for_this_batch = {"image_embed" : model.module.image_queue.to(device), "text_embed": model.module.text_queue.to(device)}
-            else:    
-
-                key_image_features = model.key_encode_image(image).to(device)
-                key_text_features = model.key_encode_text(text).to(device)
-
-                model._dequeue_and_enqueue(key_image_features,key_text_features)
-
-                # Now the keys are the updated queue
-                keys_for_this_batch = {"image_embed" : model.image_queue.to(device), "text_embed": model.text_queue.to(device)}
-        
-        
-        
-        
-        # Zero your gradients for every batch!
-        optimizer.zero_grad()
-        
-        #compute prediction for the batch
-        output = model(image,text)
-        
-        
-        #compute loss and its gradients
-        loss = loss_fn(output,keys_for_this_batch)
-        loss.backward()
-
-        # Adjust learning weights
-        optimizer.step()
-
-        
-        # Update the momentum encoder
-        with torch.no_grad():
-            if ddp:
-                model.module._momentum_update_key_encoders()
-            else:    
-                model._momentum_update_key_encoders()
-        
-
-        # Gather data and report
-        count = batch["image"].size(0)
-        loss_meter.update(loss, count)
-
-        wandb.log({"loss": loss_meter.avg_loss, "lr" : get_lr(optimizer)  } )
-        tqdm_object.set_postfix(train_loss=loss_meter.avg_loss.item())
-        
-        
-    return loss_meter
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-################## VALIDATION EPOCH #################################
 def valid_one_epoch(model,loss_fn,valid_loader,device):
 
     loss_meter = AvgMeter()
@@ -172,47 +215,4 @@ def valid_one_epoch(model,loss_fn,valid_loader,device):
         tqdm_object.set_postfix(valid_loss=loss_meter.avg_loss.item())
 
     return loss_meter
-
-
-def valid_one_MOCO_epoch(model,loss_fn,valid_loader,device,ddp):
-
-    loss_meter = AvgMeter()
-
-    tqdm_object = tqdm(valid_loader, total=len(valid_loader))
-    
-    for batch in tqdm_object:
-
-        image = batch["image"].to(device)
-        text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
-
-        # Generate key for this batch, but don't update the queue, 
-        with torch.no_grad():
-            if ddp:
-                
-                
-                key_image_features = model.module.key_encode_image(image)
-                key_text_features = model.module.key_encode_text(text)
-
-                # Now the keys are only the new batch
-                keys_for_this_batch = {"image_embed" : key_image_features.to(device), "text_embed": key_text_features.to(device)}
-            else:
-                key_image_features = model.key_encode_image(image)
-                key_text_features = model.key_encode_text(text)
-
-                # Now the keys are only the new batch
-                keys_for_this_batch = {"image_embed" : key_image_features.to(device), "text_embed": key_text_features.to(device)}
-        
-        #compute prediction for the batch
-        output = model(image,text)
-        
-        #compute loss and its gradients
-        loss = loss_fn(output,keys_for_this_batch)
-
-        # Gather data and report
-        count = batch["image"].size(0)
-        loss_meter.update(loss, count)
-
-        wandb.log({"valid loss": loss_meter.avg_loss} )
-        tqdm_object.set_postfix(valid_loss=loss_meter.avg_loss.item())
-
-    return loss_meter
+'''
