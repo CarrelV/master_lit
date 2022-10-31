@@ -21,12 +21,12 @@ from transformers import logging
 def main(rank,world_size):
 
     logging.set_verbosity_error()
-    wandb.init(project="master_test_1",
+    wandb.init(project="Master Thesis Project",
            config={
                "batch_size": CFG.batch_size,
                "dataset": "flickr30k",
            },
-           group="MOCO")
+           group="Baselines")
 
     # setup the process groups
     setup(rank, world_size)
@@ -48,7 +48,7 @@ def main(rank,world_size):
     # device_ids tell DDP where is your model
     # output_device tells DDP where to output, in our case, it is rank
     # find_unused_parameters=True instructs DDP to find unused output of the forward() function of any module in the model
-    model = DDP(model,device_ids=[rank],output_device=rank,find_unused_parameters=True)
+    model = DDP(model,device_ids=[rank],output_device=rank,find_unused_parameters=CFG.find_unused_param)
     
     
     #Parameter
@@ -103,7 +103,7 @@ def main(rank,world_size):
             torch.save(model.module.text_projection.state_dict(), f"weights/{CFG.configuration}_text_proj_best_{CFG.training_run_number}.pt")
             torch.save(model.module.image_projection.state_dict(), f"weights/{CFG.configuration}_img_proj_best_{CFG.training_run_number}.pt")
         
-        wandb.log({"epoch train loss": train_loss.avg_loss, "epoch val loss" : valid_loss.avg_loss,"epoch lr" : get_lr(optimizer)  } )
+        wandb.log({"Training loss": train_loss.avg_loss, "Validation loss" : valid_loss.avg_loss,"Learning Rate" : get_lr(optimizer)  } )
 
         lr_scheduler.step()
 

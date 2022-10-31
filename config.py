@@ -30,21 +30,21 @@ image_embedding = 384
 #############################################################################
 
 ## See at the end the different possibilities
-configuration = "LiT"
+configuration = "baseline"
 
 # Increment if retraining the same configuration one more time
 training_run_number = 1
 
-# 1024 when both backbone are frozen (baseline,bad_baseline,APE)
+# 1024 when both backbone are frozen (baseline,bad_baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (costly_baseline)
 # 128 when only the text backbone is finetuned (LiT,APE_LiT)
-batch_size = 128
+batch_size = 1024
 
-warming_epochs = 5
-epochs = 20
+warming_epochs = 20
+epochs = 300
 
 # 1 at home, 2 on cluster
-gpu_number = 1
+gpu_number = 2
 
 
 #############################################################################
@@ -106,7 +106,10 @@ text_checkpoint = f"weights/text_proj_best_{checkpoint_number}.pt"
 
 test_batch_size = 1
 
-###################################################################
+
+
+
+########################## Different CONFIGURATION #########################################
 
 if configuration == "bad_baseline":
     #Model weight init
@@ -118,6 +121,7 @@ if configuration == "bad_baseline":
     image_backbone_finetune = True
     
     text_head_config = "simple_proj"
+    find_unused_param = True
 
 elif configuration == "baseline":
     #Model weight init
@@ -129,6 +133,20 @@ elif configuration == "baseline":
     image_backbone_finetune = False
 
     text_head_config = "simple_proj"
+    find_unused_param = False
+
+
+elif configuration == "good_baseline":
+    #Model weight init
+    text_backbone_pretrained = True 
+    image_backbone_pretrained = True
+
+    #Model training
+    text_backbone_finetune = False
+    image_backbone_finetune = False
+
+    text_head_config = "small_mlp"
+    find_unused_param = False
 
 elif configuration == "costly_baseline":
     #Model weight init
@@ -140,6 +158,7 @@ elif configuration == "costly_baseline":
     image_backbone_finetune = False
 
     text_head_config = "simple_proj"
+    find_unused_param = True
 
 elif configuration == "LiT":
     #Model weight init
@@ -151,6 +170,7 @@ elif configuration == "LiT":
     image_backbone_finetune = False
 
     text_head_config = "small_mlp"
+    find_unused_param = True
 
 elif configuration == "APE":
     #Model weight init
@@ -162,6 +182,7 @@ elif configuration == "APE":
     image_backbone_finetune = False
 
     text_head_config = "large_mlp"
+    find_unused_param = False
 
 #Using both the LiT finetuning scheme and the bigger APE MLP
 elif configuration == "APE_LiT":
@@ -174,3 +195,4 @@ elif configuration == "APE_LiT":
     image_backbone_finetune = False
 
     text_head_config = "large_mlp"
+    find_unused_param = True

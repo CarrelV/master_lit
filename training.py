@@ -82,7 +82,7 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
         count = batch["image"].size(0)
         loss_meter.update(loss, count)
 
-        wandb.log({"minibatch train loss": loss_meter.avg_loss, "minibatch lr" : get_lr(optimizer)  } )
+        wandb.log({"step Training loss": loss_meter.avg_loss, "step Learning Rate" : get_lr(optimizer)  } )
         tqdm_object.set_postfix(train_loss=loss_meter.avg_loss.item())
         
         
@@ -129,7 +129,7 @@ def valid_one_epoch(model,loss_fn,valid_loader,device):
         count = batch["image"].size(0)
         loss_meter.update(loss, count)
 
-        wandb.log({"minibatch valid loss": loss_meter.avg_loss} )
+        wandb.log({"step Validation loss": loss_meter.avg_loss} )
         tqdm_object.set_postfix(valid_loss=loss_meter.avg_loss.item())
 
     return loss_meter
