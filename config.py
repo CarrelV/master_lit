@@ -35,10 +35,10 @@ configuration = "LiT"
 # Increment if retraining the same configuration one more time
 training_run_number = 1
 
-# 1024 when both backbone are frozen
-# 64 when both backbone are finetuned
-#  when only the text backbone is finetuned 
-batch_size = 256
+# 1024 when both backbone are frozen (baseline,bad_baseline,APE)
+# 64 when both backbone are finetuned (costly_baseline)
+# 128 when only the text backbone is finetuned (LiT,APE_LiT)
+batch_size = 128
 
 warming_epochs = 5
 epochs = 20
@@ -152,7 +152,7 @@ elif configuration == "LiT":
 
     text_head_config = "small_mlp"
 
-elif configuration == "APE_small":
+elif configuration == "APE":
     #Model weight init
     text_backbone_pretrained = True 
     image_backbone_pretrained = True
@@ -164,7 +164,7 @@ elif configuration == "APE_small":
     text_head_config = "large_mlp"
 
 #Using both the LiT finetuning scheme and the bigger APE MLP
-elif configuration == "APE_lit":
+elif configuration == "APE_LiT":
     #Model weight init
     text_backbone_pretrained = True 
     image_backbone_pretrained = True
