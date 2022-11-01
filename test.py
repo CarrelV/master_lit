@@ -5,7 +5,7 @@ from tqdm import tqdm
 from transformers import logging
 import torchvision.transforms as transforms
 
-from models import ClIPMoco
+from models import CLIPMoco
 import config as CFG
 from tokenizer import get_tokenizer,get_feature_extractor
 from dataloader import get_dataloader
