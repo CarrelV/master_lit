@@ -115,7 +115,7 @@ def compute_text_weight_zeroshot(model,tokenizer,device,classnames, template):
 def flickr_retrieval(model,tokenizer,feature_extractor,device):
 
 
-    test_loader = get_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
+    test_loader = get_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,rank=0,world_size=1,batch_size=CFG.batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
 
     with torch.no_grad():
 
