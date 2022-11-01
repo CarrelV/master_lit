@@ -30,14 +30,14 @@ image_embedding = 384
 #############################################################################
 
 ## See at the end the different possibilities
-configuration = "baseline"
+configuration = "good_baseline"
 
 # Increment if retraining the same configuration one more time
 training_run_number = 1
 
-# 1024 when both backbone are frozen (baseline,bad_baseline,good_baseline,APE)
-# 64 when both backbone are finetuned (costly_baseline)
-# 128 when only the text backbone is finetuned (LiT,APE_LiT)
+# 1024 when both backbone are frozen (baseline,good_baseline,APE)
+# 64 when both backbone are finetuned (bad_baseline)
+# 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 batch_size = 1024
 
 warming_epochs = 20
@@ -99,10 +99,10 @@ weight_decay = 1e-3
 
 ########## Test Configuration ##########
 
-checkpoint_number = 0
+checkpoint_number = 1
 
-image_checkpoint = f"weights/img_proj_best_{checkpoint_number}.pt"
-text_checkpoint = f"weights/text_proj_best_{checkpoint_number}.pt"
+image_checkpoint = f"weights/baseline_img_proj_best_{checkpoint_number}.pt"
+text_checkpoint = f"weights/baseline_text_proj_best_{checkpoint_number}.pt"
 
 test_batch_size = 1
 
