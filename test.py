@@ -5,7 +5,7 @@ from tqdm import tqdm
 from transformers import logging
 import torchvision.transforms as transforms
 
-from models import CLIPProjection
+from models import ClIPMoco
 import config as CFG
 from tokenizer import get_tokenizer,get_feature_extractor
 from dataloader import get_dataloader
@@ -21,7 +21,7 @@ def test():
 
     tokenizer = get_tokenizer(CFG.text_model_name)
 
-    model = CLIPProjection().to(device)
+    model = CLIPMoco().to(device)
 
     checkpoint_image = torch.load(CFG.image_checkpoint)
     checkpoint_text = torch.load(CFG.text_checkpoint)
