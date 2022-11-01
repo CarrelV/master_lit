@@ -30,7 +30,7 @@ image_embedding = 384
 #############################################################################
 
 ## See at the end the different possibilities
-configuration = "baseline"
+configuration = "good_baseline"
 
 # Increment if retraining the same configuration one more time
 training_run_number = 1
