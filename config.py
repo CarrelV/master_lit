@@ -81,9 +81,9 @@ split = "train"
 
 # 
 
-
-image_encoder_lr = 1e-5
-text_encoder_lr = 1e-4
+lr = 1e-3
+image_encoder_lr = 1e-3
+text_encoder_lr = 1e-3
 image_head_lr = 1e-3
 text_head_lr = 1e-3
 
