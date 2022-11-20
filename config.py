@@ -30,7 +30,7 @@ image_embedding = 384
 #############################################################################
 
 ## See at the end the different possibilities
-configuration = "LiT"
+configuration = "bad_baseline"
 
 # Increment if retraining the same configuration one more time
 training_run_number = 1
@@ -38,7 +38,7 @@ training_run_number = 1
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
-batch_size = 128
+batch_size = 64
 
 warming_epochs = 20
 epochs = 300
