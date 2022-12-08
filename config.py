@@ -57,7 +57,7 @@ gpu_number = 2
 #             Testing          #
 ################################
 
-configuration_to_test = "APE_LiT"
+configuration_to_test = "LiT"
 
 weight_version = 1
 #############################################################################
