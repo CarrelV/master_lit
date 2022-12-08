@@ -1,0 +1,98 @@
+-------------------------
+For the model baseline
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 36.00
+Top-5 accuracy: 69.40
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 35.70
+Top-5 accuracy: 67.50
+
+
+-------------------------
+For the model good_baseline
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 35.90
+Top-5 accuracy: 70.10
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 36.50
+Top-5 accuracy: 70.70
+
+
+-------------------------
+For the model costly_baseline
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 39.50
+Top-5 accuracy: 73.90
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 38.50
+Top-5 accuracy: 73.60
+
+
+-------------------------
+For the model APE
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 33.80
+Top-5 accuracy: 68.50
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 34.30
+Top-5 accuracy: 68.40
+
+
+-------------------------
+For the model APE_LiT
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 35.00
+Top-5 accuracy: 70.40
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 34.60
+Top-5 accuracy: 70.40
+
+
+-------------------------
+For the model LiT
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 38.50
+Top-5 accuracy: 73.70
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 38.50
+Top-5 accuracy: 74.00
+
+
+
+#### Comparison with CLIP #######
+
+-------------------------
+For the model pretrained CLIP from Huggingface
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 77.10
+Top-5 accuracy: 94.60
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 75.10
+Top-5 accuracy: 95.00
+
+
+#### DID NOT CONVERGE WHEN TRAINING ####
+-------------------------
+For the model bad_baseline
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 0.80
+Top-5 accuracy: 4.00
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 0.80
+Top-5 accuracy: 4.00
