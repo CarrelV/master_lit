@@ -57,7 +57,7 @@ gpu_number = 2
 #             Testing          #
 ################################
 
-configuration_to_test = "LiT"
+configuration_to_test = "bad_baseline"
 
 weight_version = 1
 #############################################################################
