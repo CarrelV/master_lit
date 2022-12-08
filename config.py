@@ -57,7 +57,7 @@ gpu_number = 2
 #             Testing          #
 ################################
 
-configuration_to_test = "good_baseline"
+configuration_to_test = "costly_baseline"
 
 weight_version = 1
 #############################################################################
