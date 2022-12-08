@@ -29,6 +29,11 @@ image_embedding = 384
 #                                                                           #
 #############################################################################
 
+
+################################
+#             Training         #
+################################
+
 ## See at the end the different possibilities
 configuration = "APE_LiT"
 
@@ -47,6 +52,13 @@ epochs = 300
 gpu_number = 2
 
 
+################################
+#             Testing          #
+################################
+
+configuration_to_test = "baseline"
+
+weight_version = 1
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -94,16 +106,6 @@ weight_decay = 1e-3
 
 # at home = 1, cluster = 2 (or 4, check)
 
-
-
-########## Test Configuration ##########
-
-checkpoint_number = 1
-
-image_checkpoint = f"weights/baseline_img_proj_best_{checkpoint_number}.pt"
-text_checkpoint = f"weights/baseline_text_proj_best_{checkpoint_number}.pt"
-
-test_batch_size = 1
 
 
 

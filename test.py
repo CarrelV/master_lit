@@ -18,20 +18,28 @@ def test():
 
     
     feature_extractor = get_feature_extractor(CFG.vision_model_name)
-
     tokenizer = get_tokenizer(CFG.text_model_name)
+
 
     model = CLIPMoco().to(device)
 
-    checkpoint_image = torch.load(CFG.image_checkpoint)
-    checkpoint_text = torch.load(CFG.text_checkpoint)
 
-    model.image_projection.load_state_dict(checkpoint_image)
-    model.text_projection.load_state_dict(checkpoint_text)
+    # Load the weights for the backbone
+    if CFG.text_backbone_finetune:
+        model.text_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_enc_best_{CFG.weight_version}.pt"))
+    if CFG.image_backbone_finetune:
+        model.image_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_enc_best_{CFG.weight_version}.pt"))
+    # Load the heads
+    model.text_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_proj_best_{CFG.weight_version}.pt"))
+    model.image_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_proj_best_{CFG.weight_version}.pt"))
+
 
     model.eval()
 
-    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
+    print("-------------------------")
+    print(f"For the model {CFG.configuration_to_test}")
+    print("-------------------------")
+    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
     flickr_retrieval(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
@@ -155,6 +163,9 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
 
     top1_i2t = (top1_i2t / n) * 100
     top5_i2t = (top5_i2t / n) * 100 
+
+    
+
 
     print("Image 2 Text Retrieval on Flickr30k:")
     print(f"Top-1 accuracy: {top1_i2t:.2f}")
