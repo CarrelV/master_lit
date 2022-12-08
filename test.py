@@ -13,6 +13,7 @@ from utils import read_imagenet_class
 
 def test():
 
+    print("Start testing")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logging.set_verbosity_error()
 
@@ -33,6 +34,7 @@ def test():
     model.text_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_proj_best_{CFG.weight_version}.pt"))
     model.image_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_proj_best_{CFG.weight_version}.pt"))
 
+    print("Model loaded")
 
     model.eval()
 

@@ -36,6 +36,7 @@ image_embedding = 384
 
 ## See at the end the different possibilities
 configuration = "APE_LiT"
+testing = True
 
 # Increment if retraining the same configuration one more time
 training_run_number = 1
@@ -111,6 +112,10 @@ weight_decay = 1e-3
 
 
 ########################## Different CONFIGURATION #########################################
+
+if testing:
+    configuration = configuration_to_test
+
 
 if configuration == "bad_baseline":
     #Model weight init
