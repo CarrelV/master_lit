@@ -107,7 +107,11 @@ class flickr30k(Dataset):
         
         caption = self.prompt+pre_caption(random.choice(item['caption']), self.max_words)
         
+        #for CLIP
+        #image_encoded = self.feature_extractor(text=None,images=image,return_tensors="pt")
+        # For our
         image_encoded = self.feature_extractor(image,return_tensors="pt")
+
         caption_encoded = self.tokenizer(caption,padding="max_length",max_length=self.max_words)
 
         return {"image" :image_encoded["pixel_values"].squeeze(0), "input_ids": torch.as_tensor(caption_encoded["input_ids"]), "attention_mask": torch.as_tensor(caption_encoded["attention_mask"])}

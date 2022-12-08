@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import logging
 import torchvision.transforms as transforms
+from transformers import CLIPTokenizerFast, CLIPProcessor, CLIPModel
 
 from models import CLIPMoco
 import config as CFG
@@ -33,8 +34,16 @@ def test():
     # Load the heads
     model.text_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_proj_best_{CFG.weight_version}.pt"))
     model.image_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_proj_best_{CFG.weight_version}.pt"))
+    '''
+    #testing with a pretrained clip
+    model_id = "openai/clip-vit-base-patch32"
+    tokenizer = CLIPTokenizerFast.from_pretrained(model_id)
+    feature_extractor = CLIPProcessor.from_pretrained(model_id)
+    model = CLIPModel.from_pretrained(model_id).to(device)
 
+    '''
     print("Model loaded")
+    
 
     model.eval()
 
@@ -135,12 +144,20 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
             image = batch["image"].to(device)
             text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
 
+            print(text["input_ids"].shape)
+            print(text["attention_mask"].shape)
             # compute image_features
             image_features = model.encode_image(image)
+            # For CLIP only
+            #image_features = model.get_image_features(image)
             image_features /= image_features.norm(dim=-1, keepdim=True)
 
             # compute text features
             text_features = model.encode_text(text)
+            # For CLIP only
+            #text_features = model.get_text_features(**text)
+            
+            
             text_features /= text_features.norm(dim=-1, keepdim=True)
 
             
