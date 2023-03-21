@@ -2,7 +2,6 @@ import copy
 import numpy as np
 import torch
 import torch_pruning as tp
-import transformers
 import model_test
 import functools
 
@@ -25,7 +24,6 @@ def pruning_v1(model, reduction_factor):
     DG = tp.DependencyGraph()
 
     DG.register_customized_layer(
-        model_test.CLIPLSTMoco.image_projection,
         model_test.CLIPLSTMoco.text_projection, 
         in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
         out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
@@ -123,7 +121,6 @@ def pruning_bottleneck(model, reduction_factor, importance_measure=None, version
     DG = tp.DependencyGraph()
 
     DG.register_customized_layer(
-        model_test.CLIPLSTMoco.image_projection,
         model_test.CLIPLSTMoco.text_projection,  
         in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
         out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
@@ -169,7 +166,7 @@ def pruning_bottleneck(model, reduction_factor, importance_measure=None, version
         [f"{sub_model}.block.0.layer.0.SelfAttention.{n}.weight" for n in ["q", "k", "v", "o"]]
     )
 
-    for i in range(12):
+    for i in range(model.config.num_layers):
         # ordered_target_layers.append(
         #     [f"{sub_model}.block.{i}.layer.0.SelfAttention.{n}.weight" for n in ["q", "k", "v", "o"]]
         # )
@@ -181,7 +178,7 @@ def pruning_bottleneck(model, reduction_factor, importance_measure=None, version
         [f"{sub_model}.block.0.layer.0.SelfAttention.{n}.weight" for n in ["q", "k", "v", "o"]]
         )
     
-    for i in range(12):
+    for i in range(model.config.num_decoder_layers):
         # ordered_target_layers.append(
         #     [f"{sub_model}.block.{i}.layer.0.SelfAttention.{n}.weight" for n in ["q", "k", "v", "o"]]
         #     )
@@ -193,7 +190,7 @@ def pruning_bottleneck(model, reduction_factor, importance_measure=None, version
     module_mapping = {}
 
     sub_model = "encoder"
-    for i in range(12):
+    for i in range(model.config.num_layers):
         for n in ["q", "k", "v", "o"]:
             module_mapping[f"{sub_model}.block.{i}.layer.0.SelfAttention.{n}.weight"] = \
                 f"{sub_model}.block[{i}].layer[0].SelfAttention.{n}.weight"
@@ -204,7 +201,7 @@ def pruning_bottleneck(model, reduction_factor, importance_measure=None, version
 
     sub_model = "decoder"
 
-    for i in range(12):
+    for i in range(model.config.num_decoder_layers):
         for n in ["q", "k", "v", "o"]:
             module_mapping[f"{sub_model}.block.{i}.layer.0.SelfAttention.{n}.weight"] = \
                 f"{sub_model}.block[{i}].layer[0].SelfAttention.{n}.weight"
@@ -261,7 +258,6 @@ def pruning_with_residual(model, reduction_factor, importance_measure=None, vers
     DG = tp.DependencyGraph()
 
     DG.register_customized_layer(
-        model_test.CLIPLSTMoco.image_projection,
         model_test.CLIPLSTMoco.text_projection,  
         in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
         out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
@@ -307,7 +303,7 @@ def pruning_with_residual(model, reduction_factor, importance_measure=None, vers
         [f"{sub_model}.block.{i}.layer.0.SelfAttention.{n}.weight" for n in ["q", "k", "v", "o"] for i in range(12)]
     )
 
-    for i in range(12):
+    for i in range(model.config.num_layers):
         # ordered_target_layers.append(
         #     [f"{sub_model}.block.{i}.layer.0.SelfAttention.{n}.weight" for n in ["q", "k", "v", "o"]]
         # )
@@ -319,7 +315,7 @@ def pruning_with_residual(model, reduction_factor, importance_measure=None, vers
         [f"{sub_model}.block.{i}.layer.0.SelfAttention.{n}.weight" for n in ["q", "k", "v", "o"] for i in range(12)]
         )
     
-    for i in range(12):
+    for i in range(model.config.num_decoder_layers):
         # ordered_target_layers.append(
         #     [f"{sub_model}.block.{i}.layer.0.SelfAttention.{n}.weight" for n in ["q", "k", "v", "o"]]
         #     )
@@ -331,7 +327,7 @@ def pruning_with_residual(model, reduction_factor, importance_measure=None, vers
     module_mapping = {}
 
     sub_model = "encoder"
-    for i in range(12):
+    for i in range(model.config.num_layers):
         for n in ["q", "k", "v", "o"]:
             module_mapping[f"{sub_model}.block.{i}.layer.0.SelfAttention.{n}.weight"] = \
                 f"{sub_model}.block[{i}].layer[0].SelfAttention.{n}.weight"
@@ -342,7 +338,7 @@ def pruning_with_residual(model, reduction_factor, importance_measure=None, vers
 
     sub_model = "decoder"
 
-    for i in range(12):
+    for i in range(model.config.num_decoder_layers):
         for n in ["q", "k", "v", "o"]:
             module_mapping[f"{sub_model}.block.{i}.layer.0.SelfAttention.{n}.weight"] = \
                 f"{sub_model}.block[{i}].layer[0].SelfAttention.{n}.weight"
@@ -394,13 +390,21 @@ def pruning_with_residual(model, reduction_factor, importance_measure=None, vers
 
 
 def pruning_without_residual(model, tokenizer, reduction_factor, importance_measure=None, version=2, num_heads=12, iterations=2):
-    inputs_dict = tokenizer(["I like dogs.", "I really like your cats."], padding=True, return_tensors="pt")
-
-    inputs_dict = {"input_ids": inputs_dict["input_ids"], "attention_mask": inputs_dict["attention_mask"]} # transform to dict
-
+    inputs_dict = {
+        "input_ids": torch.randint(0, model.shared.weight.shape[0], (32, 128)), 
+        "decoder_input_ids": torch.ones(32, 1, dtype=torch.long) * model.config.decoder_start_token_id
+    }
     # Build dependency graph
     DG = tp.DependencyGraph()
     
+    DG.register_customized_layer(
+        model_test.CLIPLSTMoco.text_projection,  
+        in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
+        out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
+        get_in_ch_fn=lambda l: None,  # estimate the n_channel of layer input. Return None if the layer does not change tensor shape.
+        get_out_ch_fn=lambda l: None
+    ) # estimate the n_channel of layer output. Return None if the layer does not change tensor shape.
+
     DG.build_dependency(model, example_inputs = inputs_dict, pruning_dim = -1) # Note to set pruning_dim to -1 to prune BertModel on hidden_states.
 
     # get a pruning plan by pruning from word embedding
