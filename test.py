@@ -4,9 +4,11 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import logging
 import torchvision.transforms as transforms
-from transformers import CLIPTokenizerFast, CLIPProcessor, CLIPModel
+#from transformers import CLIPTokenizerFast, CLIPProcessor, CLIPModel
 
-from models import CLIPMoco
+from model_test import CLIPMoco
+#from models import CLIPMoco
+
 import config as CFG
 from tokenizer import get_tokenizer,get_feature_extractor
 from dataloader import get_dataloader
@@ -144,8 +146,8 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
             image = batch["image"].to(device)
             text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
 
-            print(text["input_ids"].shape)
-            print(text["attention_mask"].shape)
+            #print(text["input_ids"].shape)
+            #print(text["attention_mask"].shape)
             # compute image_features
             image_features = model.encode_image(image)
             # For CLIP only

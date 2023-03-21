@@ -21,7 +21,9 @@ text_embedding = 512
 vision_model_name = "facebook/dino-vits16"
 image_embedding = 384
 
+side_network = False
 
+reduction_factor = 8
 
 #############################################################################
 #                                                                           #
