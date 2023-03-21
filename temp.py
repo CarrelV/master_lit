@@ -42,7 +42,6 @@ from transformers.modeling_outputs import (
     Seq2SeqQuestionAnsweringModelOutput,
     Seq2SeqSequenceClassifierOutput,
 )
-from .modeling_side_outputs import SideBaseModelOutput
 from transformers.modeling_utils import PreTrainedModel
 from transformers.utils import logging
 from transformers.models.bart.configuration_bart import BartConfig
@@ -59,6 +58,15 @@ BART_PRETRAINED_MODEL_ARCHIVE_LIST = [
     "facebook/bart-large",
     # See all BART models at https://huggingface.co/models?filter=bart
 ]
+
+
+class SideBaseModelOutput(BaseModelOutput):
+    last_hidden_state: torch.FloatTensor = None
+    hidden_states: Optional[Tuple[torch.FloatTensor]] = None
+    attentions: Optional[Tuple[torch.FloatTensor]] = None
+    last_side_hidden_state: torch.FloatTensor = None
+    side_hidden_states: Optional[Tuple[torch.FloatTensor]] = None
+    side_attentions: Optional[Tuple[torch.FloatTensor]] = None
 
 
 def shift_tokens_right(input_ids: torch.Tensor, pad_token_id: int, decoder_start_token_id: int):
