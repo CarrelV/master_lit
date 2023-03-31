@@ -5,6 +5,8 @@ import torch_pruning as tp
 import model_test
 import functools
 
+import config as CFG
+
 def round_pruning_amount(total_parameters, n_to_prune, round_to):
     """round the parameter amount after pruning to an integer multiple of `round_to`.
     """
@@ -24,7 +26,7 @@ def pruning_v1(model, reduction_factor):
     DG = tp.DependencyGraph()
 
     DG.register_customized_layer(
-        model_test.CLIPLSTMoco.text_projection, 
+        model_test.CLIPMoco.text_projection, 
         in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
         out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
         get_in_ch_fn=lambda l: None,  # estimate the n_channel of layer input. Return None if the layer does not change tensor shape.
@@ -121,7 +123,7 @@ def pruning_bottleneck(model, reduction_factor, importance_measure=None, version
     DG = tp.DependencyGraph()
 
     DG.register_customized_layer(
-        model_test.CLIPLSTMoco.text_projection,  
+        model_test.CLIPMoco.text_projection,  
         in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
         out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
         get_in_ch_fn=lambda l: None,  # estimate the n_channel of layer input. Return None if the layer does not change tensor shape.
@@ -258,7 +260,7 @@ def pruning_with_residual(model, reduction_factor, importance_measure=None, vers
     DG = tp.DependencyGraph()
 
     DG.register_customized_layer(
-        model_test.CLIPLSTMoco.text_projection,  
+        model_test.CLIPMoco.text_projection,  
         in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
         out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
         get_in_ch_fn=lambda l: None,  # estimate the n_channel of layer input. Return None if the layer does not change tensor shape.
@@ -390,15 +392,19 @@ def pruning_with_residual(model, reduction_factor, importance_measure=None, vers
 
 
 def pruning_without_residual(model, tokenizer, reduction_factor, importance_measure=None, version=2, num_heads=12, iterations=2):
-    inputs_dict = {
+    '''inputs_dict = {
         "input_ids": torch.randint(0, model.shared.weight.shape[0], (32, 128)), 
         "decoder_input_ids": torch.ones(32, 1, dtype=torch.long) * model.config.decoder_start_token_id
-    }
+    }'''
+
+    inputs_dict = tokenizer(["I like dogs.", "I really like your cats."], padding=True, return_tensors="pt")
+
+    inputs_dict = {"input_ids": inputs_dict["input_ids"], "attention_mask": inputs_dict["attention_mask"]} # transform to dict
     # Build dependency graph
     DG = tp.DependencyGraph()
     
     DG.register_customized_layer(
-        model_test.CLIPLSTMoco.text_projection,  
+        model_test.CLIPMoco.text_projection,  
         in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
         out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
         get_in_ch_fn=lambda l: None,  # estimate the n_channel of layer input. Return None if the layer does not change tensor shape.
@@ -449,7 +455,7 @@ def pruning_without_residual(model, tokenizer, reduction_factor, importance_meas
     ordered_target_layers.append(f"model.{sub_model}.embed_positions.weight")
     ordered_target_layers.append([f"model.{sub_model}.layernorm_embedding.weight"])
     ordered_target_layers.append([f"model.{sub_model}.layernorm_embedding.bias"])
-    for i in range(model.config.encoder_layers):
+    for i in range(model.config.num_hidden_layers):
         ordered_target_layers.append(
             [f"model.{sub_model}.layers.{i}.self_attn.{n}_proj.weight" for n in ["q", "k", "v"]]
             )
@@ -589,31 +595,31 @@ def pruning_without_residual(model, tokenizer, reduction_factor, importance_meas
 
     return new_state_dict
 
-def pruning_BERT(model,reduction_factor,num_head,importance_measure=None,iterations=11,version=1):
+def pruning_BERT_model(model,tokenizer,reduction_factor,importance_measure=None,iterations=11,version=1):
 
     if version == 1:
-        return pruning_v1(model,reduction_factor)
+        return pruning_v1(model,tokenizer,reduction_factor)
     elif version == 2:
-        return pruning_v2(model,reduction_factor,importance_measure)
+        return pruning_v2(model,tokenizer,reduction_factor,importance_measure)
     elif version == 3:
-        return pruning_v3(model,reduction_factor,num_head,importance_measure)
+        return pruning_v3(model,tokenizer,reduction_factor,CFG.num_head,importance_measure)
     elif version == 4:
-        return pruning_v4(model,reduction_factor,num_head,importance_measure)
+        return pruning_v4(model,tokenizer,reduction_factor,CFG.num_head,importance_measure)
     elif version == 5:
-        return pruning_v5(model,reduction_factor,importance_measure,iterations)
+        return pruning_v5(model,tokenizer,reduction_factor,importance_measure,iterations)
 
-def pruning_v2(model, reduction_factor, importance_measure=None):
-    return pruning_without_residual(model, reduction_factor, importance_measure=importance_measure, version=2)
-
-
-def pruning_v3(model, reduction_factor, num_heads, importance_measure=None):
-    return pruning_without_residual(model, reduction_factor, importance_measure=importance_measure, version=3, num_heads=num_heads)
+def pruning_v2(model, tokenizer,reduction_factor, importance_measure=None):
+    return pruning_without_residual(model,tokenizer, reduction_factor, importance_measure=importance_measure, version=2)
 
 
-def pruning_v4(model, reduction_factor, num_heads, importance_measure=None):
-    return pruning_without_residual(model, reduction_factor, importance_measure=importance_measure, version=4, num_heads=num_heads)
+def pruning_v3(model,tokenizer, reduction_factor, num_heads, importance_measure=None):
+    return pruning_without_residual(model, tokenizer,reduction_factor, importance_measure=importance_measure, version=3, num_heads=num_heads)
 
 
-def pruning_v5(model, reduction_factor, importance_measure=None, iterations=11):
-    return pruning_without_residual(model, reduction_factor, importance_measure=importance_measure, version=5, iterations=iterations)
+def pruning_v4(model, tokenizer,reduction_factor, num_heads, importance_measure=None):
+    return pruning_without_residual(model, tokenizer,reduction_factor, importance_measure=importance_measure, version=4, num_heads=num_heads)
+
+
+def pruning_v5(model, tokenizer,reduction_factor, importance_measure=None, iterations=11):
+    return pruning_without_residual(model, tokenizer,reduction_factor, importance_measure=importance_measure, version=5, iterations=iterations)
 
