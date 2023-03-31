@@ -4,9 +4,8 @@ import torch
 import torch.nn as nn
 
 from copy import deepcopy
-from model_BERT import BertModel,BertConfig
+from model_BERTLsT import BertModel,BertConfig,BertLSTModel
 from model_ViT import ViTModel,ViTConfig
-from pruning_BERT import pruning_BERT
 from transformers import BertTokenizerFast
 
 
@@ -15,11 +14,14 @@ from transformers import BertTokenizerFast
 class TextEncoder(nn.Module):
     def __init__(self, model_name=CFG.text_model_name, pretrained=CFG.text_backbone_pretrained, trainable=CFG.text_backbone_finetune):
         super().__init__()
+        self.config = BertConfig.from_pretrained(model_name) 
+        
         if pretrained:
+            
             self.model = BertModel.from_pretrained(model_name)
         else:
 
-            self.model = BertModel(config=BertConfig.from_pretrained(model_name))
+            self.model = BertModel(self.config)
             
         for p in self.model.parameters():
             p.requires_grad = trainable
@@ -29,34 +31,14 @@ class TextEncoder(nn.Module):
 
     def forward(self, input_ids, attention_mask):
         output = self.model(input_ids=input_ids, attention_mask=attention_mask)
-        last_hidden_state = output.last_hidden_state
-        return last_hidden_state[:, self.target_token_idx, :]
-
-
-###################### PRUNED TEXT TOWER ####################################
-
-class PrunedTextEncoder(nn.Module):
-    def __init__(self, model_name=CFG.text_model_name, pretrained=CFG.text_backbone_pretrained, trainable=CFG.text_backbone_finetune,reducation_factor = CFG.reduction_factor):
-        super().__init__()
-        if pretrained:
-            self.model = BertModel.from_pretrained(model_name)
-        else:
-
-            self.model = BertModel(config=BertConfig.from_pretrained(model_name))
         
-
-        self.tokenizer = BertTokenizerFast.from_pretrained(model_name)
-
-        self.pruned_state_dict = pruning_BERT(self.model,self.tokenizer,CFG.reduction_factor)
-
-
-        # we are using the CLS token hidden representation as the sentence's embedding
-        self.target_token_idx = 0
-
-    def forward(self, input_ids, attention_mask):
-        output = self.model(input_ids=input_ids, attention_mask=attention_mask)
         last_hidden_state = output.last_hidden_state
+
         return last_hidden_state[:, self.target_token_idx, :]
+
+
+
+
 ###################### IMAGE TOWER ####################################
 
 
@@ -193,6 +175,8 @@ class CLIPMoco(nn.Module):
     def __init__(
         self,
         text_head_config = CFG.text_head_config,
+        text_tower_config = CFG.text_tower_config,
+        image_tower_config = CFG.image_tower_config,
         temperature=CFG.temperature,
         image_embedding=CFG.image_embedding,
         text_embedding=CFG.text_embedding,
@@ -204,11 +188,20 @@ class CLIPMoco(nn.Module):
     ):
         super().__init__()
         self.text_head_config = text_head_config
+        self.text_tower_config = text_tower_config
+        self.image_tower_config = image_tower_config
+
+        if self.image_tower_config == "classic":
+            self.image_encoder = ImageEncoder()
+
+        if self.text_tower_config == "classic":
+            self.text_encoder = TextEncoder()
+        elif self.text_tower_config == "LST":
+            self.text_encoder = BertLSTModel.from_pretrained(CFG.text_model_name)
         
-        self.image_encoder = ImageEncoder()
-        self.text_encoder = TextEncoder()
-        
+
         self.image_projection = ProjectionHead(embedding_dim=image_embedding)
+        
         if self.text_head_config == "simple_proj":
             self.text_projection = ProjectionHead(embedding_dim=text_embedding)
         elif self.text_head_config == "small_mlp":

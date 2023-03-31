@@ -20,7 +20,7 @@
 import config as CFG
 
 import math
-import os
+import os,copy
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
 
@@ -30,6 +30,7 @@ from torch import nn
 
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import (
+    BaseModelOutput,
     BaseModelOutputWithPastAndCrossAttentions,
     BaseModelOutputWithPoolingAndCrossAttentions,
 )
@@ -42,7 +43,7 @@ from transformers.utils import (
     logging
 )
 from transformers import BertConfig
-
+from pruning import pruning_BERT_without_residual
 
 logger = logging.get_logger(__name__)
 
@@ -992,4 +993,216 @@ class BertModel(BertPreTrainedModel):
             attentions=encoder_outputs.attentions,
             cross_attentions=encoder_outputs.cross_attentions,
         )
+
+class LSTModelOutput(BaseModelOutput):
+    last_hidden_state: torch.FloatTensor = None
+    hidden_states: Optional[Tuple[torch.FloatTensor]] = None
+    attentions: Optional[Tuple[torch.FloatTensor]] = None
+    last_side_hidden_state: torch.FloatTensor = None
+    side_hidden_states: Optional[Tuple[torch.FloatTensor]] = None
+    side_attentions: Optional[Tuple[torch.FloatTensor]] = None
+
+
+
+class BertLSTModel(BertPreTrainedModel):
+    
+
+    def __init__(self, config, add_pooling_layer=False):
+        super().__init__(config)
+        
+        self.config = config
+        
+        self.target_token_idx = 0
+
+        # Main BERT
+        self.embeddings = BertEmbeddings(config)
+        self.encoder = BertEncoder(config)
+
+        self.pooler = BertPooler(config) if add_pooling_layer else None
+
+        # Freeze all parameters in the main tower
+        for p in self.encoder.parameters():
+            p.requires_grad = False
+
+
+        # If pretrain, copy the pruned weights to the side network
+
+
+        # Side pruned BERT
+
+        side_config = copy.deepcopy(config)
+
+        side_config.intermediate_size = side_config.intermediate_size // CFG.reduction_factor
+        side_config.hidden_size = side_config.hidden_size // CFG.reduction_factor
+
+        # Downsample emb
+        self.side_emb = nn.Linear(config.hidden_size,side_config.hidden_size)
+
+        # Final upsampler for the end to be able to add different heads
+        self.final_upsample = nn.Linear(side_config.hidden_size,config.hidden_size)
+
+
+        # List of Downsampler (linear layers) from main to side
+        self.side_downsamplers = nn.ModuleList(
+            [nn.Linear(config.hidden_size,side_config.hidden_size) for _ in range(config.num_hidden_layers)]
+        )
+
+        # List of the reduced Bert layers in the side network
+        self.side_encoder = nn.ModuleList(
+            [BertLayer(side_config) for _ in range(config.num_hidden_layers)]
+        )
+
+        # List of learnable parameter for the gated combination
+        self.side_gate_params = nn.ParameterList(
+            [nn.Parameter(torch.ones(1) * CFG.gate_alpha) for _ in range(config.num_hidden_layers)]
+        )
+        self.gate_T = CFG.gate_T
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def get_input_embeddings(self):
+        return self.embeddings.word_embeddings
+
+    def set_input_embeddings(self, value):
+        self.embeddings.word_embeddings = value
+
+    def _prune_heads(self, heads_to_prune):
+        """
+        Prunes heads of the model. heads_to_prune: dict of {layer_num: list of heads to prune in this layer} See base
+        class PreTrainedModel
+        """
+        for layer, heads in heads_to_prune.items():
+            self.encoder.layer[layer].attention.prune_heads(heads)
+
+    @add_start_docstrings_to_model_forward(BERT_INPUTS_DOCSTRING.format("batch_size, sequence_length"))
+    @add_code_sample_docstrings(
+        processor_class=_TOKENIZER_FOR_DOC,
+        checkpoint=_CHECKPOINT_FOR_DOC,
+        output_type=BaseModelOutputWithPoolingAndCrossAttentions,
+        config_class=_CONFIG_FOR_DOC,
+    )
+    def forward(
+        self,
+        input_ids: Optional[torch.Tensor] = None,
+        attention_mask: Optional[torch.Tensor] = None,
+        token_type_ids: Optional[torch.Tensor] = None,
+        head_mask: Optional[torch.Tensor] = None,
+        output_hidden_states: Optional[bool] = None,
+        return_dict: Optional[bool] = None,
+    ) -> Union[Tuple[torch.Tensor], BaseModelOutputWithPoolingAndCrossAttentions]:
+        
+
+        output_hidden_states = (
+            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+        )
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+
+        
+
+        
+        if input_ids is not None:
+            input_shape = input_ids.size()
+        else:
+            raise ValueError("You have to specify either input_ids or inputs_embeds")
+
+        batch_size, seq_length = input_shape
+        device = input_ids.device
+
+        # Not useful params
+        past_key_values_length =  0
+        use_cache = False
+        positions_ids = None
+        inputs_embeds = None
+        output_attentions = None
+        encoder_hidden_states = None
+
+        if attention_mask is None:
+            attention_mask = torch.ones(((batch_size, seq_length + past_key_values_length)), device=device)
+
+        if token_type_ids is None:
+            if hasattr(self.embeddings, "token_type_ids"):
+                buffered_token_type_ids = self.embeddings.token_type_ids[:, :seq_length]
+                buffered_token_type_ids_expanded = buffered_token_type_ids.expand(batch_size, seq_length)
+                token_type_ids = buffered_token_type_ids_expanded
+            else:
+                token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=device)
+
+        # We can provide a self-attention mask of dimensions [batch_size, from_seq_length, to_seq_length]
+        # ourselves in which case we just need to make it broadcastable to all heads.
+        extended_attention_mask: torch.Tensor = self.get_extended_attention_mask(attention_mask, input_shape,device=device)
+
+        # If a 2D or 3D attention mask is provided for the cross-attention
+        # we need to make broadcastable to [batch_size, num_heads, seq_length, seq_length]
+        encoder_extended_attention_mask = None
+
+        # Prepare head mask if needed
+        # 1.0 in head_mask indicate we keep the head
+        # attention_probs has shape bsz x n_heads x N x N
+        # input head_mask has shape [num_heads] or [num_hidden_layers x num_heads]
+        # and head_mask is converted to shape [num_hidden_layers x batch x num_heads x seq_length x seq_length]
+        head_mask = self.get_head_mask(head_mask, self.config.num_hidden_layers)
+
+        embedding_output = self.embeddings(
+            input_ids=input_ids,
+            position_ids=positions_ids,
+            token_type_ids=token_type_ids,
+            inputs_embeds=inputs_embeds,
+            past_key_values_length=past_key_values_length,
+        )
+
+        # Forward pass of the main encoder, which output all hidden states
+        encoder_outputs = self.encoder(
+            embedding_output,
+            attention_mask=extended_attention_mask,
+            head_mask=head_mask,
+            encoder_hidden_states=encoder_hidden_states,
+            encoder_attention_mask=encoder_extended_attention_mask,
+            past_key_values=None,
+            use_cache=use_cache,
+            output_attentions=output_attentions,
+            output_hidden_states=True,
+            return_dict=return_dict,
+        )
+        
+        # Forward of the main network
+        hidden_states = encoder_outputs[1]
+        last_hidden_state = encoder_outputs[0]
+        pooled_output = self.pooler(last_hidden_state) if self.pooler is not None else None
+
+
+        # Forward for the side network using the hidden states
+
+        # g_emb(x_emb)
+        side_hidden_states = self.side_emb(embedding_output)
+
+        # for each layer add the sigmoid (gate) off the previous layer (side net) and the downsampled hidden state from the main net (the ladder) 
+        for idx in range(self.config.num_hidden_layers):
+
+            side_layer_to_process = self.side_encoder[idx]
+            side_downsampler = self.side_downsamplers[idx]
+            
+            # Gating
+            side_gate_param = self.side_gate_params[idx]
+            gate = torch.sigmoid(side_gate_param / self.gate_T)
+
+            # Combining both inputs
+            side_hidden_states = gate * side_hidden_states + (1 - gate) * side_downsampler(hidden_states[idx])
+
+            # Processing next side layer
+            side_layer_outputs = side_layer_to_process(side_hidden_states)
+
+            # Remember new side_hidden_state
+            side_hidden_states = side_layer_outputs[0]
+
+
+        # At the end, upsample the side_hidden_states and returns it only
+
+        upsample_outputs = self.final_upsample(side_hidden_states)
+
+        last_hidden_state = upsample_outputs[0]
+
+        '''return LSTModelOutput(
+            last_hidden_state=last_hidden_state,
+        )'''
+        return last_hidden_state[self.target_token_idx,:]
 
