@@ -21,9 +21,17 @@ text_embedding = 512
 vision_model_name = "facebook/dino-vits16"
 image_embedding = 384
 
-side_network = False
+
+
+##############Pruning
 
 reduction_factor = 8
+
+
+## Side network
+
+gate_alpha = 0.0
+gate_T = 0.1
 
 #############################################################################
 #                                                                           #
@@ -37,8 +45,9 @@ reduction_factor = 8
 ################################
 
 ## See at the end the different possibilities
-configuration = "APE_LiT"
-testing = True
+configuration = "text_LST"
+testing = False
+
 
 # Increment if retraining the same configuration one more time
 training_run_number = 1
@@ -46,7 +55,7 @@ training_run_number = 1
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
-batch_size = 128
+batch_size = 512
 
 warming_epochs = 20
 epochs = 300
@@ -118,6 +127,23 @@ weight_decay = 1e-3
 if testing:
     configuration = configuration_to_test
 
+if configuration == "text_LST":
+    #Model weight init
+    text_backbone_pretrained = True 
+    image_backbone_pretrained = True
+
+    #Model training
+    text_backbone_finetune = True 
+    image_backbone_finetune = True
+    
+    text_head_config = "simple_proj"
+    text_tower_config = "LST"
+    image_tower_config = "classic"
+    find_unused_param = True
+
+    side_text_weights_copy = True
+
+
 
 if configuration == "bad_baseline":
     #Model weight init
@@ -129,7 +155,11 @@ if configuration == "bad_baseline":
     image_backbone_finetune = True
     
     text_head_config = "simple_proj"
+    text_tower_config = "classic"
+    image_tower_config = "classic"
     find_unused_param = True
+
+    side_text_weights_copy = False
 
 elif configuration == "baseline":
     #Model weight init
@@ -141,7 +171,11 @@ elif configuration == "baseline":
     image_backbone_finetune = False
 
     text_head_config = "simple_proj"
+    text_tower_config = "classic"
+    image_tower_config = "classic"
     find_unused_param = False
+
+    side_text_weights_copy = False
 
 
 elif configuration == "good_baseline":
@@ -154,7 +188,11 @@ elif configuration == "good_baseline":
     image_backbone_finetune = False
 
     text_head_config = "small_mlp"
+    text_tower_config = "classic"
+    image_tower_config = "classic"
     find_unused_param = False
+
+    side_text_weights_copy = False
 
 elif configuration == "costly_baseline":
     #Model weight init
@@ -166,7 +204,11 @@ elif configuration == "costly_baseline":
     image_backbone_finetune = False
 
     text_head_config = "simple_proj"
+    text_tower_config = "classic"
+    image_tower_config = "classic"
     find_unused_param = True
+
+    side_text_weights_copy = False
 
 elif configuration == "LiT":
     #Model weight init
@@ -178,7 +220,11 @@ elif configuration == "LiT":
     image_backbone_finetune = False
 
     text_head_config = "small_mlp"
+    text_tower_config = "classic"
+    image_tower_config = "classic"
     find_unused_param = True
+
+    side_text_weights_copy = False
 
 elif configuration == "APE":
     #Model weight init
@@ -190,7 +236,11 @@ elif configuration == "APE":
     image_backbone_finetune = False
 
     text_head_config = "large_mlp"
+    text_tower_config = "classic"
+    image_tower_config = "classic"
     find_unused_param = False
+
+    side_text_weights_copy = False
 
 #Using both the LiT finetuning scheme and the bigger APE MLP
 elif configuration == "APE_LiT":
@@ -203,4 +253,8 @@ elif configuration == "APE_LiT":
     image_backbone_finetune = False
 
     text_head_config = "large_mlp"
+    text_tower_config = "classic"
+    image_tower_config = "classic"
     find_unused_param = True
+
+    side_text_weights_copy = False

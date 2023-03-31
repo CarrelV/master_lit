@@ -1,10 +1,11 @@
 import config as CFG
 from dataloader import get_dataloader
 from tokenizer import get_tokenizer,get_feature_extractor
-from models import CLIPMoco
+from models_CLIP import CLIPMoco
 from losses import CLIPMoCOLoss
 from training import train_one_epoch, valid_one_epoch,get_lr
 from utils import setup,cleanup
+from utils_models import modify_text_model_after_init
 
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -19,7 +20,6 @@ from transformers import logging
 
 ## Seems to be working when testing locally with GPU = 1. Maybe hacky/wrong fix? Will test tomorrow on the cluster
 def main(rank,world_size):
-
     logging.set_verbosity_error()
     wandb.init(project="Master Thesis Project",
            config={
@@ -29,8 +29,9 @@ def main(rank,world_size):
            group="Baselines")
 
     # setup the process groups
-    setup(rank, world_size)
-    
+    #setup(rank, world_size)
+    rank = 1
+    world_size=1
     # prepare the dataloader
     tokenizer = get_tokenizer(CFG.text_model_name)
     feature_extractor = get_feature_extractor(CFG.vision_model_name)
@@ -43,7 +44,15 @@ def main(rank,world_size):
     model = CLIPMoco().to(rank)
     loss_fn = CLIPMoCOLoss().to(rank)
 
+    # copy the pruned weights of the main text to the side LST text network
+    if CFG.side_text_weights_copy:
+        
+        model = modify_text_model_after_init(model,tokenizer)
 
+    
+
+    
+    
     # wrap the model with DDP
     # device_ids tell DDP where is your model
     # output_device tells DDP where to output, in our case, it is rank
@@ -123,4 +132,3 @@ if __name__ == "__main__":
         args=(world_size,),
         nprocs=world_size
     )
-    
