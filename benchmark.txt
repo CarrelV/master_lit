@@ -70,6 +70,17 @@ Top-1 accuracy: 38.50
 Top-5 accuracy: 74.00
 
 
+-------------------------
+For the model LST-Text
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 28.10
+Top-5 accuracy: 61.50
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 27.40
+Top-5 accuracy: 59.80
+
 
 #### Comparison with CLIP #######
 
