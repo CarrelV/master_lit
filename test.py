@@ -6,7 +6,7 @@ from transformers import logging
 import torchvision.transforms as transforms
 #from transformers import CLIPTokenizerFast, CLIPProcessor, CLIPModel
 
-from model_test import CLIPMoco
+from models_CLIP import CLIPMoco
 #from models import CLIPMoco
 
 import config as CFG

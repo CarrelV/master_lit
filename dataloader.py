@@ -44,3 +44,22 @@ def get_dataloader(tokenizer,feature_extractor,rank,world_size,batch_size,shuffl
     else:
         print("Wrong split")
 
+
+def get_local_dataloader(tokenizer,feature_extractor,batch_size,shuffle,split):
+    
+    
+    if split == "train":
+        
+        dataset = get_dataset(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,split="train")
+        
+        return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,drop_last=True)
+    
+    elif split == "val":
+        dataset = get_dataset(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_test,split="val")
+        return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,drop_last=True)
+    
+    elif split == "test":
+        dataset = get_dataset(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_test,split="test")
+        return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,drop_last=True)
+    else:
+        print("Wrong split")

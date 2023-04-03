@@ -50,12 +50,12 @@ testing = False
 
 
 # Increment if retraining the same configuration one more time
-training_run_number = 1
+training_run_number = 2
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
-batch_size = 512
+batch_size = 256
 
 warming_epochs = 20
 epochs = 300
@@ -68,7 +68,7 @@ gpu_number = 2
 #             Testing          #
 ################################
 
-configuration_to_test = "bad_baseline"
+configuration_to_test = "text_LST"
 
 weight_version = 1
 #############################################################################
@@ -93,7 +93,7 @@ m=0.999
 ########## Training Configuration ##########
 
 
-
+samples_for_fisher = 1024
 
 
 num_workers = 0
@@ -106,7 +106,7 @@ split = "train"
 # 
 
 image_encoder_lr = 1e-5
-text_encoder_lr = 1e-4
+text_encoder_lr = 5e-4
 image_head_lr = 1e-3
 text_head_lr = 1e-3
 
@@ -134,7 +134,7 @@ if configuration == "text_LST":
 
     #Model training
     text_backbone_finetune = True 
-    image_backbone_finetune = True
+    image_backbone_finetune = False
     
     text_head_config = "simple_proj"
     text_tower_config = "LST"
