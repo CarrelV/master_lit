@@ -25,7 +25,7 @@ image_embedding = 384
 
 ##############Pruning
 
-reduction_factor = 2
+reduction_factor = 4
 
 
 ## Side network
@@ -50,12 +50,12 @@ testing = False
 
 
 # Increment if retraining the same configuration one more time
-training_run_number = 2
+training_run_number = 1
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
-batch_size = 256
+batch_size = 1024
 
 warming_epochs = 20
 epochs = 300
