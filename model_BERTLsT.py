@@ -979,7 +979,10 @@ class BertModel(BertPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
+
+
         sequence_output = encoder_outputs[0]
+
         pooled_output = self.pooler(sequence_output) if self.pooler is not None else None
 
         if not return_dict:
@@ -1024,6 +1027,8 @@ class BertLSTModel(BertPreTrainedModel):
         for p in self.encoder.parameters():
             p.requires_grad = False
 
+        for p in self.embeddings.parameters():
+            p.requires_grad = False
 
         # If pretrain, copy the pruned weights to the side network
 
@@ -1196,13 +1201,11 @@ class BertLSTModel(BertPreTrainedModel):
 
 
         # At the end, upsample the side_hidden_states and returns it only
-
+  
         upsample_outputs = self.final_upsample(side_hidden_states)
-
-        last_hidden_state = upsample_outputs[0]
 
         '''return LSTModelOutput(
             last_hidden_state=last_hidden_state,
         )'''
-        return last_hidden_state[self.target_token_idx,:]
+        return upsample_outputs[:,self.target_token_idx,:]
 

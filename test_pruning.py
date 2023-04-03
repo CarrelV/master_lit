@@ -6,7 +6,7 @@ import transformers
 import config as CFG
 
 from tokenizer import get_tokenizer,get_feature_extractor
-from pruning_test import pruning_BERT_without_residual
+from pruning import pruning_BERT_without_residual
 
 from model_BERTLsT import *
 

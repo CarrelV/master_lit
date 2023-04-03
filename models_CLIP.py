@@ -255,7 +255,6 @@ class CLIPMoco(nn.Module):
     def key_encode_text(self,text):
         
         text_features = self.text_key_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
-            
         # Getting Text Embeddings (output of proj heads)
         text_embeddings = self.text_key_projection(text_features)
 
@@ -293,6 +292,7 @@ class CLIPMoco(nn.Module):
     ## Update all key parameters (both encoders and projection module)
     @torch.no_grad()
     def _momentum_update_key_encoders(self):
+
         for param_q, param_k in zip(self.image_encoder.parameters(), self.image_key_encoder.parameters()):
             param_k.data = param_k.data * self.m + param_q.data * (1. - self.m)
             
@@ -308,9 +308,10 @@ class CLIPMoco(nn.Module):
     # Add new minibatch _k to queue and remove the oldest minibatch in queue
     @torch.no_grad()
     def _dequeue_and_enqueue(self, image_k, text_k):
-
-        image_k = concat_all_gather(image_k)
-        text_k = concat_all_gather(text_k)
+        
+        #Add when training on multi GPU
+        #image_k = concat_all_gather(image_k)
+        #text_k = concat_all_gather(text_k)
 
         bs = image_k.size(0)
         assert self.K % bs == 0  # for simplicity
