@@ -15,9 +15,9 @@ def select_weights(weights, idxs):
 
 def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance_measure=None):
     inputs_dict = tokenizer(["I like dogs.", "I really like your cats."], padding=True, return_tensors="pt")
-
+    # padding="max_length",max_length=CFG.max_length
     inputs_dict = {"input_ids": inputs_dict["input_ids"], "attention_mask": inputs_dict["attention_mask"]} # transform to dict
-
+    
     # Build dependency graph
     DG = tpd.DependencyGraph()
     DG.build_dependency(model, example_inputs = inputs_dict, pruning_dim = -1) 
@@ -66,7 +66,6 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
         ordered_target_layers.append([f"{sub_model}.layer.{i}.output.LayerNorm.bias"])
 
     
-
     pruning_idxs_first_layer = None
 
     for prune_val in prune_vals:
@@ -85,11 +84,11 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                         weights = state_dict[sub_layer]
                         weights = select_weights(weights, pruning_idxs)
 
-                        importance = importance_measure[sub_layer]
+                        importance = importance_measure["text_encoder."+sub_layer]
                         importance = select_weights(importance, pruning_idxs)
                         
                         new_state_dict[sub_layer] = weights
-                        importance_measure[sub_layer] = importance
+                        importance_measure["text_encoder."+sub_layer] = importance
 
                 else:
                     # the most common case
@@ -100,7 +99,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                         strategy = strategy_for_others
                     
                     weights = [state_dict[sub_layer] for sub_layer in layer]
-                    importances = [importance_measure[sub_layer] for sub_layer in layer]
+                    importances = [importance_measure["text_encoder."+sub_layer] for sub_layer in layer]
 
                     # prune according to previous idx
                     weights = [select_weights(w.T, pruning_idxs).T for w in weights]
@@ -121,13 +120,13 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
                     # update importance measure
                     for l, imp in zip(layer, importances):
-                        importance_measure[l] = imp
+                        importance_measure["text_encoder."+l] = imp
 
             elif "position_embeddings.weight" in layer:
                 # the first layer
                 # will only select next prune idx
                 # and direct copy the same weights
-                importance = importance_measure[layer]
+                importance = importance_measure["text_encoder."+layer]
                 weights = state_dict[layer]
                 pruning_idxs = strategy_for_others(weights=importance.T, amount=prune_val)
 
@@ -135,7 +134,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                 importance = select_weights(importance.T, pruning_idxs).T
 
                 new_state_dict[layer] = weights
-                importance_measure[layer] = importance
+                importance_measure["text_encoder."+layer] = importance
 
                 pruning_idxs_first_layer = pruning_idxs
             
@@ -145,11 +144,11 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                 weights = state_dict[layer]
                 weights = select_weights(weights.T, pruning_idxs).T
 
-                importance = importance_measure[layer]
+                importance = importance_measure["text_encoder."+layer]
                 importance = select_weights(importance.T, pruning_idxs).T
                 
                 new_state_dict[layer] = weights
-                importance_measure[layer] = importance
+                importance_measure["text_encoder."+layer] = importance
 
         state_dict = new_state_dict
 

@@ -2,7 +2,7 @@ import copy
 import numpy as np
 import torch
 import torch_pruning as tp
-import model_test
+import models_CLIP
 import functools
 
 import config as CFG
@@ -26,7 +26,7 @@ def pruning_v1(model, reduction_factor):
     DG = tp.DependencyGraph()
 
     DG.register_customized_layer(
-        model_test.CLIPMoco.text_projection, 
+        models_CLIP.CLIPMoco.text_projection, 
         in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
         out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
         get_in_ch_fn=lambda l: None,  # estimate the n_channel of layer input. Return None if the layer does not change tensor shape.
@@ -123,7 +123,7 @@ def pruning_bottleneck(model, reduction_factor, importance_measure=None, version
     DG = tp.DependencyGraph()
 
     DG.register_customized_layer(
-        model_test.CLIPMoco.text_projection,  
+        models_CLIP.CLIPMoco.text_projection,  
         in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
         out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
         get_in_ch_fn=lambda l: None,  # estimate the n_channel of layer input. Return None if the layer does not change tensor shape.
@@ -260,7 +260,7 @@ def pruning_with_residual(model, reduction_factor, importance_measure=None, vers
     DG = tp.DependencyGraph()
 
     DG.register_customized_layer(
-        model_test.CLIPMoco.text_projection,  
+        models_CLIP.CLIPMoco.text_projection,  
         in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
         out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
         get_in_ch_fn=lambda l: None,  # estimate the n_channel of layer input. Return None if the layer does not change tensor shape.
@@ -404,7 +404,7 @@ def pruning_without_residual(model, tokenizer, reduction_factor, importance_meas
     DG = tp.DependencyGraph()
     
     DG.register_customized_layer(
-        model_test.CLIPMoco.text_projection,  
+        models_CLIP.CLIPMoco.text_projection,  
         in_ch_pruning_fn=tp.prune_layernorm_in_channels, # A function to prune channels/dimensions of input tensor
         out_ch_pruning_fn=tp.prune_layernorm_out_channels, # A function to prune channels/dimensions of output tensor
         get_in_ch_fn=lambda l: None,  # estimate the n_channel of layer input. Return None if the layer does not change tensor shape.
