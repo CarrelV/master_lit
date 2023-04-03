@@ -5,7 +5,7 @@ from models_CLIP import CLIPMoco
 from losses import CLIPMoCOLoss
 from training import train_one_epoch, valid_one_epoch,get_lr
 from utils import setup,cleanup
-from utils_models import modify_text_model_after_init
+from utils_models import modify_text_model_after_init,resume_model
 
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -15,6 +15,7 @@ import torch
 from transformers.optimization import get_cosine_schedule_with_warmup
 from transformers import logging
 
+from fisher import compute_fisher
 
 
 
@@ -29,9 +30,8 @@ def main(rank,world_size):
            group="Baselines")
 
     # setup the process groups
-    #setup(rank, world_size)
-    rank = 1
-    world_size=1
+    setup(rank, world_size)
+    
     # prepare the dataloader
     tokenizer = get_tokenizer(CFG.text_model_name)
     feature_extractor = get_feature_extractor(CFG.vision_model_name)
@@ -42,15 +42,19 @@ def main(rank,world_size):
     number_of_step_per_epoch = len(dataloader_train)
     
     model = CLIPMoco().to(rank)
-    loss_fn = CLIPMoCOLoss().to(rank)
+    loss_fn = CLIPMoCOLoss()
 
     # copy the pruned weights of the main text to the side LST text network
     if CFG.side_text_weights_copy:
         
-        model = modify_text_model_after_init(model,tokenizer)
+        importance_measure = compute_fisher(model, get_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=1,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train"), num_samples=CFG.samples_for_fisher)
+        
+        model = modify_text_model_after_init(model,tokenizer,importance_measure,rank)
+    
+    model.to(rank)
 
     
-
+    resume_model(model)
     
     
     # wrap the model with DDP
@@ -112,7 +116,12 @@ def main(rank,world_size):
             torch.save(model.module.text_projection.state_dict(), f"weights/{CFG.configuration}_text_proj_best_{CFG.training_run_number}.pt")
             torch.save(model.module.image_projection.state_dict(), f"weights/{CFG.configuration}_img_proj_best_{CFG.training_run_number}.pt")
         
-        wandb.log({"Training loss": train_loss.avg_loss, "Validation loss" : valid_loss.avg_loss,"Learning Rate" : get_lr(optimizer)  } )
+        wandb.log({"Training loss": train_loss.avg_loss, "Validation loss" : valid_loss.avg_loss}, commit = False )
+
+        if CFG.text_backbone_finetune:
+            wandb.log({"Text Encoder lr" : lr_scheduler.get_last_lr()[0]},commit = False)
+
+        wandb.log({"Text Projection lr" : lr_scheduler.get_last_lr()[-2], "Image Projection lr": lr_scheduler.get_last_lr()[-1]})
 
         lr_scheduler.step()
 

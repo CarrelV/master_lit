@@ -25,7 +25,7 @@ image_embedding = 384
 
 ##############Pruning
 
-reduction_factor = 8
+reduction_factor = 2
 
 
 ## Side network

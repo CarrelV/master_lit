@@ -1188,10 +1188,18 @@ class BertLSTModel(BertPreTrainedModel):
             
             # Gating
             side_gate_param = self.side_gate_params[idx]
-            gate = torch.sigmoid(side_gate_param / self.gate_T)
+            
+            ## LST original sigmoid gate
+            '''gate = torch.sigmoid(side_gate_param / self.gate_T)
 
             # Combining both inputs
-            side_hidden_states = gate * side_hidden_states + (1 - gate) * side_downsampler(hidden_states[idx])
+            side_hidden_states = gate * side_hidden_states + (1 - gate) * side_downsampler(hidden_states[idx])'''
+
+            ## Following Flamingo Tanh gatting 
+            gate = torch.tanh(side_gate_param / self.gate_T)
+
+            # Combining both inputs
+            side_hidden_states = gate * side_hidden_states + side_downsampler(hidden_states[idx])
 
             # Processing next side layer
             side_layer_outputs = side_layer_to_process(side_hidden_states)
