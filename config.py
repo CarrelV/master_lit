@@ -55,7 +55,7 @@ training_run_number = 1
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
-batch_size = 1024
+batch_size = 512
 
 warming_epochs = 20
 epochs = 300
