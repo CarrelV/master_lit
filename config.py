@@ -23,9 +23,9 @@ image_embedding = 384
 
 
 
-##############Pruning
+##############Pruning for LST
 
-reduction_factor = 4
+reduction_factor = 8
 
 
 ## Side network
@@ -55,7 +55,7 @@ training_run_number = 1
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
-batch_size = 256
+batch_size = 1024
 
 warming_epochs = 20
 epochs = 300
@@ -64,13 +64,16 @@ epochs = 300
 gpu_number = 2
 
 
+# When using LST, can chose to add a final skip connection between the output of the frozen main model and 
+# the output of the upsampled side network output
+sum_last_outputs = True
 ################################
 #             Testing          #
 ################################
 
 configuration_to_test = "text_LST"
 
-weight_version = 1
+weight_version = 2
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -258,3 +261,14 @@ elif configuration == "APE_LiT":
     find_unused_param = True
 
     side_text_weights_copy = False
+
+
+##################### Skip connection at the end of LST model
+
+if configuration == "LST_Text" and sum_last_outputs:
+
+    add_final_skip_connection = True
+
+else:
+
+    add_final_skip_connection = False

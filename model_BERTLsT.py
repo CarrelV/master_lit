@@ -1017,6 +1017,7 @@ class BertLSTModel(BertPreTrainedModel):
         
         self.target_token_idx = 0
 
+        self.final_skip_connection = CFG.add_final_skip_connection
         # Main BERT
         self.embeddings = BertEmbeddings(config)
         self.encoder = BertEncoder(config)
@@ -1062,6 +1063,11 @@ class BertLSTModel(BertPreTrainedModel):
             [nn.Parameter(torch.ones(1) * CFG.gate_alpha) for _ in range(config.num_hidden_layers)]
         )
         self.gate_T = CFG.gate_T
+
+        # Add a final sum between the output of the original 
+        if self.final_skip_connection:
+            self.final_skip_connection_gate = nn.Parameter(torch.ones(1) * CFG.gate_alpha)
+
         # Initialize weights and apply final processing
         self.post_init()
 
@@ -1171,6 +1177,8 @@ class BertLSTModel(BertPreTrainedModel):
         
         # Forward of the main network
         hidden_states = encoder_outputs[1]
+
+        attention_hidden_states = hidden_states[1:]
         last_hidden_state = encoder_outputs[0]
         pooled_output = self.pooler(last_hidden_state) if self.pooler is not None else None
 
@@ -1180,9 +1188,10 @@ class BertLSTModel(BertPreTrainedModel):
         # g_emb(x_emb)
         side_hidden_states = self.side_emb(embedding_output)
 
+
         # for each layer add the sigmoid (gate) off the previous layer (side net) and the downsampled hidden state from the main net (the ladder) 
         for idx in range(self.config.num_hidden_layers):
-
+            
             side_layer_to_process = self.side_encoder[idx]
             side_downsampler = self.side_downsamplers[idx]
             
@@ -1198,8 +1207,10 @@ class BertLSTModel(BertPreTrainedModel):
             ## Following Flamingo Tanh gatting 
             gate = torch.tanh(side_gate_param / self.gate_T)
 
-            # Combining both inputs
-            side_hidden_states = gate * side_hidden_states + side_downsampler(hidden_states[idx])
+            # Combining both inputs 
+            side_hidden_states = gate * side_hidden_states + side_downsampler(attention_hidden_states[idx])
+
+
 
             # Processing next side layer
             side_layer_outputs = side_layer_to_process(side_hidden_states)
@@ -1212,8 +1223,14 @@ class BertLSTModel(BertPreTrainedModel):
   
         upsample_outputs = self.final_upsample(side_hidden_states)
 
+        if self.final_skip_connection:
+            final_gate = torch.tanh(final_gate / self.gate_T)
+            final_output = last_hidden_state + gate * upsample_outputs
+
+        else:
+             final_output = upsample_outputs
         '''return LSTModelOutput(
             last_hidden_state=last_hidden_state,
         )'''
-        return upsample_outputs[:,self.target_token_idx,:]
+        return final_output[:,self.target_token_idx,:]
 
