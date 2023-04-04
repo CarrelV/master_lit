@@ -11,11 +11,10 @@ from transformers import logging
 from tokenizer import get_tokenizer,get_feature_extractor
 from pruning import pruning_BERT_without_residual
 
-from model_BERTLsT import BertLSTModel
+from fisher import compute_fisher
+from dataloader import get_local_dataloader
 
-from transformers import AutoTokenizer, BertModel,BertConfig
-
-from utils_models import modify_text_model_after_init
+from utils_models import modify_text_model_after_init,resume_model
 
 if __name__ == "__main__":
     
@@ -23,7 +22,6 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    text_config = BertConfig.from_pretrained(CFG.text_model_name)
     model = CLIPMoco().to(device)
     
 
@@ -34,14 +32,21 @@ if __name__ == "__main__":
 
     dummy_image = np.zeros((256,256,3), np.uint8)
     image = feature_extractor(dummy_image,return_tensors="pt")
-
     
-    model = modify_text_model_after_init(model,tokenizer)
-#print(model)
+    if CFG.side_text_weights_copy:
+       
+        importance_measure = compute_fisher(model, get_local_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=1,shuffle=CFG.shuffle_train,split="train"), num_samples=CFG.samples_for_fisher)
+        
+        model = modify_text_model_after_init(model,tokenizer,importance_measure,device)
+
+
+    resume_model(model)
+
+
     
     #model.copy_pretrain_weight(tokenizer,8)
 
-    #outputs = model(image["pixel_values"],text)
+    outputs = model(image["pixel_values"],text)
 
 
     #print(outputs)

@@ -1,0 +1,5 @@
+DONE Change the gatting from sigmoid to tanh to have more like control net, no impact from side in the beggining
+DONE Add final skip connection
+DONE Correct the last hidden to side ladder which where wrong by one
+Test small transformer head on top instead of MLP
+Change the 0 shot classification task to higher level class to test

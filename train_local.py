@@ -65,9 +65,9 @@ def main():
     #Parameter
     params = []
     if CFG.text_backbone_finetune:
-        params.append({"params" : model.text_encoder.parameters(), "lr" : CFG.text_encoder_lr,"weight_decay": 0.001})
+        params.append({"params" : model.text_encoder.parameters(), "lr" : CFG.text_encoder_lr,"weight_decay": 0.})
     if CFG.image_backbone_finetune:
-        params.append({"params" : model.image_encoder.parameters(), "lr" : CFG.image_encoder_lr,"weight_decay": 0.001})
+        params.append({"params" : model.image_encoder.parameters(), "lr" : CFG.image_encoder_lr,"weight_decay": 0.})
     params.append({"params" : model.text_projection.parameters(), "lr" : CFG.text_head_lr,"weight_decay": 0.})
     params.append({"params" : model.image_projection.parameters(), "lr" : CFG.image_head_lr,"weight_decay": 0.})
 
