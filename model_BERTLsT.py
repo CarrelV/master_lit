@@ -1152,6 +1152,7 @@ class BertLSTModel(BertPreTrainedModel):
         # input head_mask has shape [num_heads] or [num_hidden_layers x num_heads]
         # and head_mask is converted to shape [num_hidden_layers x batch x num_heads x seq_length x seq_length]
         head_mask = self.get_head_mask(head_mask, self.config.num_hidden_layers)
+        
 
         embedding_output = self.embeddings(
             input_ids=input_ids,
@@ -1160,7 +1161,6 @@ class BertLSTModel(BertPreTrainedModel):
             inputs_embeds=inputs_embeds,
             past_key_values_length=past_key_values_length,
         )
-
         # Forward pass of the main encoder, which output all hidden states
         encoder_outputs = self.encoder(
             embedding_output,
