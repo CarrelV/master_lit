@@ -45,7 +45,7 @@ gate_T = 0.1
 ################################
 
 ## See at the end the different possibilities
-configuration = "text_LST"
+configuration = "baseline_transformer"
 testing = False
 
 
@@ -147,6 +147,21 @@ if configuration == "text_LST":
     side_text_weights_copy = True
 
 
+elif configuration == "baseline_transformer":
+    #Model weight init
+    text_backbone_pretrained = True 
+    image_backbone_pretrained = True
+
+    #Model training
+    text_backbone_finetune = False
+    image_backbone_finetune = False
+
+    text_head_config = "transformer_head"
+    text_tower_config = "classic"
+    image_tower_config = "classic"
+    find_unused_param = False
+
+    side_text_weights_copy = False
 
 if configuration == "bad_baseline":
     #Model weight init

@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 from copy import deepcopy
-from model_BERTLsT import BertModel,BertConfig,BertLSTModel
+from model_BERTLsT import BertModel,BertConfig,BertLSTModel,BertEncoder
 from model_ViT import ViTModel,ViTConfig
 from transformers import BertTokenizerFast
 
@@ -27,14 +27,13 @@ class TextEncoder(nn.Module):
             p.requires_grad = trainable
 
         # we are using the CLS token hidden representation as the sentence's embedding
-        self.target_token_idx = 0
 
     def forward(self, input_ids, attention_mask):
         output = self.model(input_ids=input_ids, attention_mask=attention_mask)
         
         last_hidden_state = output.last_hidden_state
 
-        return last_hidden_state[:, self.target_token_idx, :]
+        return last_hidden_state
 
 
 
@@ -60,6 +59,41 @@ class ImageEncoder(nn.Module):
         output = self.model(image)
         last_hidden_state = output.last_hidden_state
         return last_hidden_state[:, self.target_token_idx, :]
+
+
+###################### TRANSFORMER HEAD ####################################
+
+# To test if it can replace the MLP heads
+class TransformerHead(nn.Module):
+    def __init__(
+        self,
+        embedding_dim,
+        projection_dim=CFG.projection_dim
+
+    ):
+        super().__init__()
+        
+        self.downsample = nn.Linear(embedding_dim,128)
+        config = BertConfig(hidden_size=128,intermediate_size=512,num_attention_heads=2)
+        self.attention_block = BertEncoder(config)
+        self.upsampler = nn.Linear(128, projection_dim)
+        self.layer_norm = nn.LayerNorm(projection_dim)
+
+        self.target_token_idx = 0
+    
+    def forward(self,input):
+
+        downsample_input = self.downsample(input)
+        attention_output = self.attention_block(downsample_input)
+        
+        last_hidden_state = attention_output.last_hidden_state
+        upsample_output = self.upsampler(last_hidden_state)
+        output = self.layer_norm(upsample_output)
+
+        return output[:, self.target_token_idx, :]
+
+
+
 
 
 
@@ -187,6 +221,9 @@ class CLIPMoco(nn.Module):
         m=0.9
     ):
         super().__init__()
+
+        self.target_token_idx = 0
+
         self.text_head_config = text_head_config
         self.text_tower_config = text_tower_config
         self.image_tower_config = image_tower_config
@@ -208,6 +245,8 @@ class CLIPMoco(nn.Module):
             self.text_projection = SmallMLPHead(embedding_dim=text_embedding)
         elif self.text_head_config == "large_mlp":
             self.text_projection = LargeMLPHead(embedding_dim=text_embedding)
+        elif self.text_head_config == "transformer_head":
+            self.text_projection = TransformerHead(embedding_dim=text_embedding)
 
         self.proj_dim = proj_dim
         self.temperature = temperature
@@ -240,12 +279,17 @@ class CLIPMoco(nn.Module):
     def encode_text(self,text):
         if not self.finetune_text:
             with torch.no_grad():
-                text_features = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
+                text_encoder_output = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
         
         else:
-            text_features = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
+            text_encoder_output = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
 
         # Getting Text Embeddings (output of proj heads)
+        if self.text_head_config == "transformer_head":
+            text_features = text_encoder_output
+        else:
+            text_features = text_encoder_output[:,self.target_token_idx,:]
+
         text_embeddings = self.text_projection(text_features)
 
         return  text_embeddings
@@ -254,8 +298,15 @@ class CLIPMoco(nn.Module):
     @torch.no_grad()
     def key_encode_text(self,text):
         
-        text_features = self.text_key_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
+        text_encoder_output = self.text_key_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])
         # Getting Text Embeddings (output of proj heads)
+
+
+        if self.text_head_config == "transformer_head":
+            text_features = text_encoder_output
+        else:
+            text_features = text_encoder_output[:,self.target_token_idx,:]
+
         text_embeddings = self.text_key_projection(text_features)
 
         return  text_embeddings
@@ -325,7 +376,7 @@ class CLIPMoco(nn.Module):
         
         image_embeddings = self.encode_image(image)
         text_embeddings = self.encode_text(text)
-        
+
         return {"image_embed": image_embeddings, "text_embed": text_embeddings}
 
 # utils

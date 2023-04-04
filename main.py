@@ -42,7 +42,7 @@ def main(rank,world_size):
     number_of_step_per_epoch = len(dataloader_train)
     
     model = CLIPMoco().to(rank)
-    loss_fn = CLIPMoCOLoss()
+    loss_fn = CLIPMoCOLoss().to(rank)
 
     # copy the pruned weights of the main text to the side LST text network
     if CFG.side_text_weights_copy:
@@ -51,7 +51,6 @@ def main(rank,world_size):
         print("fisher importance measure computed")
         model = modify_text_model_after_init(model,tokenizer,importance_measure,rank)
     
-    model.to(rank)
 
     
     resume_model(model)
