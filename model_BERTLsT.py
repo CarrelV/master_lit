@@ -1232,5 +1232,5 @@ class BertLSTModel(BertPreTrainedModel):
         '''return LSTModelOutput(
             last_hidden_state=last_hidden_state,
         )'''
-        return final_output[:,self.target_token_idx,:]
+        return final_output
 
