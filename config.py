@@ -46,7 +46,7 @@ gate_T = 0.1
 
 ## See at the end the different possibilities
 configuration = "baseline_transformer"
-testing = False
+testing = True
 
 
 # Increment if retraining the same configuration one more time
@@ -71,9 +71,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "text_LST"
+configuration_to_test = "Text_LST"
 
-weight_version = 2
+weight_version = 1
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
