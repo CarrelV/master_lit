@@ -71,7 +71,7 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "Text_LST"
+configuration_to_test = "text_LST"
 
 weight_version = 1
 #############################################################################
