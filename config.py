@@ -1,7 +1,5 @@
 ########## Dataset Configuration ##########
 
-image_root=""
-ann_root="./flickr30k"
 
 max_length = 128
 prompt = ""

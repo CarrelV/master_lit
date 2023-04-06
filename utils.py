@@ -1,6 +1,9 @@
 import torch.distributed as dist
 import os
 import torch
+from pathlib import Path
+import json
+from collections import OrderedDict
 
 def setup(rank, world_size):
     os.environ['MASTER_ADDR'] = 'localhost'
@@ -33,3 +36,7 @@ def read_imagenet_class():
             classes.append(x)
     return classes
 
+def read_json(fname):
+    fname = Path(fname)
+    with fname.open('rt') as handle:
+        return json.load(handle, object_hook=OrderedDict)
