@@ -4,7 +4,7 @@ wandb/
 *.pt
 ImageNetV2-matched-frequency/
 *.gz
-
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
