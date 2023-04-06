@@ -171,12 +171,14 @@ class mscoco(Dataset):
 
         if self.split == "train":
             filename = "captions_train2017.json"
+            image_path = "train2017"
         elif self.split == "val":
             filename = "captions_val2017.json"
+            image_path = "val2017"
                 
         annotations = read_json(os.path.join(ann_root,filename))
         self.transform = transform
-        self.image_root = image_root
+        self.image_root = image_root+image_path
         self.max_words = max_words      
         self.prompt = prompt
         
@@ -220,7 +222,7 @@ def get_dataset(dataset,tokenizer,feature_extractor,transform,split):
         ann_root="./flickr30k"
         return flickr30k(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform,image_root=image_root,ann_root=ann_root,split=split)
     elif dataset == "mscoco":
-        image_root = "data/mscoco/train2017"
+        image_root = "data/mscoco"
         ann_root="data/mscoco/annotations"
         return mscoco(tokenizer,feature_extractor,transform,image_root,ann_root,split)
     
