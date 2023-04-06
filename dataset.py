@@ -171,14 +171,14 @@ class mscoco(Dataset):
 
         if self.split == "train":
             filename = "captions_train2017.json"
-            image_path = "train2017"
+            image_split = "train2017"
         elif self.split == "val":
             filename = "captions_val2017.json"
-            image_path = "val2017"
+            image_split = "val2017"
                 
         annotations = read_json(os.path.join(ann_root,filename))
         self.transform = transform
-        self.image_root = image_root+image_path
+        self.image_root = os.path.join(image_root,image_split)
         self.max_words = max_words      
         self.prompt = prompt
         

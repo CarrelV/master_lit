@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     dataset = get_dataset(dataset="mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,split="train")
 
-    image_root = "data/mscoco/train2017"
+    image_root = "data/mscoco"
     ann_root="data/mscoco/annotations"
     
     ds_train = mscoco(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,image_root=image_root,ann_root=ann_root,split="train")
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
         ds_train.__getitem__(0)
     
-    image_root = "data/mscoco/val2017"
+    image_root = "data/mscoco"
     ann_root="data/mscoco/annotations"
     
     ds_val = mscoco(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,image_root=image_root,ann_root=ann_root,split="val")
