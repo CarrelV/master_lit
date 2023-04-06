@@ -174,7 +174,7 @@ class mscoco(Dataset):
         elif self.split == "val":
             filename = "captions_val2017.json"
                 
-        annotations = read_json(os.path.join(ann_root,filename),'r')
+        annotations = read_json(os.path.join(ann_root,filename))
         self.transform = transform
         self.image_root = image_root
         self.max_words = max_words      
