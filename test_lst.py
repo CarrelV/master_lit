@@ -28,6 +28,7 @@ if __name__ == "__main__":
     tokenizer = get_tokenizer(CFG.text_model_name)
     feature_extractor = get_feature_extractor(CFG.vision_model_name)
 
+    print(feature_extractor)
     text = tokenizer("Hello, my dog is cute", return_tensors="pt").to(device)
 
     dummy_image = np.zeros((256,256,3), np.uint8)

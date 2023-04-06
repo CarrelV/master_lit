@@ -12,7 +12,7 @@ import config as CFG
 
 
 # 
-def modify_text_model_after_init(model,tokenizer,importance_measure,device):
+def modify_text_model_after_init(model,tokenizer,importance_measure):
 
     side_state_dict = pruning_BERT_without_residual(model.text_encoder,tokenizer,CFG.reduction_factor,importance_measure)
 

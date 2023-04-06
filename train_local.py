@@ -48,7 +48,7 @@ def main():
        
         importance_measure = compute_fisher(model, get_local_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=1,shuffle=CFG.shuffle_train,split="train"), num_samples=CFG.samples_for_fisher)
         
-        model = modify_text_model_after_init(model,tokenizer,importance_measure,device)
+        model = modify_text_model_after_init(model,tokenizer,importance_measure)
 
 
 
