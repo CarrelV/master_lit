@@ -25,7 +25,9 @@ if __name__ == "__main__":
     for i in range(10):
 
         ds_train.__getitem__(0)
-
+    
+    image_root = "data/mscoco/val2017"
+    ann_root="data/mscoco/annotations"
     
     ds_val = mscoco(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,image_root=image_root,ann_root=ann_root,split="val")
 
