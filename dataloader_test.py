@@ -11,10 +11,10 @@ if __name__ == "__main__":
     tokenizer = get_tokenizer(CFG.text_model_name)
     feature_extractor = get_feature_extractor(CFG.vision_model_name)
 
-    dataloader_train = get_local_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="train")
-    dataloader_valid = get_local_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="val")
+    dataloader_train = get_local_dataloader("mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="train")
+    dataloader_valid = get_local_dataloader("mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="val")
 
-    dataset = get_dataset(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,split="train",dataset="mscoco")
+    dataset = get_dataset(dataset="mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,split="train")
 
     
     

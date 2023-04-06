@@ -22,44 +22,44 @@ transform_test = transforms.Compose([
 
 
 
-def get_dataloader(tokenizer,feature_extractor,rank,world_size,batch_size,shuffle,num_workers,split,pin_memory=False):
+def get_dataloader(dataset,tokenizer,feature_extractor,rank,world_size,batch_size,shuffle,num_workers,split,pin_memory=False):
     
     
     if split == "train":
         
-        dataset = get_dataset(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,split="train")
+        dataset = get_dataset(dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,split="train")
         
         sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=shuffle, drop_last=True)
         return DataLoader(dataset=dataset,batch_size=batch_size,pin_memory=pin_memory,num_workers=num_workers,sampler=sampler,drop_last=True)
     
     elif split == "val":
-        dataset = get_dataset(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_test,split="val")
+        dataset = get_dataset(dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_test,split="val")
         sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=shuffle, drop_last=True)
         return DataLoader(dataset=dataset,batch_size=batch_size,pin_memory=pin_memory,num_workers=num_workers,sampler=sampler,drop_last=False)
     
     elif split == "test":
-        dataset = get_dataset(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_test,split="test")
+        dataset = get_dataset(dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_test,split="test")
         sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=shuffle, drop_last=True)
         return DataLoader(dataset=dataset,batch_size=batch_size,pin_memory=pin_memory,num_workers=num_workers,sampler=sampler,drop_last=False)
     else:
         print("Wrong split")
 
 
-def get_local_dataloader(tokenizer,feature_extractor,batch_size,shuffle,split):
+def get_local_dataloader(dataset,tokenizer,feature_extractor,batch_size,shuffle,split):
     
     
     if split == "train":
         
-        dataset = get_dataset(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,split="train")
+        dataset = get_dataset(dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,split="train")
         
         return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,drop_last=True)
     
     elif split == "val":
-        dataset = get_dataset(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_test,split="val")
+        dataset = get_dataset(dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_test,split="val")
         return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,drop_last=True)
     
     elif split == "test":
-        dataset = get_dataset(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_test,split="test")
+        dataset = get_dataset(dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_test,split="test")
         return DataLoader(dataset=dataset,batch_size=batch_size,shuffle=shuffle,drop_last=True)
     else:
         print("Wrong split")

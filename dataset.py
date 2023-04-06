@@ -213,7 +213,7 @@ class mscoco(Dataset):
 
         return {"image" :image_encoded["pixel_values"].squeeze(0), "input_ids": torch.as_tensor(caption_encoded["input_ids"]), "attention_mask": torch.as_tensor(caption_encoded["attention_mask"])}
 
-def get_dataset(tokenizer,feature_extractor,transform,split,dataset):
+def get_dataset(dataset,tokenizer,feature_extractor,transform,split):
     
     if dataset == "flickr30k":
         image_root=""
