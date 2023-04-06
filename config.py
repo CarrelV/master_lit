@@ -23,7 +23,7 @@ image_embedding = 384
 
 ##############Pruning for LST
 
-reduction_factor = 8
+reduction_factor = 4
 
 
 ## Side network
@@ -43,12 +43,12 @@ gate_T = 0.1
 ################################
 
 ## See at the end the different possibilities
-configuration = "baseline_transformer"
-testing = True
+configuration = "text_LST"
+testing = False
 
 
 # Increment if retraining the same configuration one more time
-training_run_number = 1
+training_run_number = 2
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)

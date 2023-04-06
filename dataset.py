@@ -63,7 +63,7 @@ class flickr30k(Dataset):
             url = "https://storage.googleapis.com/sfr-vision-language-research/datasets/flickr30k_test.json"
             filename = "flickr30k_test.json"
 
-        download_url(url,ann_root)
+        #download_url(url,ann_root)
         
         self.annotation = json.load(open(os.path.join(ann_root,filename),'r'))
         self.transform = transform
@@ -115,8 +115,6 @@ class flickr30k(Dataset):
         
         caption = self.prompt+pre_caption(random.choice(item['caption']), self.max_words)
         
-        print(caption)
-
         #for CLIP
         #image_encoded = self.feature_extractor(text=None,images=image,return_tensors="pt")
         # For our
@@ -204,8 +202,6 @@ class mscoco(Dataset):
         
         caption = self.prompt+random.choice(self.img_id_to_captions[img_id])
         
-        print(caption)
-
         #for CLIP
         #image_encoded = self.feature_extractor(text=None,images=image,return_tensors="pt")
         # For our
@@ -214,6 +210,10 @@ class mscoco(Dataset):
         caption_encoded = self.tokenizer(caption,padding="max_length",max_length=self.max_words)
 
         return {"image" :image_encoded["pixel_values"].squeeze(0), "input_ids": torch.as_tensor(caption_encoded["input_ids"]), "attention_mask": torch.as_tensor(caption_encoded["attention_mask"])}
+
+
+########################################################################################
+
 
 def get_dataset(dataset,tokenizer,feature_extractor,transform,split):
     

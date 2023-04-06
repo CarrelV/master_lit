@@ -2,6 +2,7 @@
 
 from dataset import get_dataset
 import os
+from PIL import Image
 
 import torch
 from torch.utils.data import DataLoader
@@ -10,11 +11,13 @@ from torch.utils.data.distributed import DistributedSampler
 
 
 transform_train = transforms.Compose([
+            transforms.Resize(256,interpolation=Image.BICUBIC),
             transforms.RandomCrop(224,pad_if_needed=True),
             transforms.RandomHorizontalFlip(), 
             ])
 
 transform_test = transforms.Compose([
+            transforms.Resize(256,interpolation=Image.BICUBIC),
             transforms.CenterCrop(224),
             ])
 
