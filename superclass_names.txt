@@ -1,0 +1,1000 @@
+cyprinid fish
+cyprinid fish
+mackerel shark
+requiem shark
+shark
+ray
+ray
+bird
+bird
+flightless bird
+finch
+finch
+finch
+finch
+bunting
+thrush
+nightingale
+corvine bird
+corvine bird
+titmouse
+oscine bird
+hawk
+eagle
+bird of prey
+owl
+salamander
+triton
+triton
+ambystomid salamander
+ambystomid salamander
+true frog
+toad frog
+toad frog
+sea turtle
+sea turtle
+turtle
+turtle
+turtle
+gecko
+iguanid lizard
+iguanid lizard
+teiid lizard
+agamid lizard
+agamid lizard
+anguid lizard
+venomous lizard
+lacertid lizard
+chameleon
+monitor lizard
+crocodile
+alligator
+horned dinosaur
+colubrid snake
+colubrid snake
+colubrid snake
+colubrid snake
+colubrid snake
+colubrid snake
+colubrid snake
+colubrid snake
+colubrid snake
+boa
+python
+cobra
+black mamba
+snake
+viper
+rattlesnake
+rattlesnake
+arthropod
+arachnid
+arachnid
+spider
+spider
+spider
+spider
+spider
+spider
+acarine
+arthropod
+grouse
+grouse
+grouse
+grouse
+peafowl
+phasianid
+phasianid
+parrot
+parrot
+cockatoo
+lory
+cuckoo
+coraciiform bird
+coraciiform bird
+apodiform bird
+piciform bird
+piciform bird
+duck
+fish duck
+anseriform bird
+swan
+mammal
+egg-laying mammal
+egg-laying mammal
+kangaroo
+opossum
+marsupial
+coelenterate
+anthozoan
+stony coral
+worm
+worm
+gastropod
+gastropod
+gastropod
+gastropod
+shellfish
+cephalopod mollusk
+crab
+crab
+crab
+crab
+true lobster
+lobster
+decapod crustacean
+decapod crustacean
+malacostracan crustacean
+stork
+stork
+wading bird
+wading bird
+heron
+egret
+heron
+wading bird
+wading bird
+purple gallinule
+coot
+wading bird
+turnstone
+sandpiper
+sandpiper
+snipe
+shorebird
+pelecaniform seabird
+penguin
+oceanic bird
+baleen whale
+dolphin
+sea cow
+eared seal
+toy dog
+toy dog
+toy dog
+toy dog
+toy dog
+English toy spaniel
+toy spaniel
+toy dog
+hunting dog
+hound dog
+hound dog
+hound dog
+hound dog
+hound dog
+coonhound
+foxhound
+foxhound
+hound dog
+wolfhound
+wolfhound
+greyhound
+greyhound
+hound dog
+hound dog
+hound dog
+hound dog
+hound dog
+hound dog
+bull terrier
+bull terrier
+terrier
+terrier
+terrier
+terrier
+terrier
+terrier
+terrier
+fox terrier
+wirehaired terrier
+Welsh terrier
+terrier
+terrier
+terrier
+terrier
+terrier
+schnauzer
+schnauzer
+schnauzer
+terrier
+terrier
+terrier
+terrier
+terrier
+terrier
+retriever
+retriever
+retriever
+retriever
+retriever
+Spanish pointer
+Spanish pointer
+setter
+setter
+setter
+spaniel
+spaniel
+springer spaniel
+springer spaniel
+spaniel
+spaniel
+water spaniel
+watchdog
+watchdog
+Belgian sheepdog
+Belgian sheepdog
+shepherd dog
+shepherd dog
+shepherd dog
+shepherd dog
+shepherd dog
+shepherd dog
+shepherd dog
+shepherd dog
+shepherd dog
+shepherd dog
+pinscher
+pinscher
+Sennenhunde
+Sennenhunde
+Sennenhunde
+Sennenhunde
+working dog
+working dog
+mastiff
+English bulldog
+working dog
+working dog
+working dog
+sledge dog
+sledge dog
+domestic dog
+pinscher
+domestic dog
+domestic dog
+domestic dog
+domestic dog
+domestic dog
+spitz
+spitz
+spitz
+spitz
+Brussels griffon
+Welsh corgi
+Welsh corgi
+poodle dog
+poodle dog
+poodle dog
+domestic dog
+wolf
+wolf
+wolf
+wolf
+wild dog
+wild dog
+wild dog
+canid
+fox
+fox
+fox
+fox
+domestic cat
+domestic cat
+domestic cat
+domestic cat
+domestic cat
+wildcat
+wildcat
+big cat
+big cat
+big cat
+big cat
+big cat
+big cat
+bear
+bear
+bear
+bear
+viverrine mammal
+viverrine mammal
+beetle
+beetle
+beetle
+beetle
+beetle
+scarabaeid beetle
+scarabaeid beetle
+beetle
+two-winged insects
+hymenopterous insect
+hymenopterous insect
+orthopterous insect
+orthopterous insect
+phasmid insect
+dictyopterous insect
+dictyopterous insect
+homopterous insect
+homopterous insect
+neuropterous insect
+odonate
+odonate
+nymphalid butterfly
+butterfly
+danaid butterfly
+pierid butterfly
+butterfly
+butterfly
+echinoderm
+echinoderm
+echinoderm
+rabbit
+leporid mammal
+rabbit
+rodent
+rodent
+tree squirrel
+rodent
+rodent
+cavy
+horse
+equid
+swine
+swine
+swine
+artiodactyl mammal
+cows
+Old World buffalo
+bovid
+sheep
+mountain sheep
+wild goat
+antelope
+antelope
+antelope
+camel
+artiodactyl mammal
+musteline mammal
+musteline mammal
+musteline mammal
+musteline mammal
+musteline mammal
+musteline mammal
+musteline mammal
+edentate
+tree sloth
+great ape
+great ape
+great ape
+lesser ape
+lesser ape
+Old World monkey
+Old World monkey
+Old World monkey
+Old World monkey
+Old World monkey
+Old World monkey
+Old World monkey
+New World monkey
+New World monkey
+New World monkey
+New World monkey
+New World monkey
+New World monkey
+lemur
+lemur
+elephant
+elephant
+procyonid
+procyonid
+food fish
+soft-finned fish
+salmon
+butterfly fish
+damselfish
+ganoid fish
+ganoid fish
+scorpaenid fish
+plectognath fish
+calculating machine
+robe
+gown
+free-reed instrument
+guitar
+warship
+airplane
+lighter-than-air craft
+construction
+car
+motor vehicle
+clock
+shed
+protective garment
+bin
+automatic rifle
+bag
+workplace
+gymnastic apparatus
+lighter-than-air craft
+pen
+adhesive bandage
+stringed instrument
+barrier
+weight
+chair
+shop
+farm building
+measuring instrument
+vessel
+handcart
+ball
+ball
+baby bed
+double-reed instrument
+cap
+bath linen
+vessel
+car
+tower
+jar
+hat
+bottle
+glass
+shelter
+piece of cloth
+bicycle
+swimsuit
+protective covering
+optical instrument
+shelter
+shed
+sledge
+necktie
+hat
+furniture
+shop
+cap
+weapon
+necktie
+memorial
+woman's clothing
+barrier
+armor plate
+cleaning implement
+vessel
+fastener
+body armor
+passenger train
+shop
+car
+pot
+lamp
+gun
+small boat
+opener
+sweater
+mirror
+ride
+kit
+box
+wheel
+machine
+container
+electronic equipment
+fortification
+sailboat
+electronic equipment
+bowed stringed instrument
+radiotelephone
+ligament
+fence
+body armor
+power saw
+box
+chest of drawers
+percussion instrument
+cabinet
+stocking
+place of worship
+theater
+knife
+dwelling
+covering
+footwear
+shaker
+mug
+pot
+construction
+lock
+data input device
+shop
+cargo ship
+car
+bottle opener
+brass
+boot
+hat
+baby bed
+lifting device
+helmet
+box
+baby bed
+cooker
+croquet equipment
+staff
+body armor
+barrier
+table
+personal computer
+telephone
+garment
+clock
+watch
+table
+piece of cloth
+white goods
+hydraulic brake
+landing
+sledge
+roof
+mat
+drill rig
+percussion instrument
+stick
+weight
+oven
+fan
+guitar
+locomotive
+wall unit
+container
+coffee maker
+powder
+scarf
+office furniture
+boat
+truck
+screen
+staff
+woodwind
+chair
+helmet
+self-propelled vehicle
+construction
+pen
+bed
+car
+brass
+pan
+coat
+truck
+mask
+pump
+glass
+motor vehicle
+ball
+golf equipment
+boat
+percussion instrument
+dress
+piano
+building
+grate
+marketplace
+instrument of execution
+clip
+toiletry
+tracked vehicle
+hand tool
+basket
+dryer
+portable computer
+piece of cloth
+magnetic disk
+free-reed instrument
+chordophone
+farm machine
+ax
+sheath
+theater
+framework
+mechanical device
+skirt
+gymnastic apparatus
+cart
+sandglass
+stereo
+home appliance
+lantern
+trouser
+car
+shirt
+puzzle
+cart
+data input device
+robe
+protective garment
+fastener
+coat
+vessel
+shade
+portable computer
+garden tool
+cap
+knife
+building
+sea boat
+device
+car
+passenger ship
+makeup
+shoe
+toiletry
+electro-acoustic transducer
+hand glass
+factory
+compass
+bag
+box
+tights
+swimsuit
+top
+percussion instrument
+percussion instrument
+disguise
+stick
+post
+system
+measure
+cabinet
+memorial
+electro-acoustic transducer
+kitchen appliance
+uniform
+can
+bus
+skirt
+car
+weapon
+glove
+bowl
+housing
+car
+electronic equipment
+religious residence
+electronic equipment
+minibike
+vessel
+cap
+place of worship
+screen
+wheeled vehicle
+bicycle
+tent
+electronic device
+trap
+van
+restraint
+fastener
+brace
+jewelry
+cap
+portable computer
+column
+double-reed instrument
+wind instrument
+meter
+filter
+keyboard instrument
+electronic equipment
+skirt
+cart
+breathing device
+package
+oar
+wheel
+lock
+brush
+nightwear
+residence
+pipe
+towel
+rescue equipment
+gymnastic apparatus
+bench
+timer
+car
+area
+telephone
+support
+box
+sharpener
+toiletry
+dish
+duplicator
+device
+helmet
+fence
+truck
+support
+savings bank
+bottle
+cushion
+ball
+wheel
+ship
+vessel
+edge tool
+building
+bag
+rack
+tool
+hand tool
+camera
+rod
+van
+cloak
+game equipment
+bottle
+container
+wheel
+power tool
+rug
+peripheral
+correctional institution
+weapon
+optical instrument
+disk
+ball
+bag
+pen
+bedclothes
+car
+sports implement
+mechanism
+communication system
+astronomical telescope
+cistern
+self-propelled vehicle
+winder
+camera
+white goods
+device
+building
+pistol
+firearm
+chair
+oven
+eraser
+ball
+measuring stick
+shoe
+strongbox
+pin
+shaker
+shoe
+skirt
+single-reed instrument
+sheath
+measuring instrument
+bus
+sailing vessel
+board
+display
+fastener
+hand tool
+safety belt
+home appliance
+armor
+shop
+screen
+basket
+handcart
+hand tool
+cap
+curtain
+runner
+face mask
+bag
+analog computer
+door
+slot machine
+breathing device
+tracked vehicle
+motor vehicle
+dispenser
+ball
+hosiery
+reflector
+hat
+bowl
+key
+heater
+spacecraft
+turner
+motorboat
+web
+stick
+car
+lamp
+platform
+locomotive
+bridge
+percussion instrument
+medical instrument
+scarf
+fence
+timer
+heater
+filter
+self-propelled vehicle
+litter
+convertible
+shrine
+submersible
+garment
+timepiece
+converging lens
+spectacles
+cream
+bridge
+cleaning implement
+pullover
+swimsuit
+plaything
+control
+medical instrument
+lamp
+tracked vehicle
+electronic equipment
+pot
+plaything
+telecommunication system
+ball
+roof
+curtain
+container
+farm machine
+chair of state
+roof
+kitchen appliance
+shop
+seat
+light
+emblem
+truck
+shop
+self-propelled vehicle
+truck
+receptacle
+raincoat
+wheeled vehicle
+sailboat
+rack
+memorial
+bus
+brass
+vessel
+gate
+keyboard
+canopy
+wheeled vehicle
+piano
+home appliance
+jar
+roof
+fabric
+slot machine
+gown
+bridge
+bowed stringed instrument
+ball
+kitchen appliance
+clock
+case
+furniture
+military vehicle
+basin
+white goods
+bottle
+jug
+reservoir
+jug
+signaling device
+hairpiece
+screen
+window blind
+necktie
+bottle
+airfoil
+pan
+woodenware
+fabric
+rail fence
+ship
+small boat
+dwelling
+computer
+magazine
+puzzle
+sign
+light
+jacket
+fare
+entree
+dip
+soup
+stew
+pudding
+frozen dessert
+frozen dessert
+loaf of bread
+bun
+cracker
+hamburger
+sandwich
+potato
+cabbage
+cruciferous vegetable
+cruciferous vegetable
+summer squash
+summer squash
+winter squash
+winter squash
+vegetable
+vegetable
+sweet pepper
+vegetable
+vegetable
+eating apple
+berry
+citrus
+citrus
+edible fruit
+edible fruit
+edible fruit
+edible fruit
+edible fruit
+edible fruit
+fodder
+spaghetti sauce
+sauce
+concoction
+dish
+dish
+dish
+dish
+wine
+coffee
+punch
+punch
+mountain
+globule
+geological formation
+reef
+spring
+shore
+natural elevation
+bar
+shore
+natural depression
+mountain
+athlete
+participant
+diver
+oilseed
+flower
+lady's slipper
+kernel
+fruit
+fruit
+seed
+fungus
+basidiomycete
+fungus
+fungus
+fungus
+fungus
+fungus
+fruit
+tissue paper

@@ -5,9 +5,11 @@ from tqdm import tqdm
 from transformers import logging
 import torchvision.transforms as transforms
 #from transformers import CLIPTokenizerFast, CLIPProcessor, CLIPModel
-
+from robustness.tools.imagenet_helpers import common_superclass_wnid,ImageNetHierarchy
+from robustness import datasets
 from models_CLIP import CLIPMoco
 #from models import CLIPMoco
+import warnings
 
 import config as CFG
 from tokenizer import get_tokenizer,get_feature_extractor
@@ -20,22 +22,22 @@ def test():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logging.set_verbosity_error()
 
-    
+    warnings.simplefilter(action='ignore', category=FutureWarning)
+
     feature_extractor = get_feature_extractor(CFG.vision_model_name)
     tokenizer = get_tokenizer(CFG.text_model_name)
-
 
     model = CLIPMoco().to(device)
 
 
     # Load the weights for the backbone
     if CFG.text_backbone_finetune:
-        model.text_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_enc_best_{CFG.weight_version}.pt"))
+        model.text_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_enc_best_{CFG.weight_version}.pt",map_location=device))
     if CFG.image_backbone_finetune:
-        model.image_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_enc_best_{CFG.weight_version}.pt"))
+        model.image_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_enc_best_{CFG.weight_version}.pt",map_location=device))
     # Load the heads
-    model.text_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_proj_best_{CFG.weight_version}.pt"))
-    model.image_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_proj_best_{CFG.weight_version}.pt"))
+    model.text_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_proj_best_{CFG.weight_version}.pt",map_location=device))
+    model.image_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_proj_best_{CFG.weight_version}.pt",map_location=device))
     '''
     #testing with a pretrained clip
     model_id = "openai/clip-vit-base-patch32"
@@ -51,40 +53,129 @@ def test():
 
     print("-------------------------")
     print(f"For the model {CFG.configuration_to_test}")
-    print("-------------------------")
-    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
+    print("-------------------------\n")
 
-    flickr_retrieval(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
+    print("0 Shot classification on ImageNetV2:")
+
+    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "all",device=device)
+    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "big",device=device)
+    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "medium",device=device)
+    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "small",device=device)
+    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "tiny",device=device)
+
+    #flickr_retrieval(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
 ######################## IMAGENET 0 SHOT ###############
-
-
-
-def imagenet_0shot(model,tokenizer,feature_extractor,device):
-
-    transform_ImageNet = transforms.Compose([
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize((0.444, 0.421, 0.385), 
-                                 (0.285, 0.277, 0.286)),
-            ])
-
-    ds = ImageNetV2Dataset(transform=transform_ImageNet)
-    test_loader = DataLoader(ds, batch_size=CFG.test_batch_size, num_workers=CFG.num_workers)
+def imagenet_0shot(model,tokenizer,feature_extractor,dataset,device):
 
     imagenet_prompt ='a photo of a {}.'
 
-    imagenet_classes = read_imagenet_class()
+
+    transform_ImageNet = transforms.Compose([
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize((0.444, 0.421, 0.385), 
+                                     (0.285, 0.277, 0.286)),
+                ])
+    
+    print("-------------------------\n")
+
+    if dataset == "all":
+        
+
+        ds = ImageNetV2Dataset(transform=transform_ImageNet)
+        test_loader = DataLoader(ds, batch_size=CFG.test_batch_size, num_workers=CFG.num_workers)
+
+        imagenet_classes = read_imagenet_class()
+            
+
+        print(f"On the complete test set with {len(imagenet_classes)} different classes")
+
+    elif dataset == "tiny":
+
+        in_path = "ImageNet"
+        in_info_path = "imageNet_utils"
+        in_hier = ImageNetHierarchy(in_path, in_info_path)
+
+        superclass_wnid = common_superclass_wnid('mixed_13')
+
+        
+        class_ranges, labels_map = in_hier.get_subclasses(superclass_wnid, balanced=True)
+
+        custom_dataset = datasets.CustomImageNet(in_path, class_ranges)
+        _, test_loader = custom_dataset.make_loaders(workers=CFG.num_workers,
+                                                        batch_size=CFG.batch_size,only_val=True)
+
+        print(f"On a massively reduced test set with {len(labels_map)} different classes, less complex, representative of common object")
+        imagenet_classes = [item.split(",")[0] for item in labels_map.values() ]
+
+    elif dataset == "big":
+
+        in_path = "ImageNet"
+        in_info_path = "imageNet_utils"
+        in_hier = ImageNetHierarchy(in_path, in_info_path)
+
+        superclass_wnid, class_ranges, labels_map = in_hier.get_superclasses(400,
+                                             balanced=False)
+
+        custom_dataset = datasets.CustomImageNet(in_path, class_ranges)
+        _, test_loader = custom_dataset.make_loaders(workers=CFG.num_workers,
+                                                        batch_size=CFG.batch_size,only_val=True)
+
+        print(f"On a reduced test set with {len(labels_map)} different classes, where we grouped the classes by subclasses")
+        imagenet_classes = [item.split(",")[0] for item in labels_map.values() ]
+
+    elif dataset == "medium":
+
+        in_path = "ImageNet"
+        in_info_path = "imageNet_utils"
+        in_hier = ImageNetHierarchy(in_path, in_info_path)
+
+        superclass_wnid, class_ranges, labels_map = in_hier.get_superclasses(100,
+                                             balanced=False)
+
+        custom_dataset = datasets.CustomImageNet(in_path, class_ranges)
+        _, test_loader = custom_dataset.make_loaders(workers=CFG.num_workers,
+                                                        batch_size=CFG.batch_size,only_val=True)
+
+        print(f"On a reduced test set with {len(labels_map)} different classes, where we grouped the classes by subclasses")
+        imagenet_classes = [item.split(",")[0] for item in labels_map.values() ]
+
+    elif dataset == "small":
+
+        in_path = "ImageNet"
+        in_info_path = "imageNet_utils"
+        in_hier = ImageNetHierarchy(in_path, in_info_path)
+
+        superclass_wnid, class_ranges, labels_map = in_hier.get_superclasses(25,
+                                             balanced=False)
+
+        custom_dataset = datasets.CustomImageNet(in_path, class_ranges)
+        _, test_loader = custom_dataset.make_loaders(workers=CFG.num_workers,
+                                                        batch_size=CFG.batch_size,only_val=True)
+
+        print(f"On a reduced test set with {len(labels_map)} different classes, where we grouped the classes by subclasses")
+        imagenet_classes = [item.split(",")[0] for item in labels_map.values() ]
+
+    print("\n-------------------------")
+
+    print("Some example of classes:")
+    print(imagenet_classes[:10])
+
+    print("\n")
 
     text_zeroshot_weight = compute_text_weight_zeroshot(model=model,tokenizer=tokenizer,device=device,classnames=imagenet_classes,template=imagenet_prompt)
 
+    counter = 0
     with torch.no_grad():
         top1, top5, n = 0., 0., 0.
         for images, target in tqdm(test_loader):
-         
-            images = feature_extractor(images.squeeze(0),return_tensors="pt")
             
-            images = images["pixel_values"]
+          
+            
+            #images = feature_extractor(images,return_tensors="pt")
+
+            #images = images["pixel_values"]
             
             images = images.to(device)
             target = target.to(device)
@@ -103,9 +194,11 @@ def imagenet_0shot(model,tokenizer,feature_extractor,device):
     top1 = (top1 / n) * 100
     top5 = (top5 / n) * 100 
 
-    print("0 Shot classification on ImageNetV2:")
     print(f"Top-1 accuracy: {top1:.2f}")
-    print(f"Top-5 accuracy: {top5:.2f}")
+    print(f"Top-5 accuracy: {top5:.2f}\n")
+
+
+
 
 
 
@@ -209,6 +302,7 @@ def accuracy(output, target, topk=(1,)):
 
 
 
+############################ MAIN #######################
 
 if __name__ == "__main__":
 
