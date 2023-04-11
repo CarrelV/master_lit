@@ -5,6 +5,7 @@ wandb/
 ImageNetV2-matched-frequency/
 *.gz
 data/
+ImageNet/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
