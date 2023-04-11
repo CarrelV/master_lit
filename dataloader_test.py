@@ -11,10 +11,7 @@ if __name__ == "__main__":
     tokenizer = get_tokenizer(CFG.text_model_name)
     feature_extractor = get_feature_extractor(CFG.vision_model_name)
 
-    dataloader_train = get_local_dataloader("mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="train")
-    dataloader_valid = get_local_dataloader("mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="val")
 
-    dataset = get_dataset(dataset="mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,split="train")
 
     image_root = "data/mscoco"
     ann_root="data/mscoco/annotations"
@@ -23,14 +20,7 @@ if __name__ == "__main__":
 
     print("Train")
     for i in range(10):
-
-        ds_train.__getitem__(0)
+        for _ in range(5):
+            ds_train.__getitem__(i)
     
-    image_root = "data/mscoco"
-    ann_root="data/mscoco/annotations"
     
-    ds_val = mscoco(tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,image_root=image_root,ann_root=ann_root,split="val")
-
-    print("Train")
-    for i in range(10):
-        ds_val.__getitem__(0)

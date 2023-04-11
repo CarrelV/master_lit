@@ -83,6 +83,18 @@ Top-5 accuracy: 59.80
 
 
 -------------------------
+For the model LST-Text (CLUSTER)
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 28.00
+Top-5 accuracy: 59.40
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 27.50
+Top-5 accuracy: 59.10
+
+
+-------------------------
 For the model Baseline Transformer
 -------------------------
 

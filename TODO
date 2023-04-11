@@ -2,5 +2,8 @@ DONE Change the gatting from sigmoid to tanh to have more like control net, no i
 DONE Add final skip connection
 DONE Correct the last hidden to side ladder which where wrong by one
 DONE implement small transformer head on top instead of MLP
-test small transformer head to see if possible (WARNING already quite big)
-Change the 0 shot classification task to higher level class to test
+DONE test small transformer head to see if possible (WARNING already quite big)
+DONE Change the 0 shot classification task to higher level class to test
+IN PROCESS train LST_text on MSCOCO
+train LiT on MSCOCO to compare
+implement LoRA clip model 
