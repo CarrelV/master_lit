@@ -95,6 +95,33 @@ Top-5 accuracy: 59.10
 
 
 -------------------------
+For the model LST-Text trained on MSCOCO (CLUSTER weight 2)
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 22.00
+Top-5 accuracy: 47.90
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 21.60
+Top-5 accuracy: 49.00
+
+0 shot imageNet on the full set (1000 classes)
+Top-1 accuracy: 04.41
+Top-5 accuracy: 12.84
+0 shot imageNet on the big set (400 classes)
+Top-1 accuracy: 00.70
+Top-5 accuracy: 02.47
+0 shot imageNet on the medium set (100 classes)
+Top-1 accuracy: 03.77
+Top-5 accuracy: 14.19
+0 shot imageNet on the small set (25 classes)
+Top-1 accuracy: 10.05
+Top-5 accuracy: 31.30
+0 shot imageNet on the tiny set (13 classes)
+Top-1 accuracy: 19.36
+Top-5 accuracy: 53.33
+
+-------------------------
 For the model Baseline Transformer
 -------------------------
 

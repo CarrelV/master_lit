@@ -64,7 +64,8 @@ def test():
     imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "tiny",device=device)
 
     i2t_t2i_retrieval(model=model,dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
-    i2t_t2i_retrieval(model=model,dataset="mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
+    #No test set for mscoco
+    #i2t_t2i_retrieval(model=model,dataset="mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
 ######################## IMAGENET 0 SHOT ###############
 def imagenet_0shot(model,tokenizer,feature_extractor,dataset,device):

@@ -23,7 +23,7 @@ image_embedding = 384
 
 ##############Pruning for LST
 
-reduction_factor = 4
+reduction_factor = 8
 
 
 ## Side network
@@ -44,7 +44,7 @@ gate_T = 0.1
 
 ## See at the end the different possibilities
 configuration = "LiT"
-testing = True
+testing = False
 
 
 # Increment if retraining the same configuration one more time
@@ -68,7 +68,7 @@ gpu_number = 2
 
 # When using LST, can chose to add a final skip connection between the output of the frozen main model and 
 # the output of the upsampled side network output
-sum_last_outputs = False
+sum_last_outputs = True
 ################################
 #             Testing          #
 ################################
