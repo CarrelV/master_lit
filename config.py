@@ -68,7 +68,7 @@ gpu_number = 2
 
 # When using LST, can chose to add a final skip connection between the output of the frozen main model and 
 # the output of the upsampled side network output
-sum_last_outputs = True
+sum_last_outputs = False
 ################################
 #             Testing          #
 ################################
