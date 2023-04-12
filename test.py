@@ -63,7 +63,7 @@ def test():
     imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "small",device=device)
     imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "tiny",device=device)
 
-    #flickr_retrieval(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
+    flickr_retrieval(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
 ######################## IMAGENET 0 SHOT ###############
 def imagenet_0shot(model,tokenizer,feature_extractor,dataset,device):

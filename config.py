@@ -59,8 +59,8 @@ test_batch_size = 128
 
 
 
-warming_epochs = 20
-epochs = 300
+warming_epochs = 5
+epochs = 50
 
 # 1 at home, 2 on cluster
 gpu_number = 1
@@ -75,7 +75,7 @@ sum_last_outputs = True
 
 configuration_to_test = "text_LST"
 
-weight_version = 1
+weight_version = 2
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
