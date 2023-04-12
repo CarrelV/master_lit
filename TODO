@@ -4,6 +4,8 @@ DONE Correct the last hidden to side ladder which where wrong by one
 DONE implement small transformer head on top instead of MLP
 DONE test small transformer head to see if possible (WARNING already quite big)
 DONE Change the 0 shot classification task to higher level class to test
-DONE train LST_text on MSCOCO
+DONE train LST_text on MSCOCO 
+retrain LST_text on MSCOCO with same epoch as LiT for fair comparison
 IN PROCESS train LiT on MSCOCO to compare
-implement LoRA clip model 
+DONE implement LoRA clip model 
+train LoRA model
