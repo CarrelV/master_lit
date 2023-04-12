@@ -44,6 +44,7 @@ from transformers.utils import (
 )
 from transformers import BertConfig
 from pruning import pruning_BERT_without_residual
+import lora
 
 logger = logging.get_logger(__name__)
 
@@ -202,9 +203,17 @@ class BertSelfAttention(nn.Module):
         self.attention_head_size = int(config.hidden_size / config.num_attention_heads)
         self.all_head_size = self.num_attention_heads * self.attention_head_size
 
-        self.query = nn.Linear(config.hidden_size, self.all_head_size)
+        if CFG.apply_lora:
+            self.query = lora.Linear(config.hidden_size, self.all_head_size,CFG.lora_r,CFG.lora_alpha,CFG.lora_dropout)
+        else:
+            self.query = nn.Linear(config.hidden_size, self.all_head_size)
+        
         self.key = nn.Linear(config.hidden_size, self.all_head_size)
-        self.value = nn.Linear(config.hidden_size, self.all_head_size)
+        
+        if CFG.apply_lora:
+            self.value = lora.Linear(config.hidden_size, self.all_head_size,CFG.lora_r,CFG.lora_alpha,CFG.lora_dropout)
+        else:
+            self.value = nn.Linear(config.hidden_size, self.all_head_size)
 
         self.dropout = nn.Dropout(config.attention_probs_dropout_prob)
         self.position_embedding_type = position_embedding_type or getattr(

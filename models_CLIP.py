@@ -7,7 +7,7 @@ from copy import deepcopy
 from model_BERTLsT import BertModel,BertConfig,BertLSTModel,BertEncoder
 from model_ViT import ViTModel,ViTConfig
 from transformers import BertTokenizerFast
-
+import lora_utils
 
 ###################### TEXT TOWER ####################################
 
@@ -236,6 +236,10 @@ class CLIPMoco(nn.Module):
         elif self.text_tower_config == "LST":
             self.text_encoder = BertLSTModel.from_pretrained(CFG.text_model_name)
         
+        ## If the model use lora, freeze the parameters not LoRA
+        if CFG.apply_lora:
+            lora_utils.mark_only_lora_as_trainable(self.text_encoder)
+
 
         self.image_projection = ProjectionHead(embedding_dim=image_embedding)
         

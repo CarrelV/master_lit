@@ -95,6 +95,14 @@ temperature = 1.0
 K = 4096
 
 m=0.999
+
+########### LoRA Parameters ################
+lora_r = 16
+lora_alpha = 32
+lora_dropout = 0.1
+
+# False by default, override to True if config = lora
+apply_lora = False
 ########## Training Configuration ##########
 
 
@@ -132,6 +140,24 @@ weight_decay = 1e-3
 if testing:
     configuration = configuration_to_test
 
+if configuration == "lora":
+    #Model weight init
+    text_backbone_pretrained = True 
+    image_backbone_pretrained = True
+
+    #Model training
+    text_backbone_finetune = True 
+    image_backbone_finetune = False
+
+    text_head_config = "small_mlp"
+    text_tower_config = "classic"
+    image_tower_config = "classic"
+    find_unused_param = True
+
+    side_text_weights_copy = False
+
+    apply_lora = True
+
 if configuration == "text_LST":
     #Model weight init
     text_backbone_pretrained = True 
@@ -165,7 +191,7 @@ elif configuration == "baseline_transformer":
 
     side_text_weights_copy = False
 
-if configuration == "bad_baseline":
+elif configuration == "bad_baseline":
     #Model weight init
     text_backbone_pretrained = False 
     image_backbone_pretrained = False
