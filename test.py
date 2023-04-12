@@ -63,7 +63,8 @@ def test():
     imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "small",device=device)
     imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "tiny",device=device)
 
-    flickr_retrieval(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
+    i2t_t2i_retrieval(model=model,dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
+    i2t_t2i_retrieval(model=model,dataset="mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
 ######################## IMAGENET 0 SHOT ###############
 def imagenet_0shot(model,tokenizer,feature_extractor,dataset,device):
@@ -226,10 +227,10 @@ def compute_text_weight_zeroshot(model,tokenizer,device,classnames, template):
 #########################  FLICKR I2T and T2I RETRIEVAL ########################
 
 
-def flickr_retrieval(model,tokenizer,feature_extractor,device):
+def i2t_t2i_retrieval(model,dataset,tokenizer,feature_extractor,device):
 
 
-    test_loader = get_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,rank=0,world_size=1,batch_size=CFG.batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
+    test_loader = get_dataloader(dataset=dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,rank=0,world_size=1,batch_size=CFG.batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
 
     with torch.no_grad():
 
@@ -281,14 +282,14 @@ def flickr_retrieval(model,tokenizer,feature_extractor,device):
     
 
 
-    print("Image 2 Text Retrieval on Flickr30k:")
+    print(f"Image 2 Text Retrieval on {dataset}:")
     print(f"Top-1 accuracy: {top1_i2t:.2f}")
     print(f"Top-5 accuracy: {top5_i2t:.2f}")
 
     top1_t2i = (top1_t2i / n) * 100
     top5_t2i = (top5_t2i / n) * 100 
 
-    print("Text 2 Image Retrieval on Flickr30k:")
+    print(f"Text 2 Image Retrieval on {dataset}:")
     print(f"Top-1 accuracy: {top1_t2i:.2f}")
     print(f"Top-5 accuracy: {top5_t2i:.2f}")
 
