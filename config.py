@@ -23,7 +23,7 @@ image_embedding = 384
 
 ##############Pruning for LST
 
-reduction_factor = 8
+reduction_factor = 4
 
 
 ## Side network
@@ -43,17 +43,17 @@ gate_T = 0.1
 ################################
 
 ## See at the end the different possibilities
-configuration = "text_LST"
+configuration = "LiT"
 testing = True
 
 
 # Increment if retraining the same configuration one more time
-training_run_number = 1
+training_run_number = 2
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
-batch_size = 256
+batch_size = 128
 
 test_batch_size = 128
 
@@ -63,7 +63,7 @@ warming_epochs = 5
 epochs = 50
 
 # 1 at home, 2 on cluster
-gpu_number = 1
+gpu_number = 2
 
 
 # When using LST, can chose to add a final skip connection between the output of the frozen main model and 
