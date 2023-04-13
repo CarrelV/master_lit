@@ -51,6 +51,7 @@ def main(rank,world_size):
         print("fisher importance measure computed")
         model = modify_text_model_after_init(model,tokenizer,importance_measure)
     
+    print(model)
     
     resume_model(model)
     model.to(rank)
