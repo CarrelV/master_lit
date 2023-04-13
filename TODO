@@ -5,8 +5,8 @@ DONE implement small transformer head on top instead of MLP
 DONE test small transformer head to see if possible (WARNING already quite big)
 DONE Change the 0 shot classification task to higher level class to test
 DONE train LST_text on MSCOCO 
-retrain LST_text on MSCOCO with same epoch as LiT for fair comparison
-IN PROCESS train LiT on MSCOCO to compare
+IN PROCESS retrain LST_text on MSCOCO with same epoch as LiT for fair comparison
+DONE train LiT on MSCOCO to compare
 DONE implement LoRA clip model 
 # Not needed train LoRA model
 

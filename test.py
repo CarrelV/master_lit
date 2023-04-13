@@ -199,6 +199,8 @@ def imagenet_0shot(model,tokenizer,feature_extractor,dataset,device):
     print(f"Top-1 accuracy: {top1:.2f}")
     print(f"Top-5 accuracy: {top5:.2f}\n")
 
+    
+
 
 
 
