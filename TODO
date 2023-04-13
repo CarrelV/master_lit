@@ -8,4 +8,10 @@ DONE train LST_text on MSCOCO
 retrain LST_text on MSCOCO with same epoch as LiT for fair comparison
 IN PROCESS train LiT on MSCOCO to compare
 DONE implement LoRA clip model 
-train LoRA model
+# Not needed train LoRA model
+
+1 Transformer Head with 1 layer on flickr (if good, we continue with LST with smaller layer, for example only 2 layers 1&5 vs 4&8)
+1 use bigger data set cc3m
+2 use bigger text encoder for LST for the same memory budget than the current LiT text encoder 
+If still not beating, LoRA instead of LST
+at the end use bigger image ViT for both (LiT and LST)
