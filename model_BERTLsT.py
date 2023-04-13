@@ -1233,8 +1233,8 @@ class BertLSTModel(BertPreTrainedModel):
         upsample_outputs = self.final_upsample(side_hidden_states)
 
         if self.final_skip_connection:
-            final_gate = torch.tanh(final_gate / self.gate_T)
-            final_output = last_hidden_state + gate * upsample_outputs
+            final_gate = torch.tanh(self.final_skip_connection_gate / self.gate_T)
+            final_output = last_hidden_state + final_gate * upsample_outputs
 
         else:
              final_output = upsample_outputs
