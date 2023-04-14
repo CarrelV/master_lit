@@ -133,7 +133,7 @@ Top-1 accuracy: 26.30
 Top-5 accuracy: 56.40
 
 -------------------------
-For the model Baseline Transformer (CLUSTER weight 2)
+For the model Baseline Transformer (1 layer, CLUSTER weight 2)
 -------------------------
 
 Image 2 Text Retrieval on Flickr30k:
@@ -150,6 +150,34 @@ For the model LST-Text trained on MSCOCO 50 epochs (CLUSTER weight 3)
 -------------------------
 
 Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 19.00
+Top-5 accuracy: 48.20
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 19.90
+Top-5 accuracy: 46.90
+
+0 shot imageNet on the full set (1000 classes)
+Top-1 accuracy: 04.00
+Top-5 accuracy: 11.87
+0 shot imageNet on the big set (400 classes)
+Top-1 accuracy: 00.72
+Top-5 accuracy: 02.88
+0 shot imageNet on the medium set (100 classes)
+Top-1 accuracy: 03.41
+Top-5 accuracy: 15.15
+0 shot imageNet on the small set (25 classes)
+Top-1 accuracy: 08.28
+Top-5 accuracy: 32.67
+0 shot imageNet on the tiny set (13 classes)
+Top-1 accuracy: 19.62
+Top-5 accuracy: 58.85
+
+
+-------------------------
+For the model classic_LiT trained on MSCOCO 50 epochs (CLUSTER weight 1)
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
 Top-1 accuracy: 
 Top-5 accuracy: 
 Text 2 Image Retrieval on Flickr30k:
@@ -163,7 +191,7 @@ Top-5 accuracy:
 Top-1 accuracy: 
 Top-5 accuracy: 
 0 shot imageNet on the medium set (100 classes)
-Top-1 accuracy:
+Top-1 accuracy: 
 Top-5 accuracy: 
 0 shot imageNet on the small set (25 classes)
 Top-1 accuracy: 
@@ -174,7 +202,7 @@ Top-5 accuracy:
 
 
 -------------------------
-For the model LiT trained on MSCOCO 50 epochs (CLUSTER weight 2)
+For the model LiT (MLP head) trained on MSCOCO 50 epochs (CLUSTER weight 2)
 -------------------------
 
 Image 2 Text Retrieval on Flickr30k:

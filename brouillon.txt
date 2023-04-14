@@ -1,0 +1,51 @@
+-------------------------
+Number of parameters to finetune
+
+
+                    LST-Text:                       LiT
+
+Text encoder        728'649                         41'373'184
+Text head           788'224                          5'772'032
+Image encoder             0                                  0
+Image head          657'152                            657'152
+
+Total                                                   ~47 mio
+
+
+-------------------------
+Trained on MSCOCO 50 epochs 
+-------------------------
+                                                            LST-Text            classic_LiT             Diff
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy:                                             19.00               22.80           - 3.80
+Top-5 accuracy:                                             48.20               50.90           - 2.70
+
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy:                                             19.90               23.30           - 3.40
+Top-5 accuracy:                                             46.90               49.70           - 2.80
+
+-------------------------
+
+0 shot imageNet on the full set (1000 classes)
+Top-1 accuracy:                                             04.00               04.07           - 0.07
+Top-5 accuracy:                                             11.87               13.55           - 1.68
+
+0 shot imageNet on the big set (400 classes)
+Top-1 accuracy:                                             00.72               00.79           - 0.07
+Top-5 accuracy:                                             02.88               02.31           + 0.57
+
+0 shot imageNet on the medium set (100 classes)
+Top-1 accuracy:                                             03.41               03.32           + 0.09
+Top-5 accuracy:                                             15.15               12.63           + 2.52
+
+0 shot imageNet on the small set (25 classes)
+Top-1 accuracy:                                             08.28               08.38           + 0.10
+Top-5 accuracy:                                             32.67               35.28           - 2.61
+
+0 shot imageNet on the tiny set (13 classes)
+Top-1 accuracy:                                             19.62               18.59           + 1.03
+Top-5 accuracy:                                             58.85               62.56           - 3.71
+
+-------------------------
+
+No public test set available for MSCOCO (due to ongoing challenge)
