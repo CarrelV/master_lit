@@ -74,7 +74,7 @@ class TransformerHead(nn.Module):
         super().__init__()
         
         self.downsample = nn.Linear(embedding_dim,128)
-        config = BertConfig(hidden_size=128,intermediate_size=512,num_attention_heads=2)
+        config = BertConfig(hidden_size=128,num_hidden_layers=1,intermediate_size=512,num_attention_heads=2)
         self.attention_block = BertEncoder(config)
         self.upsampler = nn.Linear(128, projection_dim)
         self.layer_norm = nn.LayerNorm(projection_dim)

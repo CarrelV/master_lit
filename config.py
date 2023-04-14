@@ -43,12 +43,12 @@ gate_T = 0.1
 ################################
 
 ## See at the end the different possibilities
-configuration = "text_LST"
-testing = True
+configuration = "classic_LiT"
+testing = False
 
 
 # Increment if retraining the same configuration one more time
-training_run_number = 3
+training_run_number = 1
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -73,9 +73,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "text_LST"
+configuration_to_test = "classic_LiT"
 
-weight_version = 3
+weight_version = 1
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -240,7 +240,7 @@ elif configuration == "good_baseline":
 
     side_text_weights_copy = False
 
-elif configuration == "costly_baseline":
+elif configuration == "classic_LiT":
     #Model weight init
     text_backbone_pretrained = True 
     image_backbone_pretrained = True
