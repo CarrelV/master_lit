@@ -5,13 +5,15 @@ DONE implement small transformer head on top instead of MLP
 DONE test small transformer head to see if possible (WARNING already quite big)
 DONE Change the 0 shot classification task to higher level class to test
 DONE train LST_text on MSCOCO 
-IN PROCESS retrain LST_text on MSCOCO with same epoch as LiT for fair comparison
+DONE retrain LST_text on MSCOCO with same epoch as LiT for fair comparison
 DONE train LiT on MSCOCO to compare
 DONE implement LoRA clip model 
 # Not needed train LoRA model
 
-1 Transformer Head with 1 layer on flickr (if good, we continue with LST with smaller layer, for example only 2 layers 1&5 vs 4&8)
-2 train LST 8 layer on mscoco
+DONE correct transformer head error in config
+
+train Transformer Head with 1 layer on flickr (if good, we continue with LST with smaller layer, for example only 2 layers 1&5 vs 4&8)
+
 Check if we go with smaller number of layer
 Bert base uncased
 
