@@ -174,31 +174,31 @@ Top-5 accuracy: 58.85
 
 
 -------------------------
-For the model classic_LiT trained on MSCOCO 50 epochs (CLUSTER weight 1)
+For the model classic_LiT (projection head) trained on MSCOCO 50 epochs (CLUSTER weight 1)
 -------------------------
 
 Image 2 Text Retrieval on Flickr30k:
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 23.80
+Top-5 accuracy: 52.60
 Text 2 Image Retrieval on Flickr30k:
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 23.00
+Top-5 accuracy: 52.60
 
 0 shot imageNet on the full set (1000 classes)
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 04.43
+Top-5 accuracy: 13.42
 0 shot imageNet on the big set (400 classes)
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 00.67
+Top-5 accuracy: 02.68
 0 shot imageNet on the medium set (100 classes)
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 02.23
+Top-5 accuracy: 13.27
 0 shot imageNet on the small set (25 classes)
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 08.13
+Top-5 accuracy: 33.12
 0 shot imageNet on the tiny set (13 classes)
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 17.31
+Top-5 accuracy: 61.54
 
 
 -------------------------

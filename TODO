@@ -12,7 +12,7 @@ DONE implement LoRA clip model
 
 DONE correct transformer head error in config
 
-train Transformer Head with 1 layer on flickr (if good, we continue with LST with smaller layer, for example only 2 layers 1&5 vs 4&8)
+IN PROCESS train Transformer Head with 1 layer on flickr (if good, we continue with LST with smaller layer, for example only 2 layers 1&5 vs 4&8)
 
 Check if we go with smaller number of layer
 Bert base uncased

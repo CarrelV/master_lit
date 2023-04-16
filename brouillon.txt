@@ -1,50 +1,49 @@
 -------------------------
 Number of parameters to finetune
 
-
-                    LST-Text:                       LiT
+                    LST-Text:                       LiT classic (projection head)
 
 Text encoder        728'649                         41'373'184
-Text head           788'224                          5'772'032
+Text head           788'224                            788'224
 Image encoder             0                                  0
 Image head          657'152                            657'152
 
-Total                                                   ~47 mio
+Total             2'174'025                         42'818'560             5.06 % of weights
 
 
 -------------------------
 Trained on MSCOCO 50 epochs 
 -------------------------
-                                                            LST-Text            classic_LiT             Diff
+                                                            LST-Text          classic_LiT         Diff
 Image 2 Text Retrieval on Flickr30k:
-Top-1 accuracy:                                             19.00               22.80           - 3.80
-Top-5 accuracy:                                             48.20               50.90           - 2.70
+Top-1 accuracy:                                             19.00               23.80           - 4.80
+Top-5 accuracy:                                             48.20               52.60           - 4.40
 
 Text 2 Image Retrieval on Flickr30k:
-Top-1 accuracy:                                             19.90               23.30           - 3.40
-Top-5 accuracy:                                             46.90               49.70           - 2.80
+Top-1 accuracy:                                             19.90               23.00           - 3.10
+Top-5 accuracy:                                             46.90               52.60           - 5.70
 
 -------------------------
 
 0 shot imageNet on the full set (1000 classes)
-Top-1 accuracy:                                             04.00               04.07           - 0.07
-Top-5 accuracy:                                             11.87               13.55           - 1.68
+Top-1 accuracy:                                             04.00               04.43           - 0.43
+Top-5 accuracy:                                             11.87               13.42           - 1.55
 
 0 shot imageNet on the big set (400 classes)
-Top-1 accuracy:                                             00.72               00.79           - 0.07
-Top-5 accuracy:                                             02.88               02.31           + 0.57
+Top-1 accuracy:                                             00.72               00.67           + 0.05
+Top-5 accuracy:                                             02.88               02.68           + 0.20
 
 0 shot imageNet on the medium set (100 classes)
-Top-1 accuracy:                                             03.41               03.32           + 0.09
-Top-5 accuracy:                                             15.15               12.63           + 2.52
+Top-1 accuracy:                                             03.41               02.23           + 1.18
+Top-5 accuracy:                                             15.15               13.27           + 1.88
 
 0 shot imageNet on the small set (25 classes)
-Top-1 accuracy:                                             08.28               08.38           + 0.10
-Top-5 accuracy:                                             32.67               35.28           - 2.61
+Top-1 accuracy:                                             08.28               08.13           + 0.15
+Top-5 accuracy:                                             32.67               33.12           - 0.45
 
 0 shot imageNet on the tiny set (13 classes)
-Top-1 accuracy:                                             19.62               18.59           + 1.03
-Top-5 accuracy:                                             58.85               62.56           - 3.71
+Top-1 accuracy:                                             19.62               17.31           + 2.31
+Top-5 accuracy:                                             58.85               61.54           - 2.68
 
 -------------------------
 
