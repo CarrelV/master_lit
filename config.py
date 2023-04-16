@@ -43,7 +43,7 @@ gate_T = 0.1
 ################################
 
 ## See at the end the different possibilities
-configuration = "classic_LiT"
+configuration = "baseline_transformer"
 testing = False
 
 
@@ -59,8 +59,8 @@ test_batch_size = 128
 
 
 
-warming_epochs = 5
-epochs = 50
+warming_epochs = 20
+epochs = 300
 
 # 1 at home, 2 on cluster
 gpu_number = 2
@@ -73,7 +73,7 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "classic_LiT"
+configuration_to_test = "baseline_transformer"
 
 weight_version = 1
 #############################################################################

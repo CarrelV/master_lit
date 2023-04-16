@@ -25,7 +25,7 @@ def main(rank,world_size):
     wandb.init(project="Master Thesis Project",
            config={
                "batch_size": CFG.batch_size,
-               "dataset": "mscoco",
+               "dataset": "flickr30k",
            },
            group="Baselines")
 
@@ -36,8 +36,8 @@ def main(rank,world_size):
     tokenizer = get_tokenizer(CFG.text_model_name)
     feature_extractor = get_feature_extractor(CFG.vision_model_name)
 
-    dataloader_train = get_dataloader(dataset="mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train")
-    dataloader_valid = get_dataloader(dataset="mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="val")
+    dataloader_train = get_dataloader(dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train")
+    dataloader_valid = get_dataloader(dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="val")
 
     number_of_step_per_epoch = len(dataloader_train)
     
