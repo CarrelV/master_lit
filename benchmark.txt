@@ -133,15 +133,15 @@ Top-1 accuracy: 26.30
 Top-5 accuracy: 56.40
 
 -------------------------
-For the model Baseline Transformer (1 layer, CLUSTER weight 2)
+For the model Baseline Transformer (1 layer, CLUSTER weight 1)
 -------------------------
 
 Image 2 Text Retrieval on Flickr30k:
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 35.60
+Top-5 accuracy: 71.10
 Text 2 Image Retrieval on Flickr30k:
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 35.60
+Top-5 accuracy: 69.70
 
 #################################################
 
