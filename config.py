@@ -24,9 +24,9 @@ training_run_number = "bert_base"
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
-batch_size = 64
+batch_size = 32
 
-test_batch_size = 64
+test_batch_size = 32
 
 
 

@@ -12,12 +12,12 @@ DONE implement LoRA clip model
 
 DONE correct transformer head error in config
 
-IN PROCESS train Transformer Head with 1 layer on flickr (if good, we continue with LST with smaller layer, for example only 2 layers 1&5 vs 4&8)
+DONE train Transformer Head with 1 layer on flickr (if good, we continue with LST with smaller layer, for example only 2 layers 1&5 vs 4&8)
 
 Check if we go with smaller number of layer
-Bert base uncased
+IN PROCESS Bert base uncased
 
 1 use bigger data set cc3m
-2 use bigger text encoder for LST for the same memory budget than the current LiT text encoder 
+IN PROCESS use bigger text encoder for LST for the same memory budget than the current LiT text encoder 
 If still not beating, LoRA instead of LST
 at the end use bigger image ViT for both (LiT and LST)
