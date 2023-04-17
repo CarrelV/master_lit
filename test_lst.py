@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
 
     resume_model(model)
-
+    print(model)
 
     print("Finish")
     #model.copy_pretrain_weight(tokenizer,8)

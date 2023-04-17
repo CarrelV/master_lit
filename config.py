@@ -1,7 +1,69 @@
+
+
+#############################################################################
+#                                                                           #
+#                        Only stuff to Modify                               #
+#                                                                           #
+#############################################################################
+
+
+################################
+#             Training         #
+################################
+
+text_model_size = "medium"
+
+## See at the end the different possibilities
+configuration = "text_LST"
+testing = False
+
+
+# Increment if retraining the same configuration one more time
+training_run_number = "bert_base"
+
+# 1024 when both backbone are frozen (baseline,good_baseline,APE)
+# 64 when both backbone are finetuned (bad_baseline)
+# 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
+batch_size = 128
+
+test_batch_size = 128
+
+
+
+warming_epochs = 5
+epochs = 50
+
+# 1 at home, 2 on cluster
+gpu_number = 2
+
+
+# When using LST, can chose to add a final skip connection between the output of the frozen main model and 
+# the output of the upsampled side network output
+sum_last_outputs = True
+################################
+#             Testing          #
+################################
+
+configuration_to_test = "text_LST"
+
+weight_version = "bert_base"
+#############################################################################
+#                                                                           #
+#                            END MODIFICATION                               #
+#                                                                           #
+#############################################################################
+
 ########## Dataset Configuration ##########
+if text_model_size == "small":
+
+    max_length = 128
+
+elif text_model_size == "medium":
+
+    max_length = 256
 
 
-max_length = 128
+
 prompt = ""
 
 ########## Models Configurations ##########
@@ -13,8 +75,19 @@ prompt = ""
 # image size
 size = 224
 
-text_model_name = "prajjwal1/bert-medium"
-text_embedding = 512
+if text_model_size == "small":
+
+    text_model_name = "prajjwal1/bert-medium"
+    text_embedding = 512
+
+elif text_model_size == "medium":
+
+    text_model_name = "bert-base-uncased"
+    text_embedding = 768
+
+
+
+
 
 vision_model_name = "facebook/dino-vits16"
 image_embedding = 384
@@ -30,57 +103,6 @@ reduction_factor = 8
 
 gate_alpha = 0.0
 gate_T = 0.1
-
-#############################################################################
-#                                                                           #
-#                        Only stuff to Modify                               #
-#                                                                           #
-#############################################################################
-
-
-################################
-#             Training         #
-################################
-
-## See at the end the different possibilities
-configuration = "baseline_transformer"
-testing = False
-
-
-# Increment if retraining the same configuration one more time
-training_run_number = 1
-
-# 1024 when both backbone are frozen (baseline,good_baseline,APE)
-# 64 when both backbone are finetuned (bad_baseline)
-# 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
-batch_size = 128
-
-test_batch_size = 128
-
-
-
-warming_epochs = 20
-epochs = 300
-
-# 1 at home, 2 on cluster
-gpu_number = 2
-
-
-# When using LST, can chose to add a final skip connection between the output of the frozen main model and 
-# the output of the upsampled side network output
-sum_last_outputs = True
-################################
-#             Testing          #
-################################
-
-configuration_to_test = "baseline_transformer"
-
-weight_version = 1
-#############################################################################
-#                                                                           #
-#                            END MODIFICATION                               #
-#                                                                           #
-#############################################################################
 
 
 # for projection head; used for both image and text encoders
