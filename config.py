@@ -125,6 +125,7 @@ lora_dropout = 0.1
 
 # False by default, override to True if config = lora
 apply_lora = False
+add_final_skip_connection = False
 ########## Training Configuration ##########
 
 
@@ -195,6 +196,8 @@ if configuration == "text_LST":
     find_unused_param = True
 
     side_text_weights_copy = True
+    
+    add_final_skip_connection = True
 
 
 elif configuration == "baseline_transformer":
@@ -327,13 +330,3 @@ elif configuration == "APE_LiT":
 
     side_text_weights_copy = False
 
-
-##################### Skip connection at the end of LST model
-
-if configuration == "text_LST" and sum_last_outputs:
-
-    add_final_skip_connection = True
-
-else:
-
-    add_final_skip_connection = False
