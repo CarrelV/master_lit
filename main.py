@@ -54,7 +54,6 @@ def main(rank,world_size):
         print("Finish copying the weights to the pruned side network")
 
     
-    print(model)
 
     resume_model(model)
     model.to(rank)
