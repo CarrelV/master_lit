@@ -45,9 +45,8 @@ if __name__ == "__main__":
     print(model)
 
     print("Finish")
-    #model.copy_pretrain_weight(tokenizer,8)
 
-    #outputs = model(image["pixel_values"],text)
+    #outputs = model(image["pixel_values"].to(device),text)
 
     #print(outputs)
     #print(outputs)

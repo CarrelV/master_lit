@@ -1050,6 +1050,8 @@ class BertLSTModel(BertPreTrainedModel):
         side_config.intermediate_size = side_config.intermediate_size // CFG.reduction_factor
         side_config.hidden_size = side_config.hidden_size // CFG.reduction_factor
 
+        self.number_of_ladder = side_config.num_hidden_layers // CFG.ladder_reduction_factor
+        
         # Downsample emb
         self.side_emb = nn.Linear(config.hidden_size,side_config.hidden_size)
 
@@ -1059,23 +1061,25 @@ class BertLSTModel(BertPreTrainedModel):
 
         # List of Downsampler (linear layers) from main to side
         self.side_downsamplers = nn.ModuleList(
-            [nn.Linear(config.hidden_size,side_config.hidden_size) for _ in range(config.num_hidden_layers)]
+            [nn.Linear(config.hidden_size,side_config.hidden_size) for _ in range(self.number_of_ladder)]
         )
 
         # List of the reduced Bert layers in the side network
         self.side_encoder = nn.ModuleList(
-            [BertLayer(side_config) for _ in range(config.num_hidden_layers)]
+            [BertLayer(side_config) for _ in range(self.number_of_ladder)]
         )
 
         # List of learnable parameter for the gated combination
         self.side_gate_params = nn.ParameterList(
-            [nn.Parameter(torch.ones(1) * CFG.gate_alpha) for _ in range(config.num_hidden_layers)]
+            [nn.Parameter(torch.ones(1) * CFG.gate_alpha) for _ in range(self.number_of_ladder)]
         )
         self.gate_T = CFG.gate_T
 
         # Add a final sum between the output of the original 
         if self.final_skip_connection:
-            self.final_skip_connection_gate = nn.Parameter(torch.ones(1) * CFG.gate_alpha)
+            self.final_skip_connection_gate = nn.ParameterList(
+                [nn.Parameter(torch.ones(1) * CFG.gate_alpha) for _ in range(1)]
+        )
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -1198,8 +1202,22 @@ class BertLSTModel(BertPreTrainedModel):
         side_hidden_states = self.side_emb(embedding_output)
 
 
+        # If we remove some Ladder connections
+        if CFG.configuration == "reduced_LST_first":
+            initial_gap = 0
+            step = CFG.ladder_reduction_factor
+
+        elif CFG.configuration == "reduced_LST_first":
+            initial_gap = CFG.ladder_reduction_factor - 1
+            step = CFG.ladder_reduction_factor
+
+        else:
+            initial_gap = 0
+            step = 1
+
         # for each layer add the sigmoid (gate) off the previous layer (side net) and the downsampled hidden state from the main net (the ladder) 
-        for idx in range(self.config.num_hidden_layers):
+
+        for idx in range(self.number_of_ladder):
             
             side_layer_to_process = self.side_encoder[idx]
             side_downsampler = self.side_downsamplers[idx]
@@ -1217,7 +1235,7 @@ class BertLSTModel(BertPreTrainedModel):
             gate = torch.tanh(side_gate_param / self.gate_T)
 
             # Combining both inputs 
-            side_hidden_states = gate * side_hidden_states + side_downsampler(attention_hidden_states[idx])
+            side_hidden_states = gate * side_hidden_states + side_downsampler(attention_hidden_states[initial_gap + idx * step])
 
 
 
@@ -1233,7 +1251,7 @@ class BertLSTModel(BertPreTrainedModel):
         upsample_outputs = self.final_upsample(side_hidden_states)
 
         if self.final_skip_connection:
-            final_gate = torch.tanh(self.final_skip_connection_gate / self.gate_T)
+            final_gate = torch.tanh(self.final_skip_connection_gate[0] / self.gate_T)
             final_output = last_hidden_state + final_gate * upsample_outputs
 
         else:
