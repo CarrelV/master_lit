@@ -14,10 +14,10 @@ DONE correct transformer head error in config
 
 DONE train Transformer Head with 1 layer on flickr (if good, we continue with LST with smaller layer, for example only 2 layers 1&5 vs 4&8)
 
-Check if we go with smaller number of layer
-IN PROCESS Bert base uncased
+IN PROCESS Check if we go with smaller number of layer
+DONE Bert base uncased
 
 1 use bigger data set cc3m
-IN PROCESS use bigger text encoder for LST for the same memory budget than the current LiT text encoder 
+DONE use bigger text encoder for LST for the same memory budget than the current LiT text encoder 
 If still not beating, LoRA instead of LST
 at the end use bigger image ViT for both (LiT and LST)

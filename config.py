@@ -11,22 +11,22 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
+text_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "text_LST"
+configuration = "reduced_LST_first"
 testing = False
 
 
 # Increment if retraining the same configuration one more time
-training_run_number = "bert_base"
+training_run_number = "1"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
-batch_size = 32
+batch_size = 128
 
-test_batch_size = 32
+test_batch_size = 128
 
 
 
@@ -44,9 +44,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "text_LST"
+configuration_to_test = "reduced_LST_first"
 
-weight_version = "bert_base"
+weight_version = "1"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -98,6 +98,7 @@ image_embedding = 384
 
 reduction_factor = 8
 
+ladder_reduction_factor = 1
 
 ## Side network
 
@@ -148,6 +149,9 @@ text_head_lr = 1e-3
 
 weight_decay = 1e-3
 
+if text_model_size == "medium":
+    text_encoder_lr = 1e-5
+
 
 
 ########## DDP Configuration ##########
@@ -181,7 +185,7 @@ if configuration == "lora":
 
     apply_lora = True
 
-if configuration == "text_LST":
+elif configuration == "text_LST":
     #Model weight init
     text_backbone_pretrained = True 
     image_backbone_pretrained = True
@@ -199,6 +203,45 @@ if configuration == "text_LST":
     
     add_final_skip_connection = True
 
+elif configuration == "reduced_LST_first":
+    #Model weight init
+    text_backbone_pretrained = True 
+    image_backbone_pretrained = True
+
+    #Model training
+    text_backbone_finetune = True 
+    image_backbone_finetune = False
+    
+    text_head_config = "simple_proj"
+    text_tower_config = "LST"
+    image_tower_config = "classic"
+    find_unused_param = True
+
+    side_text_weights_copy = True
+    
+    add_final_skip_connection = True
+
+    ladder_reduction_factor = 4
+
+elif configuration == "reduced_LST_last":
+    #Model weight init
+    text_backbone_pretrained = True 
+    image_backbone_pretrained = True
+
+    #Model training
+    text_backbone_finetune = True 
+    image_backbone_finetune = False
+    
+    text_head_config = "simple_proj"
+    text_tower_config = "LST"
+    image_tower_config = "classic"
+    find_unused_param = True
+
+    side_text_weights_copy = True
+    
+    add_final_skip_connection = True
+
+    ladder_reduction_factor = 4
 
 elif configuration == "baseline_transformer":
     #Model weight init
