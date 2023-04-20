@@ -1,7 +1,18 @@
+
+No public test set available for MSCOCO (due to ongoing challenge)
+
+
+################################################
+#                                              #
+#           Same small BERT                    #
+#                                              #
+################################################
+
 -------------------------
+
 Number of parameters to finetune
 
-                    LST-Text:                       LiT classic (projection head)
+                    LST-Text:                       LiT classic (projection head)                                
 
 Text encoder        728'649                         41'373'184
 Text head           788'224                            788'224
@@ -47,4 +58,61 @@ Top-5 accuracy:                                             58.85               
 
 -------------------------
 
-No public test set available for MSCOCO (due to ongoing challenge)
+
+################################################
+#                                              #
+#     base BERT LST   vs   small BERT LiT      #
+#                                              #
+################################################
+
+-------------------------
+
+Number of parameters to finetune
+
+                    LST-Text:                       LiT classic (projection head)                                
+
+Text encoder      2'376'301                         41'373'184
+Text head         1'050'368                            788'224
+Image encoder             0                                  0
+Image head          657'152                            657'152
+
+Total             4'083'821                         42'818'560             9.54 % of weights
+
+
+-------------------------
+Trained on MSCOCO 50 epochs 
+-------------------------
+                                                            LST-Text          classic_LiT         Diff
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy:                                             39.10               23.80           + 15.30
+Top-5 accuracy:                                             74.90               52.60           + 22.20
+
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy:                                             38.10               23.00           + 15.10
+Top-5 accuracy:                                             75.60               52.60           + 23.00
+
+-------------------------
+
+0 shot imageNet on the full set (1000 classes)
+Top-1 accuracy:                                             03.18               04.43           - 1.25
+Top-5 accuracy:                                             10.47               13.42           - 2.95
+
+0 shot imageNet on the big set (400 classes)
+Top-1 accuracy:                                             00.64               00.67           - 0.03
+Top-5 accuracy:                                             02.44               02.68           - 0.24
+
+0 shot imageNet on the medium set (100 classes)
+Top-1 accuracy:                                             02.52               02.23           + 0.29
+Top-5 accuracy:                                             14.70               13.27           + 1.43
+
+0 shot imageNet on the small set (25 classes)
+Top-1 accuracy:                                             10.48               08.13           + 2.35
+Top-5 accuracy:                                             33.27               33.12           + 0.15
+
+0 shot imageNet on the tiny set (13 classes)
+Top-1 accuracy:                                             20.26               17.31           + 2.95
+Top-5 accuracy:                                             66.54               61.54           + 5.00
+
+
+
+
