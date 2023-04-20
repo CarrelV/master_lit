@@ -1203,17 +1203,13 @@ class BertLSTModel(BertPreTrainedModel):
 
 
         # If we remove some Ladder connections
-        if CFG.configuration == "reduced_LST_first":
-            initial_gap = 0
-            step = CFG.ladder_reduction_factor
-
-        elif CFG.configuration == "reduced_LST_first":
+        step = CFG.ladder_reduction_factor
+        
+        if CFG.configuration == "reduced_LST_last":
             initial_gap = CFG.ladder_reduction_factor - 1
-            step = CFG.ladder_reduction_factor
 
         else:
             initial_gap = 0
-            step = 1
 
         # for each layer add the sigmoid (gate) off the previous layer (side net) and the downsampled hidden state from the main net (the ladder) 
 

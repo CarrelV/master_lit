@@ -37,12 +37,12 @@ if __name__ == "__main__":
     if CFG.side_text_weights_copy:
        
         importance_measure = compute_fisher(model, get_local_dataloader(dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=1,shuffle=CFG.shuffle_train,split="train"), num_samples=CFG.samples_for_fisher)
-        
+        print("importance measure computed")
         model = modify_text_model_after_init(model,tokenizer,importance_measure)
 
 
     resume_model(model)
-    print(model)
+    #print(model)
 
     print("Finish")
 
