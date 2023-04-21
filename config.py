@@ -98,7 +98,7 @@ image_embedding = 384
 
 reduction_factor = 8
 
-ladder_reduction_factor = 1
+ladder_reduction_factor = 4
 
 ## Side network
 
