@@ -14,7 +14,7 @@
 text_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "reduced_LST_first"
+configuration = "reduced_LST_last"
 testing = False
 
 
@@ -44,7 +44,7 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "reduced_LST_first"
+configuration_to_test = "reduced_LST_last"
 
 weight_version = "1"
 #############################################################################
@@ -98,7 +98,7 @@ image_embedding = 384
 
 reduction_factor = 8
 
-ladder_reduction_factor = 4
+ladder_reduction_factor = 1
 
 ## Side network
 
