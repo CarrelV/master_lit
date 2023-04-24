@@ -26,5 +26,7 @@ train double LST on MSCOCO with all ladder
 train double LST on MSCOCO with cut ladder first
 train double LST on MSCOCO with cut ladder last
 
+train LORA on Flickr/MSCOCO?
+
 Search SOTA/literature for task which require image and text together
 LST fusion?
