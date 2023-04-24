@@ -11,27 +11,28 @@
 #             Training         #
 ################################
 
-text_model_size = "small"
+text_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "reduced_LST_last"
+configuration = "text_LST"
 testing = False
 
 
 # Increment if retraining the same configuration one more time
-training_run_number = "1"
+training_run_number = "base_flickr"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
+# 
 batch_size = 128
 
 test_batch_size = 128
 
-
-
-warming_epochs = 5
-epochs = 50
+# 20 / 300 on flickr
+# 5 / 50 on MSCOCO
+warming_epochs = 20
+epochs = 300
 
 # 1 at home, 2 on cluster
 gpu_number = 2
@@ -44,9 +45,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "reduced_LST_last"
+configuration_to_test = "text_LST"
 
-weight_version = "1"
+weight_version = "base_flickr"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
