@@ -8,16 +8,23 @@ DONE train LST_text on MSCOCO
 DONE retrain LST_text on MSCOCO with same epoch as LiT for fair comparison
 DONE train LiT on MSCOCO to compare
 DONE implement LoRA clip model 
-# Not needed train LoRA model
 
 DONE correct transformer head error in config
 
 DONE train Transformer Head with 1 layer on flickr (if good, we continue with LST with smaller layer, for example only 2 layers 1&5 vs 4&8)
 
-IN PROCESS Check if we go with smaller number of layer
+DONE Check if we go with smaller number of layer
 DONE Bert base uncased
 
-1 use bigger data set cc3m
+IN PROCESS use bigger data set cc3m
 DONE use bigger text encoder for LST for the same memory budget than the current LiT text encoder 
-If still not beating, LoRA instead of LST
-at the end use bigger image ViT for both (LiT and LST)
+
+IN PROCESS train base BERT on flickr30k
+implement LST for ViT
+train complete LST on flickr
+train double LST on MSCOCO with all ladder
+train double LST on MSCOCO with cut ladder first
+train double LST on MSCOCO with cut ladder last
+
+Search SOTA/literature for task which require image and text together
+LST fusion?

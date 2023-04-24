@@ -207,27 +207,27 @@ For the model reduced_LST_last (only 2 ladder connection, 3 and 7 kept) trained 
 -------------------------
 
 Image 2 Text Retrieval on Flickr30k:
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 21.40
+Top-5 accuracy: 50.80
 Text 2 Image Retrieval on Flickr30k:
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 21.50
+Top-5 accuracy: 48.60
 
 0 shot imageNet on the full set (1000 classes)
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 03.41
+Top-5 accuracy: 10.95
 0 shot imageNet on the big set (400 classes)
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 00.64
+Top-5 accuracy: 02.64
 0 shot imageNet on the medium set (100 classes)
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 02.98
+Top-5 accuracy: 14.23
 0 shot imageNet on the small set (25 classes)
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 09.45
+Top-5 accuracy: 32.97
 0 shot imageNet on the tiny set (13 classes)
-Top-1 accuracy: 
-Top-5 accuracy: 
+Top-1 accuracy: 20.51
+Top-5 accuracy: 60.38
 
 -------------------------
 For the model LST-Text trained on MSCOCO 50 epochs (CLUSTER weight 3)
