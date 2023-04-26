@@ -11,30 +11,30 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
+text_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "text_LST"
+configuration = "APE"
 testing = False
 
-dataset = "flickr30k"
-#dataset = "mscoco"
+#dataset = "flickr30k"
+dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "base_flickr"
+training_run_number = "mscoco"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
-# 
-batch_size = 32
+# 32 for BERT base uncased with LST
+batch_size = 1024
 
-test_batch_size = 32
+test_batch_size = 1024
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
-warming_epochs = 20
-epochs = 300
+warming_epochs = 5
+epochs = 50
 
 # 1 at home, 2 on cluster
 gpu_number = 2
@@ -47,9 +47,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "text_LST"
+configuration_to_test = "APE"
 
-weight_version = "base_flickr"
+weight_version = "mscoco"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -102,7 +102,7 @@ image_embedding = 384
 reduction_factor = 8
 
 ladder_reduction_factor = 1
-
+ladder_initial_gap = 0
 ## Side network
 
 gate_alpha = 0.0
@@ -128,7 +128,9 @@ lora_alpha = 32
 lora_dropout = 0.1
 
 # False by default, override to True if config = lora
-apply_lora = False
+apply_lora_text = False
+apply_lora_image = False
+
 add_final_skip_connection = False
 ########## Training Configuration ##########
 
@@ -170,7 +172,7 @@ if text_model_size == "medium":
 if testing:
     configuration = configuration_to_test
 
-if configuration == "lora":
+if configuration == "lora_text":
     #Model weight init
     text_backbone_pretrained = True 
     image_backbone_pretrained = True
@@ -179,14 +181,52 @@ if configuration == "lora":
     text_backbone_finetune = True 
     image_backbone_finetune = False
 
-    text_head_config = "small_mlp"
+    text_head_config = "simple_proj"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = True
 
     side_text_weights_copy = False
 
-    apply_lora = True
+    apply_lora_text = True
+
+elif configuration == "lora_image":
+    #Model weight init
+    text_backbone_pretrained = True 
+    image_backbone_pretrained = True
+
+    #Model training
+    text_backbone_finetune = False 
+    image_backbone_finetune = True
+
+    text_head_config = "simple_proj"
+    text_tower_config = "classic"
+    image_tower_config = "classic"
+    find_unused_param = True
+
+    side_text_weights_copy = False
+
+    apply_lora_image = True
+
+elif configuration == "lora":
+    #Model weight init
+    text_backbone_pretrained = True 
+    image_backbone_pretrained = True
+
+    #Model training
+    text_backbone_finetune = True 
+    image_backbone_finetune = True
+
+    text_head_config = "simple_proj"
+    text_tower_config = "classic"
+    image_tower_config = "classic"
+    find_unused_param = True
+
+    side_text_weights_copy = False
+
+    apply_lora_text = True
+    apply_lora_image = True
+
 
 elif configuration == "text_LST":
     #Model weight init
@@ -245,6 +285,7 @@ elif configuration == "reduced_LST_last":
     add_final_skip_connection = True
 
     ladder_reduction_factor = 4
+    ladder_initial_gap = ladder_reduction_factor - 1
 
 elif configuration == "baseline_transformer":
     #Model weight init
