@@ -203,14 +203,14 @@ class BertSelfAttention(nn.Module):
         self.attention_head_size = int(config.hidden_size / config.num_attention_heads)
         self.all_head_size = self.num_attention_heads * self.attention_head_size
 
-        if CFG.apply_lora:
+        if CFG.apply_lora_text:
             self.query = lora.Linear(config.hidden_size, self.all_head_size,CFG.lora_r,CFG.lora_alpha,CFG.lora_dropout)
         else:
             self.query = nn.Linear(config.hidden_size, self.all_head_size)
         
         self.key = nn.Linear(config.hidden_size, self.all_head_size)
         
-        if CFG.apply_lora:
+        if CFG.apply_lora_text:
             self.value = lora.Linear(config.hidden_size, self.all_head_size,CFG.lora_r,CFG.lora_alpha,CFG.lora_dropout)
         else:
             self.value = nn.Linear(config.hidden_size, self.all_head_size)
@@ -622,74 +622,6 @@ class BertPooler(nn.Module):
         return pooled_output
 
 
-class BertPredictionHeadTransform(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
-        if isinstance(config.hidden_act, str):
-            self.transform_act_fn = ACT2FN[config.hidden_act]
-        else:
-            self.transform_act_fn = config.hidden_act
-        self.LayerNorm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
-
-    def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:
-        hidden_states = self.dense(hidden_states)
-        hidden_states = self.transform_act_fn(hidden_states)
-        hidden_states = self.LayerNorm(hidden_states)
-        return hidden_states
-
-
-class BertLMPredictionHead(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.transform = BertPredictionHeadTransform(config)
-
-        # The output weights are the same as the input embeddings, but there is
-        # an output-only bias for each token.
-        self.decoder = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
-
-        self.bias = nn.Parameter(torch.zeros(config.vocab_size))
-
-        # Need a link between the two variables so that the bias is correctly resized with `resize_token_embeddings`
-        self.decoder.bias = self.bias
-
-    def forward(self, hidden_states):
-        hidden_states = self.transform(hidden_states)
-        hidden_states = self.decoder(hidden_states)
-        return hidden_states
-
-
-class BertOnlyMLMHead(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.predictions = BertLMPredictionHead(config)
-
-    def forward(self, sequence_output: torch.Tensor) -> torch.Tensor:
-        prediction_scores = self.predictions(sequence_output)
-        return prediction_scores
-
-
-class BertOnlyNSPHead(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.seq_relationship = nn.Linear(config.hidden_size, 2)
-
-    def forward(self, pooled_output):
-        seq_relationship_score = self.seq_relationship(pooled_output)
-        return seq_relationship_score
-
-
-class BertPreTrainingHeads(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.predictions = BertLMPredictionHead(config)
-        self.seq_relationship = nn.Linear(config.hidden_size, 2)
-
-    def forward(self, sequence_output, pooled_output):
-        prediction_scores = self.predictions(sequence_output)
-        seq_relationship_score = self.seq_relationship(pooled_output)
-        return prediction_scores, seq_relationship_score
-
 
 class BertPreTrainedModel(PreTrainedModel):
     """
@@ -724,38 +656,6 @@ class BertPreTrainedModel(PreTrainedModel):
             module.gradient_checkpointing = value
 
 
-@dataclass
-class BertForPreTrainingOutput(ModelOutput):
-    """
-    Output type of [`BertForPreTraining`].
-
-    Args:
-        loss (*optional*, returned when `labels` is provided, `torch.FloatTensor` of shape `(1,)`):
-            Total loss as the sum of the masked language modeling loss and the next sequence prediction
-            (classification) loss.
-        prediction_logits (`torch.FloatTensor` of shape `(batch_size, sequence_length, config.vocab_size)`):
-            Prediction scores of the language modeling head (scores for each vocabulary token before SoftMax).
-        seq_relationship_logits (`torch.FloatTensor` of shape `(batch_size, 2)`):
-            Prediction scores of the next sequence prediction (classification) head (scores of True/False continuation
-            before SoftMax).
-        hidden_states (`tuple(torch.FloatTensor)`, *optional*, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True`):
-            Tuple of `torch.FloatTensor` (one for the output of the embeddings + one for the output of each layer) of
-            shape `(batch_size, sequence_length, hidden_size)`.
-
-            Hidden-states of the model at the output of each layer plus the initial embedding outputs.
-        attentions (`tuple(torch.FloatTensor)`, *optional*, returned when `output_attentions=True` is passed or when `config.output_attentions=True`):
-            Tuple of `torch.FloatTensor` (one for each layer) of shape `(batch_size, num_heads, sequence_length,
-            sequence_length)`.
-
-            Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
-            heads.
-    """
-
-    loss: Optional[torch.FloatTensor] = None
-    prediction_logits: torch.FloatTensor = None
-    seq_relationship_logits: torch.FloatTensor = None
-    hidden_states: Optional[Tuple[torch.FloatTensor]] = None
-    attentions: Optional[Tuple[torch.FloatTensor]] = None
 
 
 BERT_START_DOCSTRING = r"""
@@ -845,13 +745,17 @@ class BertModel(BertPreTrainedModel):
         super().__init__(config)
         self.config = config
 
+        print("prepare emb")
         self.embeddings = BertEmbeddings(config)
+        print("prepare encoder")
         self.encoder = BertEncoder(config)
 
         self.pooler = BertPooler(config) if add_pooling_layer else None
 
+        print("pooler ready")
         # Initialize weights and apply final processing
         self.post_init()
+        print("post finish")
 
     def get_input_embeddings(self):
         return self.embeddings.word_embeddings
@@ -1031,7 +935,6 @@ class BertLSTModel(BertPreTrainedModel):
         self.embeddings = BertEmbeddings(config)
         self.encoder = BertEncoder(config)
 
-        self.pooler = BertPooler(config) if add_pooling_layer else None
 
         # Freeze all parameters in the main tower
         for p in self.encoder.parameters():
@@ -1039,9 +942,6 @@ class BertLSTModel(BertPreTrainedModel):
 
         for p in self.embeddings.parameters():
             p.requires_grad = False
-
-        # If pretrain, copy the pruned weights to the side network
-
 
         # Side pruned BERT
 
@@ -1055,7 +955,7 @@ class BertLSTModel(BertPreTrainedModel):
         # Downsample emb
         self.side_emb = nn.Linear(config.hidden_size,side_config.hidden_size)
 
-        # Final upsampler for the end to be able to add different heads
+        # Final upsampler for the end to be able to add different heads on top
         self.final_upsample = nn.Linear(side_config.hidden_size,config.hidden_size)
 
 
@@ -1075,7 +975,7 @@ class BertLSTModel(BertPreTrainedModel):
         )
         self.gate_T = CFG.gate_T
 
-        # Add a final sum between the output of the original 
+        # Add a final sum between the output of the original tower and the side tower
         if self.final_skip_connection:
             self.final_skip_connection_gate = nn.ParameterList(
                 [nn.Parameter(torch.ones(1) * CFG.gate_alpha) for _ in range(1)]
@@ -1193,7 +1093,6 @@ class BertLSTModel(BertPreTrainedModel):
 
         attention_hidden_states = hidden_states[1:]
         last_hidden_state = encoder_outputs[0]
-        pooled_output = self.pooler(last_hidden_state) if self.pooler is not None else None
 
 
         # Forward for the side network using the hidden states
@@ -1205,12 +1104,9 @@ class BertLSTModel(BertPreTrainedModel):
         # If we remove some Ladder connections
         step = CFG.ladder_reduction_factor
         
-        if CFG.configuration == "reduced_LST_last":
-            initial_gap = CFG.ladder_reduction_factor - 1
+        initial_gap = CFG.ladder_initial_gap
 
-        else:
-            initial_gap = 0
-
+    
         # for each layer add the sigmoid (gate) off the previous layer (side net) and the downsampled hidden state from the main net (the ladder) 
 
         for idx in range(self.number_of_ladder):

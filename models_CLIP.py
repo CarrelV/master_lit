@@ -22,7 +22,8 @@ class TextEncoder(nn.Module):
         else:
 
             self.model = BertModel(self.config)
-            
+
+        print("BERT ready")    
         for p in self.model.parameters():
             p.requires_grad = trainable
 
