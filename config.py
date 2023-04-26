@@ -11,7 +11,7 @@
 #             Training         #
 ################################
 
-text_model_size = "small"
+text_model_size = "medium"
 
 ## See at the end the different possibilities
 configuration = "APE"
@@ -21,13 +21,13 @@ testing = False
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "mscoco_1"
+training_run_number = "baseBERT_mscoco"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 32 for BERT base uncased with LST
-batch_size = 1024
+batch_size = 512
 
 test_batch_size = 128
 
@@ -49,7 +49,7 @@ sum_last_outputs = True
 
 configuration_to_test = "APE"
 
-weight_version = "mscoco_1"
+weight_version = "baseBERT_mscoco"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #

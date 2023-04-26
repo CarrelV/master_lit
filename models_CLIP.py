@@ -23,7 +23,6 @@ class TextEncoder(nn.Module):
 
             self.model = BertModel(self.config)
 
-        print("BERT ready")    
         for p in self.model.parameters():
             p.requires_grad = trainable
 
@@ -229,10 +228,8 @@ class CLIPMoco(nn.Module):
         self.text_tower_config = text_tower_config
         self.image_tower_config = image_tower_config
 
-        print("prepare image encoder")
         if self.image_tower_config == "classic":
             self.image_encoder = ImageEncoder()
-        print("prepare text encoder")
 
         if self.text_tower_config == "classic":
             self.text_encoder = TextEncoder()
@@ -245,11 +242,9 @@ class CLIPMoco(nn.Module):
         if CFG.apply_lora_image:
             lora_utils.mark_only_lora_as_trainable(self.image_encoder)
 
-        print("prepare image proj")
 
         self.image_projection = ProjectionHead(embedding_dim=image_embedding)
 
-        print("prepare text proj")
 
         if self.text_head_config == "simple_proj":
             self.text_projection = ProjectionHead(embedding_dim=text_embedding)
@@ -260,7 +255,6 @@ class CLIPMoco(nn.Module):
         elif self.text_head_config == "transformer_head":
             self.text_projection = TransformerHead(embedding_dim=text_embedding)
 
-        print("prepare key model")
 
         self.proj_dim = proj_dim
         self.temperature = temperature

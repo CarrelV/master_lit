@@ -745,17 +745,13 @@ class BertModel(BertPreTrainedModel):
         super().__init__(config)
         self.config = config
 
-        print("prepare emb")
         self.embeddings = BertEmbeddings(config)
-        print("prepare encoder")
         self.encoder = BertEncoder(config)
 
         self.pooler = BertPooler(config) if add_pooling_layer else None
 
-        print("pooler ready")
         # Initialize weights and apply final processing
         self.post_init()
-        print("post finish")
 
     def get_input_embeddings(self):
         return self.embeddings.word_embeddings
