@@ -228,8 +228,10 @@ class CLIPMoco(nn.Module):
         self.text_tower_config = text_tower_config
         self.image_tower_config = image_tower_config
 
+        print("prepare image encoder")
         if self.image_tower_config == "classic":
             self.image_encoder = ImageEncoder()
+        print("prepare text encoder")
 
         if self.text_tower_config == "classic":
             self.text_encoder = TextEncoder()
@@ -237,12 +239,17 @@ class CLIPMoco(nn.Module):
             self.text_encoder = BertLSTModel.from_pretrained(CFG.text_model_name)
         
         ## If the model use lora, freeze the parameters not LoRA
-        if CFG.apply_lora:
+        if CFG.apply_lora_text:
             lora_utils.mark_only_lora_as_trainable(self.text_encoder)
+        if CFG.apply_lora_image:
+            lora_utils.mark_only_lora_as_trainable(self.image_encoder)
 
+        print("prepare image proj")
 
         self.image_projection = ProjectionHead(embedding_dim=image_embedding)
-        
+
+        print("prepare text proj")
+
         if self.text_head_config == "simple_proj":
             self.text_projection = ProjectionHead(embedding_dim=text_embedding)
         elif self.text_head_config == "small_mlp":
@@ -251,6 +258,8 @@ class CLIPMoco(nn.Module):
             self.text_projection = LargeMLPHead(embedding_dim=text_embedding)
         elif self.text_head_config == "transformer_head":
             self.text_projection = TransformerHead(embedding_dim=text_embedding)
+
+        print("prepare key model")
 
         self.proj_dim = proj_dim
         self.temperature = temperature

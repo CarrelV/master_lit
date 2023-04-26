@@ -47,7 +47,7 @@ def main(rank,world_size):
     print("prepare model")
     model = CLIPMoco()
     loss_fn = CLIPMoCOLoss().to(rank)
-    
+    print("model ready")
     # copy the pruned weights of the main text to the side LST text network
     
     if CFG.side_text_weights_copy:
