@@ -30,8 +30,11 @@ def main(rank,world_size):
            group="Baselines")
 
     # setup the process groups
+
+    print("setup")
     setup(rank, world_size)
     
+    print("prepare dataloaders")
     # prepare the dataloader
     tokenizer = get_tokenizer(CFG.text_model_name)
     feature_extractor = get_feature_extractor(CFG.vision_model_name)
@@ -41,6 +44,7 @@ def main(rank,world_size):
 
     number_of_step_per_epoch = len(dataloader_train)
     
+    print("prepare model")
     model = CLIPMoco()
     loss_fn = CLIPMoCOLoss().to(rank)
     

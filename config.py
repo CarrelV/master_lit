@@ -21,7 +21,7 @@ testing = False
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "mscoco"
+training_run_number = "mscoco_1"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -29,7 +29,7 @@ training_run_number = "mscoco"
 # 32 for BERT base uncased with LST
 batch_size = 1024
 
-test_batch_size = 1024
+test_batch_size = 128
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
@@ -49,7 +49,7 @@ sum_last_outputs = True
 
 configuration_to_test = "APE"
 
-weight_version = "mscoco"
+weight_version = "mscoco_1"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
