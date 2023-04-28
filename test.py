@@ -52,7 +52,7 @@ def test():
     model.eval()
 
     print("-------------------------")
-    print(f"For the model {CFG.configuration_to_test}")
+    print(f"For the model {CFG.configuration_to_test}, weights: {CFG.weight_version}")
     print("-------------------------\n")
 
     print("0 Shot classification on ImageNetV2:")
@@ -62,6 +62,8 @@ def test():
     #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "medium",device=device)
     #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "small",device=device)
     #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "tiny",device=device)
+    
+    print("T2I and I2T retrieval on Flickr30k test set:")
 
     i2t_t2i_retrieval(model=model,dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
     #No test set for mscoco
