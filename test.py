@@ -57,11 +57,11 @@ def test():
 
     print("0 Shot classification on ImageNetV2:")
 
-    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "all",device=device)
-    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "big",device=device)
-    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "medium",device=device)
-    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "small",device=device)
-    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "tiny",device=device)
+    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "all",device=device)
+    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "big",device=device)
+    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "medium",device=device)
+    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "small",device=device)
+    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "tiny",device=device)
 
     i2t_t2i_retrieval(model=model,dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
     #No test set for mscoco
@@ -233,7 +233,7 @@ def compute_text_weight_zeroshot(model,tokenizer,device,classnames, template):
 def i2t_t2i_retrieval(model,dataset,tokenizer,feature_extractor,device):
 
 
-    test_loader = get_dataloader(dataset=dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,rank=0,world_size=1,batch_size=CFG.batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
+    test_loader = get_dataloader(dataset=dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,rank=0,world_size=1,batch_size=CFG.test_batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
 
     with torch.no_grad():
 
