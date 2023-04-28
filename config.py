@@ -141,7 +141,7 @@ add_final_skip_connection = False
 ########## Training Configuration ##########
 
 
-samples_for_fisher = 1024
+samples_for_fisher = 128
 
 
 num_workers = 0
@@ -190,7 +190,7 @@ if configuration == "lora_text":
     text_head_config = "simple_proj"
     text_tower_config = "classic"
     image_tower_config = "classic"
-    find_unused_param = True
+    find_unused_param = False
 
 
     apply_lora_text = True
@@ -207,7 +207,7 @@ elif configuration == "lora_image":
     text_head_config = "simple_proj"
     text_tower_config = "classic"
     image_tower_config = "classic"
-    find_unused_param = True
+    find_unused_param = False
 
 
     apply_lora_image = True
@@ -224,7 +224,7 @@ elif configuration == "lora":
     text_head_config = "simple_proj"
     text_tower_config = "classic"
     image_tower_config = "classic"
-    find_unused_param = True
+    find_unused_param = False
 
 
     apply_lora_text = True
@@ -243,7 +243,7 @@ elif configuration == "text_LST":
     text_head_config = "simple_proj"
     text_tower_config = "LST"
     image_tower_config = "classic"
-    find_unused_param = True
+    find_unused_param = False
 
     side_text_weights_copy = True
     
@@ -262,7 +262,7 @@ elif configuration == "image_LST":
     text_head_config = "simple_proj"
     text_tower_config = "classic"
     image_tower_config = "LST"
-    find_unused_param = True
+    find_unused_param = False
 
     side_image_weights_copy = True
     
@@ -280,7 +280,7 @@ elif configuration == "LST":
     text_head_config = "simple_proj"
     text_tower_config = "LST"
     image_tower_config = "LST"
-    find_unused_param = True
+    find_unused_param = False
 
     side_image_weights_copy = True
     side_text_weights_copy = True
@@ -299,7 +299,7 @@ elif configuration == "reduced_LST_first":
     text_head_config = "simple_proj"
     text_tower_config = "LST"
     image_tower_config = "classic"
-    find_unused_param = True
+    find_unused_param = False
 
     side_text_weights_copy = True
     
@@ -319,7 +319,7 @@ elif configuration == "reduced_LST_last":
     text_head_config = "simple_proj"
     text_tower_config = "LST"
     image_tower_config = "classic"
-    find_unused_param = True
+    find_unused_param = False
 
     side_text_weights_copy = True
     
@@ -355,7 +355,7 @@ elif configuration == "bad_baseline":
     text_head_config = "simple_proj"
     text_tower_config = "classic"
     image_tower_config = "classic"
-    find_unused_param = True
+    find_unused_param = False
 
 
 elif configuration == "baseline":
@@ -401,7 +401,7 @@ elif configuration == "classic_LiT":
     text_head_config = "simple_proj"
     text_tower_config = "classic"
     image_tower_config = "classic"
-    find_unused_param = True
+    find_unused_param = False
 
 
 elif configuration == "LiT":
@@ -416,7 +416,7 @@ elif configuration == "LiT":
     text_head_config = "small_mlp"
     text_tower_config = "classic"
     image_tower_config = "classic"
-    find_unused_param = True
+    find_unused_param = False
 
 
 elif configuration == "APE":
@@ -447,6 +447,6 @@ elif configuration == "APE_LiT":
     text_head_config = "large_mlp"
     text_tower_config = "classic"
     image_tower_config = "classic"
-    find_unused_param = True
+    find_unused_param = False
 
 
