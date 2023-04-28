@@ -11,7 +11,7 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
+text_model_size = "small"
 
 ## See at the end the different possibilities
 configuration = "APE"
@@ -21,7 +21,7 @@ testing = False
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "baseBERT_mscoco"
+training_run_number = "mscoco_1"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -49,7 +49,7 @@ sum_last_outputs = True
 
 configuration_to_test = "APE"
 
-weight_version = "baseBERT_mscoco"
+weight_version = "mscoco_1"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
