@@ -6,6 +6,8 @@ ImageNetV2-matched-frequency/
 *.gz
 data/
 ImageNet/
+test_cc3m.py
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
