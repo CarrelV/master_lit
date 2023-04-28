@@ -11,30 +11,30 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
+text_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "text_LST"
+configuration = "LST"
 testing = False
 
 dataset = "flickr30k"
 #dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "base_flickr"
+training_run_number = "flickr"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 32 for BERT base uncased with LST
-batch_size = 512
+batch_size = 256
 
 test_batch_size = 128
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
-warming_epochs = 5
-epochs = 50
+warming_epochs = 20
+epochs = 300
 
 # 1 at home, 2 on cluster
 gpu_number = 2
@@ -47,9 +47,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "text_LST"
+configuration_to_test = "LST"
 
-weight_version = "base_flickr"
+weight_version = "flickr"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -98,9 +98,10 @@ image_embedding = 384
 
 
 ##############Pruning for LST
-
+# reduction of hidden dim size
 reduction_factor = 8
 
+# reduction of number of ladder connection
 ladder_reduction_factor = 1
 ladder_initial_gap = 0
 ## Side network
@@ -130,6 +131,11 @@ lora_dropout = 0.1
 # False by default, override to True if config = lora
 apply_lora_text = False
 apply_lora_image = False
+
+# False by default, override to True if LST
+side_text_weights_copy = False
+side_image_weights_copy = False
+
 
 add_final_skip_connection = False
 ########## Training Configuration ##########
@@ -186,7 +192,6 @@ if configuration == "lora_text":
     image_tower_config = "classic"
     find_unused_param = True
 
-    side_text_weights_copy = False
 
     apply_lora_text = True
 
@@ -204,7 +209,6 @@ elif configuration == "lora_image":
     image_tower_config = "classic"
     find_unused_param = True
 
-    side_text_weights_copy = False
 
     apply_lora_image = True
 
@@ -222,7 +226,6 @@ elif configuration == "lora":
     image_tower_config = "classic"
     find_unused_param = True
 
-    side_text_weights_copy = False
 
     apply_lora_text = True
     apply_lora_image = True
@@ -242,6 +245,44 @@ elif configuration == "text_LST":
     image_tower_config = "classic"
     find_unused_param = True
 
+    side_text_weights_copy = True
+    
+    add_final_skip_connection = True
+
+
+elif configuration == "image_LST":
+    #Model weight init
+    text_backbone_pretrained = True 
+    image_backbone_pretrained = True
+
+    #Model training
+    text_backbone_finetune = False 
+    image_backbone_finetune = True
+    
+    text_head_config = "simple_proj"
+    text_tower_config = "classic"
+    image_tower_config = "LST"
+    find_unused_param = True
+
+    side_image_weights_copy = True
+    
+    add_final_skip_connection = True
+
+elif configuration == "LST":
+    #Model weight init
+    text_backbone_pretrained = True 
+    image_backbone_pretrained = True
+
+    #Model training
+    text_backbone_finetune = True 
+    image_backbone_finetune = True
+    
+    text_head_config = "simple_proj"
+    text_tower_config = "LST"
+    image_tower_config = "LST"
+    find_unused_param = True
+
+    side_image_weights_copy = True
     side_text_weights_copy = True
     
     add_final_skip_connection = True
@@ -301,7 +342,6 @@ elif configuration == "baseline_transformer":
     image_tower_config = "classic"
     find_unused_param = False
 
-    side_text_weights_copy = False
 
 elif configuration == "bad_baseline":
     #Model weight init
@@ -317,7 +357,6 @@ elif configuration == "bad_baseline":
     image_tower_config = "classic"
     find_unused_param = True
 
-    side_text_weights_copy = False
 
 elif configuration == "baseline":
     #Model weight init
@@ -333,7 +372,6 @@ elif configuration == "baseline":
     image_tower_config = "classic"
     find_unused_param = False
 
-    side_text_weights_copy = False
 
 
 elif configuration == "good_baseline":
@@ -350,7 +388,6 @@ elif configuration == "good_baseline":
     image_tower_config = "classic"
     find_unused_param = False
 
-    side_text_weights_copy = False
 
 elif configuration == "classic_LiT":
     #Model weight init
@@ -366,7 +403,6 @@ elif configuration == "classic_LiT":
     image_tower_config = "classic"
     find_unused_param = True
 
-    side_text_weights_copy = False
 
 elif configuration == "LiT":
     #Model weight init
@@ -382,7 +418,6 @@ elif configuration == "LiT":
     image_tower_config = "classic"
     find_unused_param = True
 
-    side_text_weights_copy = False
 
 elif configuration == "APE":
     #Model weight init
@@ -398,7 +433,6 @@ elif configuration == "APE":
     image_tower_config = "classic"
     find_unused_param = False
 
-    side_text_weights_copy = False
 
 #Using both the LiT finetuning scheme and the bigger APE MLP
 elif configuration == "APE_LiT":
@@ -415,5 +449,4 @@ elif configuration == "APE_LiT":
     image_tower_config = "classic"
     find_unused_param = True
 
-    side_text_weights_copy = False
 

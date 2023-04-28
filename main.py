@@ -5,7 +5,7 @@ from models_CLIP import CLIPMoco
 from losses import CLIPMoCOLoss
 from training import train_one_epoch, valid_one_epoch,get_lr
 from utils import setup,cleanup
-from utils_models import modify_text_model_after_init,resume_model
+from utils_models import modify_model_after_init,resume_model
 
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -31,10 +31,8 @@ def main(rank,world_size):
 
     # setup the process groups
 
-    print("setup")
     setup(rank, world_size)
     
-    print("prepare dataloaders")
     # prepare the dataloader
     tokenizer = get_tokenizer(CFG.text_model_name)
     feature_extractor = get_feature_extractor(CFG.vision_model_name)
@@ -44,17 +42,15 @@ def main(rank,world_size):
 
     number_of_step_per_epoch = len(dataloader_train)
     
-    print("prepare model")
     model = CLIPMoco()
     loss_fn = CLIPMoCOLoss().to(rank)
-    print("model ready")
     # copy the pruned weights of the main text to the side LST text network
     
-    if CFG.side_text_weights_copy:
+    if CFG.side_text_weights_copy or CFG.side_image_weights_copy:
         print("Starting copying the weights to the pruned side network")
         importance_measure = compute_fisher(model, get_dataloader(dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=1,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train"), num_samples=CFG.samples_for_fisher)
         print("fisher importance measure computed")
-        model = modify_text_model_after_init(model,tokenizer,importance_measure)
+        model = modify_model_after_init(model,tokenizer,feature_extractor,importance_measure)
         print("Finish copying the weights to the pruned side network")
 
     importance_measure = None

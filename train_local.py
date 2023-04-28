@@ -35,8 +35,8 @@ def main():
     tokenizer = get_tokenizer(CFG.text_model_name)
     feature_extractor = get_feature_extractor(CFG.vision_model_name)
 
-    dataloader_train = get_local_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="train")
-    dataloader_valid = get_local_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="val")
+    dataloader_train = get_local_dataloader(dataset=CFG.dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="train")
+    dataloader_valid = get_local_dataloader(dataset=CFG.dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="val")
 
     number_of_step_per_epoch = len(dataloader_train)
     
@@ -45,10 +45,13 @@ def main():
 
     # copy the pruned weights of the main text to the side LST text network
     if CFG.side_text_weights_copy:
-       
-        importance_measure = compute_fisher(model, get_local_dataloader(tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=1,shuffle=CFG.shuffle_train,split="train"), num_samples=CFG.samples_for_fisher)
+        print("Starting copying the weights to the pruned side network")
+
+        importance_measure = compute_fisher(model, get_local_dataloader(dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=1,shuffle=CFG.shuffle_train,split="train"), num_samples=CFG.samples_for_fisher)
         
         model = modify_text_model_after_init(model,tokenizer,importance_measure)
+        print("Finish copying the weights to the pruned side network")
+
 
 
 
@@ -56,11 +59,6 @@ def main():
 
     
     resume_model(model)
-    # wrap the model with DDP
-    # device_ids tell DDP where is your model
-    # output_device tells DDP where to output, in our case, it is rank
-    # find_unused_parameters=True instructs DDP to find unused output of the forward() function of any module in the model
-    
     
     #Parameter
     params = []

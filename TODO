@@ -19,14 +19,15 @@ DONE Bert base uncased
 IN PROCESS use bigger data set cc3m
 DONE use bigger text encoder for LST for the same memory budget than the current LiT text encoder 
 
-IN PROCESS train base BERT on flickr30k
-implement LST for ViT
-train complete LST on flickr
+DONE train base BERT on flickr30k
+DONE implement LST for ViT
+IN PROCESS train complete LST small on flickr
+IN PROCESS train cutted LST small on flickr
 train double LST on MSCOCO with all ladder
 train double LST on MSCOCO with cut ladder first
 train double LST on MSCOCO with cut ladder last
 
-train APE on MS COCO
+DONE train APE on MS COCO
 
 train LORA on Flickr/MSCOCO?
 
