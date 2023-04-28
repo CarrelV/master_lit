@@ -17,24 +17,24 @@ text_model_size = "small"
 configuration = "LST"
 testing = False
 
-dataset = "flickr30k"
-#dataset = "mscoco"
+#dataset = "flickr30k"
+dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "flickr_redlad_4"
+training_run_number = "mscoco"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 32 for BERT base uncased with LST
-batch_size = 256
+batch_size = 128
 
 test_batch_size = 128
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
-warming_epochs = 20
-epochs = 300
+warming_epochs = 5
+epochs = 50
 
 # 1 at home, 2 on cluster
 gpu_number = 2
@@ -49,7 +49,7 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-weight_version = "flickr_redlad_4"
+weight_version = "mscoco"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -57,13 +57,9 @@ weight_version = "flickr_redlad_4"
 #############################################################################
 
 ########## Dataset Configuration ##########
-if text_model_size == "small":
 
-    max_length = 128
+max_length = 128
 
-elif text_model_size == "medium":
-
-    max_length = 256
 
 
 
@@ -102,7 +98,8 @@ image_embedding = 384
 reduction_factor = 8
 
 # reduction of number of ladder connection
-ladder_reduction_factor = 4
+# default is 1, go to 2 or 4 if wanted
+ladder_reduction_factor = 1
 ladder_initial_gap = 0
 ## Side network
 
