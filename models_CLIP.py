@@ -58,7 +58,8 @@ class ImageEncoder(nn.Module):
         
         output = self.model(image)
         last_hidden_state = output.last_hidden_state
-        return last_hidden_state[:, self.target_token_idx, :]
+
+        return last_hidden_state
 
 
 ###################### TRANSFORMER HEAD ####################################
@@ -273,7 +274,7 @@ class CLIPMoco(nn.Module):
         for param_k in self.image_key_encoder.parameters():param_k.requires_grad = False
 
         self.text_key_encoder = deepcopy(self.text_encoder)
-        for param_k in self.image_key_encoder.parameters(): param_k.requires_grad = False
+        for param_k in self.text_key_encoder.parameters(): param_k.requires_grad = False
 
         self.image_key_projection = deepcopy(self.image_projection)
         for param_k in self.image_key_projection.parameters(): param_k.requires_grad = False
@@ -327,12 +328,13 @@ class CLIPMoco(nn.Module):
     def encode_image(self,image):
         if not self.finetune_image:
             with torch.no_grad():
-                image_features = self.image_encoder(image)
+                image_encoder_output = self.image_encoder(image)
 
         
         else:
-            image_features = self.image_encoder(image)
+            image_encoder_output = self.image_encoder(image)
 
+        image_features = image_encoder_output[:,self.target_token_idx,:]
 
         # Getting Image Embeddings (output of proj heads)
         image_embeddings = self.image_projection(image_features)
@@ -344,8 +346,10 @@ class CLIPMoco(nn.Module):
     @torch.no_grad()
     def key_encode_image(self,image):
         
-        image_features = self.image_key_encoder(image)
+        image_encoder_output = self.image_key_encoder(image)
 
+
+        image_features = image_encoder_output[:,self.target_token_idx,:]
         
         # Getting Image Embeddings (output of proj heads)
         image_embeddings = self.image_key_projection(image_features)
