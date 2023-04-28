@@ -31,7 +31,7 @@ if __name__ == "__main__":
     #print(feature_extractor)
     text = tokenizer("Hello, my dog is cute", return_tensors="pt").to(device)
 
-    dummy_image = np.zeros((256,256,3), np.uint8)
+    dummy_image = np.random.rand((256,256,3), np.uint8)
     image = feature_extractor(dummy_image,return_tensors="pt").to(device)
     print("Hallo")
     if CFG.side_text_weights_copy:
@@ -44,9 +44,11 @@ if __name__ == "__main__":
     resume_model(model)
     #print(model)
 
-    print("Finish")
 
-    #outputs = model(image["pixel_values"].to(device),text)
+
+    #print("Finish")
+
+    outputs = model(image["pixel_values"].to(device),text)
 
     #print(outputs)
     #print(outputs)

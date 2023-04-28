@@ -5,7 +5,7 @@ import torch.nn as nn
 
 from copy import deepcopy
 from model_BERTLsT import BertModel,BertConfig,BertLSTModel,BertEncoder
-from model_ViT import ViTModel,ViTConfig
+from model_ViTLsT import ViTModel,ViTConfig, ViTLSTModel
 from transformers import BertTokenizerFast
 import lora_utils
 
@@ -26,8 +26,8 @@ class TextEncoder(nn.Module):
         for p in self.model.parameters():
             p.requires_grad = trainable
 
-        # we are using the CLS token hidden representation as the sentence's embedding
-
+    # we are using the CLS token hidden representation as the sentence's embedding
+    # But don't actually return it alone because we need to pass the whole sentence to the Attention head (one of the config)
     def forward(self, input_ids, attention_mask):
         output = self.model(input_ids=input_ids, attention_mask=attention_mask)
         
@@ -230,6 +230,9 @@ class CLIPMoco(nn.Module):
 
         if self.image_tower_config == "classic":
             self.image_encoder = ImageEncoder()
+        elif self.image_tower_config == "LST":
+            self.image_encoder = ViTLSTModel.from_pretrained(CFG.vision_model_name)
+
 
         if self.text_tower_config == "classic":
             self.text_encoder = TextEncoder()
@@ -285,6 +288,8 @@ class CLIPMoco(nn.Module):
         self.queue_ptr = 0
 
     def encode_text(self,text):
+
+
         if not self.finetune_text:
             with torch.no_grad():
                 text_encoder_output = self.text_encoder(input_ids=text["input_ids"], attention_mask=text["attention_mask"])

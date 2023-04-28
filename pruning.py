@@ -127,6 +127,8 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                 # the first layer
                 # will only select next prune idx
                 # and direct copy the same weights
+                print("Hello I'm here")
+
                 importance = importance_measure["text_encoder."+layer]
                 weights = state_dict[layer]
                 pruning_idxs = strategy_for_others(weights=importance.T, amount=prune_val)
@@ -158,10 +160,10 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
 def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, importance_measure=None):
        
-    dummy_img = Image.open("flickr30k-images/36979.jpg").convert('RGB').crop((0,0,224,224))
-    inputs_img = feature_extractor(dummy_img,return_tensors="pt")
+    dummy_image = np.zeros((256,256,3), np.uint8)
+    image = feature_extractor(dummy_image,return_tensors="pt")
     
-    inputs_dict = {"pixel_values": inputs_dict["pixel_values"]} # transform to dict
+    inputs_dict = {"pixel_values": image["pixel_values"]} # transform to dict
     
     # Build dependency graph
     DG = tpd.DependencyGraph()
@@ -188,27 +190,27 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
     ordered_target_layers = []
 
     sub_model = "encoder"
-    ordered_target_layers.append("embeddings.position_embeddings.weight")
-    ordered_target_layers.append(["embeddings.LayerNorm.weight"])
-    ordered_target_layers.append(["embeddings.LayerNorm.bias"])
+    ordered_target_layers.append("embeddings.position_embeddings")
+    ordered_target_layers.append(["embeddings.patch_embeddings.projection.weight"])
+    ordered_target_layers.append(["embeddings.patch_embeddings.projection.bias"])
     for i in range(model.config.num_hidden_layers):
         ordered_target_layers.append(
-            [f"{sub_model}.layer.{i}.attention.self.{n}.weight" for n in ["query", "key", "value"]]
+            [f"{sub_model}.layer.{i}.attention.attention.{n}.weight" for n in ["query", "key", "value"]]
             )
         ordered_target_layers.append(
-            [f"{sub_model}.layer.{i}.attention.self.{n}.bias" for n in ["query", "key", "value"]]
+            [f"{sub_model}.layer.{i}.attention.attention.{n}.bias" for n in ["query", "key", "value"]]
             )
-        ordered_target_layers.append([f"{sub_model}.layer.{i}.attention.output.dense.weight"])
-        ordered_target_layers.append([f"{sub_model}.layer.{i}.attention.output.dense.bias"])
-        ordered_target_layers.append([f"{sub_model}.layer.{i}.attention.output.LayerNorm.weight"])
-        ordered_target_layers.append([f"{sub_model}.layer.{i}.attention.output.LayerNorm.bias"])
+        ordered_target_layers.append([f"{sub_model}.layer.{i}.attention.output.dense.weight"])#
+        ordered_target_layers.append([f"{sub_model}.layer.{i}.attention.output.dense.bias"])#
+        ordered_target_layers.append([f"{sub_model}.layer.{i}.layernorm_before.weight"])
+        ordered_target_layers.append([f"{sub_model}.layer.{i}.layernorm_before.bias"])
 
-        ordered_target_layers.append([f"{sub_model}.layer.{i}.intermediate.dense.weight"])
-        ordered_target_layers.append([f"{sub_model}.layer.{i}.intermediate.dense.bias"])
-        ordered_target_layers.append([f"{sub_model}.layer.{i}.output.dense.weight"])
-        ordered_target_layers.append([f"{sub_model}.layer.{i}.output.dense.bias"])
-        ordered_target_layers.append([f"{sub_model}.layer.{i}.output.LayerNorm.weight"])
-        ordered_target_layers.append([f"{sub_model}.layer.{i}.output.LayerNorm.bias"])
+        ordered_target_layers.append([f"{sub_model}.layer.{i}.intermediate.dense.weight"])#
+        ordered_target_layers.append([f"{sub_model}.layer.{i}.intermediate.dense.bias"])#
+        ordered_target_layers.append([f"{sub_model}.layer.{i}.output.dense.weight"])#
+        ordered_target_layers.append([f"{sub_model}.layer.{i}.output.dense.bias"])#
+        ordered_target_layers.append([f"{sub_model}.layer.{i}.layernorm_after.weight"])
+        ordered_target_layers.append([f"{sub_model}.layer.{i}.layernorm_after.bias"])
 
     
     pruning_idxs_first_layer = None
@@ -218,22 +220,23 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
         for layer in ordered_target_layers:
             
             if isinstance(layer, list):
-                is_layernorm =  all(["LayerNorm" in sub_layer for sub_layer in layer])
-                is_attn = all(["attention" in sub_layer for sub_layer in layer]) and not is_layernorm
+                is_layernorm_after =  all(["layernorm_after" in sub_layer for sub_layer in layer])
+                is_layernorm_before =  all(["layernorm_before" in sub_layer for sub_layer in layer])
+                is_attn = all(["attention" in sub_layer for sub_layer in layer]) and not is_layernorm_after and not is_layernorm_before
                 is_bias = all(["bias" in sub_layer for sub_layer in layer])
 
-                if is_bias or is_layernorm:
+                if is_bias or is_layernorm_after or is_layernorm_before:
                     # use previous idx to prune the weights
 
                     for sub_layer in layer:
                         weights = state_dict[sub_layer]
                         weights = select_weights(weights, pruning_idxs)
 
-                        importance = importance_measure["text_encoder."+sub_layer]
+                        importance = importance_measure["image_encoder."+sub_layer]
                         importance = select_weights(importance, pruning_idxs)
                         
                         new_state_dict[sub_layer] = weights
-                        importance_measure["text_encoder."+sub_layer] = importance
+                        importance_measure["image_encoder."+sub_layer] = importance
 
                 else:
                     # the most common case
@@ -244,7 +247,7 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
                         strategy = strategy_for_others
                     
                     weights = [state_dict[sub_layer] for sub_layer in layer]
-                    importances = [importance_measure["text_encoder."+sub_layer] for sub_layer in layer]
+                    importances = [importance_measure["image_encoder."+sub_layer] for sub_layer in layer]
 
                     # prune according to previous idx
                     weights = [select_weights(w.T, pruning_idxs).T for w in weights]
@@ -265,13 +268,14 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
 
                     # update importance measure
                     for l, imp in zip(layer, importances):
-                        importance_measure["text_encoder."+l] = imp
+                        importance_measure["image_encoder."+l] = imp
 
-            elif "position_embeddings.weight" in layer:
+            elif "position_embeddings" in layer:
                 # the first layer
                 # will only select next prune idx
                 # and direct copy the same weights
-                importance = importance_measure["text_encoder."+layer]
+                print("Hello I'm here")
+                importance = importance_measure["image_encoder."+layer]
                 weights = state_dict[layer]
                 pruning_idxs = strategy_for_others(weights=importance.T, amount=prune_val)
 
@@ -279,7 +283,7 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
                 importance = select_weights(importance.T, pruning_idxs).T
 
                 new_state_dict[layer] = weights
-                importance_measure["text_encoder."+layer] = importance
+                importance_measure["image_encoder."+layer] = importance
 
                 pruning_idxs_first_layer = pruning_idxs
             
@@ -289,11 +293,11 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
                 weights = state_dict[layer]
                 weights = select_weights(weights.T, pruning_idxs).T
 
-                importance = importance_measure["text_encoder."+layer]
+                importance = importance_measure["image_encoder."+layer]
                 importance = select_weights(importance.T, pruning_idxs).T
                 
                 new_state_dict[layer] = weights
-                importance_measure["text_encoder."+layer] = importance
+                importance_measure["image_encoder."+layer] = importance
 
         state_dict = new_state_dict
 

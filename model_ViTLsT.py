@@ -14,6 +14,7 @@
 # limitations under the License.
 """ PyTorch ViT model."""
 
+import copy
 import config as CFG
 
 import collections.abc
@@ -36,7 +37,7 @@ from transformers.utils import (
     replace_return_docstrings,
 )
 from transformers import ViTConfig
-
+import lora
 
 logger = logging.get_logger(__name__)
 
@@ -200,9 +201,17 @@ class ViTSelfAttention(nn.Module):
         self.attention_head_size = int(config.hidden_size / config.num_attention_heads)
         self.all_head_size = self.num_attention_heads * self.attention_head_size
 
-        self.query = nn.Linear(config.hidden_size, self.all_head_size, bias=config.qkv_bias)
+        if CFG.apply_lora_image:
+            self.query = lora.Linear(config.hidden_size,self.all_head_size,CFG.lora_r,CFG.lora_alpha,CFG.lora_dropout)
+        else:
+            self.query = nn.Linear(config.hidden_size, self.all_head_size, bias=config.qkv_bias)
+        
         self.key = nn.Linear(config.hidden_size, self.all_head_size, bias=config.qkv_bias)
-        self.value = nn.Linear(config.hidden_size, self.all_head_size, bias=config.qkv_bias)
+        
+        if CFG.apply_lora_image:
+            self.value = lora.Linear(config.hidden_size,self.all_head_size,CFG.lora_r,CFG.lora_alpha,CFG.lora_dropout)
+        else:
+            self.value = nn.Linear(config.hidden_size, self.all_head_size, bias=config.qkv_bias)
 
         self.dropout = nn.Dropout(config.attention_probs_dropout_prob)
 
@@ -621,12 +630,58 @@ class ViTLSTModel(ViTPreTrainedModel):
         super().__init__(config)
         self.config = config
 
+        self.final_skip_connection = CFG.add_final_skip_connection
+
+        # Main ViT
         self.embeddings = ViTEmbeddings(config, use_mask_token=use_mask_token)
         self.encoder = ViTEncoder(config)
 
         self.layernorm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
-        self.pooler = ViTPooler(config) if add_pooling_layer else None
 
+        # Freeze all parameters in the main tower
+        for p in self.encoder.parameters():
+            p.requires_grad = False
+
+        for p in self.embeddings.parameters():
+            p.requires_grad = False
+
+        # Side pruned ViT
+
+        side_config = copy.deepcopy(config)
+
+        side_config.intermediate_size = side_config.intermediate_size // CFG.reduction_factor
+        side_config.hidden_size = side_config.hidden_size // CFG.reduction_factor
+
+        self.number_of_ladder = side_config.num_hidden_layers // CFG.ladder_reduction_factor
+
+        # Downsample emb
+        self.side_emb = nn.Linear(config.hidden_size,side_config.hidden_size)
+
+        # Final upsampler for the end to be able to add different heads on top
+        self.final_upsample = nn.Linear(side_config.hidden_size,config.hidden_size)
+
+
+        # List of Downsampler (linear layers) from main to side
+        self.side_downsamplers = nn.ModuleList(
+            [nn.Linear(config.hidden_size,side_config.hidden_size) for _ in range(self.number_of_ladder)]
+        )
+
+        # List of the reduced Bert layers in the side network
+        self.side_encoder = nn.ModuleList(
+            [ViTLayer(side_config) for _ in range(self.number_of_ladder)]
+        )
+
+        # List of learnable parameter for the gated combination
+        self.side_gate_params = nn.ParameterList(
+            [nn.Parameter(torch.ones(1) * CFG.gate_alpha) for _ in range(self.number_of_ladder)]
+        )
+        self.gate_T = CFG.gate_T
+
+        # Add a final sum between the output of the original tower and the side tower
+        if self.final_skip_connection:
+            self.final_skip_connection_gate = nn.ParameterList(
+                [nn.Parameter(torch.ones(1) * CFG.gate_alpha) for _ in range(1)]
+        )
         # Initialize weights and apply final processing
         self.post_init()
 
@@ -684,26 +739,77 @@ class ViTLSTModel(ViTPreTrainedModel):
         embedding_output = self.embeddings(
             pixel_values, bool_masked_pos=bool_masked_pos, interpolate_pos_encoding=interpolate_pos_encoding
         )
-
+        
+        # Forward pass of the main encoder, which output all hidden states
         encoder_outputs = self.encoder(
             embedding_output,
             head_mask=head_mask,
             output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
+            output_hidden_states=True,
             return_dict=return_dict,
         )
+        #get all the hidden states
+        hidden_states = encoder_outputs[1]
+        #remove the emb_input
+        attention_hidden_states = hidden_states[1:]
+
         sequence_output = encoder_outputs[0]
-        sequence_output = self.layernorm(sequence_output)
-        pooled_output = self.pooler(sequence_output) if self.pooler is not None else None
+        last_hidden_state = self.layernorm(sequence_output)
 
-        if not return_dict:
-            head_outputs = (sequence_output, pooled_output) if pooled_output is not None else (sequence_output,)
-            return head_outputs + encoder_outputs[1:]
+        # Forward for the side network using the hidden states
 
-        return BaseModelOutputWithPooling(
-            last_hidden_state=sequence_output,
-            pooler_output=pooled_output,
-            hidden_states=encoder_outputs.hidden_states,
-            attentions=encoder_outputs.attentions,
-        )
+        # g_emb(x_emb)
+        side_hidden_states = self.side_emb(embedding_output)
+
+
+        # If we remove some Ladder connections
+        step = CFG.ladder_reduction_factor
+        initial_gap = CFG.ladder_initial_gap
+        
+        # for each layer add the sigmoid (gate) off the previous layer (side net) and the downsampled hidden state from the main net (the ladder) 
+
+        for idx in range(self.number_of_ladder):
+            
+            side_layer_to_process = self.side_encoder[idx]
+            side_downsampler = self.side_downsamplers[idx]
+            
+            # Gating
+            side_gate_param = self.side_gate_params[idx]
+            
+            ## LST original sigmoid gate
+            '''gate = torch.sigmoid(side_gate_param / self.gate_T)
+
+            # Combining both inputs
+            side_hidden_states = gate * side_hidden_states + (1 - gate) * side_downsampler(hidden_states[idx])'''
+
+            ## Following Flamingo Tanh gatting 
+            gate = torch.tanh(side_gate_param / self.gate_T)
+
+            # Combining both inputs 
+            side_hidden_states = gate * side_hidden_states + side_downsampler(attention_hidden_states[initial_gap + idx * step])
+
+
+
+            # Processing next side layer
+            side_layer_outputs = side_layer_to_process(side_hidden_states)
+
+            # Remember new side_hidden_state
+            side_hidden_states = side_layer_outputs[0]
+
+        # At the end, upsample the side_hidden_states and returns it only
+  
+        upsample_outputs = self.final_upsample(side_hidden_states)
+
+        if self.final_skip_connection:
+            final_gate = torch.tanh(self.final_skip_connection_gate[0] / self.gate_T)
+            final_output = last_hidden_state + final_gate * upsample_outputs
+
+        else:
+             final_output = upsample_outputs
+
+
+        
+        return final_output
+
+        
 
