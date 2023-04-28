@@ -27,7 +27,7 @@ training_run_number = "flickr"
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 32 for BERT base uncased with LST
-batch_size = 256
+batch_size = 128
 
 test_batch_size = 128
 
