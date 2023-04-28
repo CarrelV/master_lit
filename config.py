@@ -11,17 +11,17 @@
 #             Training         #
 ################################
 
-text_model_size = "small"
+text_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "APE"
+configuration = "text_LST"
 testing = False
 
-#dataset = "flickr30k"
-dataset = "mscoco"
+dataset = "flickr30k"
+#dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "mscoco_1"
+training_run_number = "base_flickr"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -47,9 +47,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "APE"
+configuration_to_test = "text_LST"
 
-weight_version = "mscoco_1"
+weight_version = "base_flickr"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
