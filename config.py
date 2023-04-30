@@ -14,7 +14,7 @@
 text_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "LiT"
+configuration = "classic_LiT"
 testing = False
 
 #dataset = "flickr30k"
@@ -27,9 +27,9 @@ training_run_number = "mscoco_baseBERT"
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 32 for BERT base uncased with LST
-batch_size = 32
+batch_size = 16
 
-test_batch_size = 32
+test_batch_size = 16
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
@@ -47,7 +47,7 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "LiT"
+configuration_to_test = "classic_LiT"
 
 weight_version = "mscoco_baseBERT"
 #############################################################################
