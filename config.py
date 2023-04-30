@@ -14,31 +14,35 @@
 text_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "classic_LiT"
+configuration = "LST"
 testing = False
 
-#dataset = "flickr30k"
-dataset = "mscoco"
+dataset = "flickr30k"
+#dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "mscoco_baseBERT"
+training_run_number = "flickr_baseBERT"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 32 for BERT base uncased with LST
-batch_size = 8
+batch_size = 64
 
-test_batch_size = 8
+test_batch_size = 64
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
-warming_epochs = 5
-epochs = 50
+warming_epochs = 20
+epochs = 300
 
 # 1 at home, 2 on cluster
 gpu_number = 2
 
+
+# reduction of number of ladder connection
+# default is 1, go to 2 or 4 if wanted
+ladder_reduction_factor = 1
 
 # When using LST, can chose to add a final skip connection between the output of the frozen main model and 
 # the output of the upsampled side network output
@@ -47,9 +51,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "classic_LiT"
+configuration_to_test = "LST"
 
-weight_version = "mscoco_baseBERT"
+weight_version = "flickr_baseBERT"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -97,9 +101,7 @@ image_embedding = 384
 # reduction of hidden dim size
 reduction_factor = 8
 
-# reduction of number of ladder connection
-# default is 1, go to 2 or 4 if wanted
-ladder_reduction_factor = 4
+
 ladder_initial_gap = 0
 ## Side network
 

@@ -69,9 +69,13 @@ def main(rank,world_size):
     #Parameter
     params = []
     if CFG.text_backbone_finetune:
-        params.append({"params" : model.module.text_encoder.parameters(), "lr" : CFG.text_encoder_lr})
+        params.append({"params" : [p for n,p in model.module.text_encoder.named_parameters() if "side_encoder" in n], "lr" : 1e-5})
+        params.append({"params" : [p for n,p in model.module.text_encoder.named_parameters() if "side_encoder" not in n], "lr" : 1e-3})
+
     if CFG.image_backbone_finetune:
-        params.append({"params" : model.module.image_encoder.parameters(), "lr" : CFG.image_encoder_lr})
+        params.append({"params" : [p for n,p in model.module.image_encoder.named_parameters() if "side_encoder" in n], "lr" : 1e-5})
+        params.append({"params" : [p for n,p in model.module.image_encoder.named_parameters() if "side_encoder" not in n], "lr" : 1e-3})
+
     params.append({"params" : model.module.text_projection.parameters(), "lr" : CFG.text_head_lr})
     params.append({"params" : model.module.image_projection.parameters(), "lr" : CFG.image_head_lr})
 
