@@ -57,11 +57,11 @@ def test():
 
     print("0 Shot classification on ImageNetV2:")
 
-    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "all",device=device)
-    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "big",device=device)
-    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "medium",device=device)
-    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "small",device=device)
-    #imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "tiny",device=device)
+    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "all",device=device)
+    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "big",device=device)
+    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "medium",device=device)
+    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "small",device=device)
+    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "tiny",device=device)
     
     print("T2I and I2T retrieval on Flickr30k test set:")
 
