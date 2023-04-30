@@ -79,3 +79,87 @@ Top-5 accuracy: 33.12
 0 shot imageNet on the tiny set (13 classes)
 Top-1 accuracy: 17.56
 Top-5 accuracy: 57.95
+
+
+-------------------------
+For the model LST (small BERT) trained on Flickr30k 300 epochs (CLUSTER weight : flickr_redlad_4)
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 37.70
+Top-5 accuracy: 73.00
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 38.30
+Top-5 accuracy: 72.50
+
+0 shot imageNet on the full set (1000 classes)
+Top-1 accuracy: 02.80
+Top-5 accuracy: 08.22
+0 shot imageNet on the big set (400 classes)
+Top-1 accuracy: 00.64
+Top-5 accuracy: 02.73
+0 shot imageNet on the medium set (100 classes)
+Top-1 accuracy: 02.67
+Top-5 accuracy: 12.52
+0 shot imageNet on the small set (25 classes)
+Top-1 accuracy: 06.79
+Top-5 accuracy: 29.98
+0 shot imageNet on the tiny set (13 classes)
+Top-1 accuracy: 18.97
+Top-5 accuracy: 54.74
+
+
+-------------------------
+For the model LST (small BERT) trained on Flickr30k 300 epochs (CLUSTER weight : flickr)
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 39.00
+Top-5 accuracy: 73.10
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 37.30
+Top-5 accuracy: 72.10
+
+0 shot imageNet on the full set (1000 classes)
+Top-1 accuracy: 02.68
+Top-5 accuracy: 08.59
+0 shot imageNet on the big set (400 classes)
+Top-1 accuracy: 00.57
+Top-5 accuracy: 03.00
+0 shot imageNet on the medium set (100 classes)
+Top-1 accuracy: 02.67
+Top-5 accuracy: 12.98
+0 shot imageNet on the small set (25 classes)
+Top-1 accuracy: 08.21
+Top-5 accuracy: 32.57
+0 shot imageNet on the tiny set (13 classes)
+Top-1 accuracy: 20.00
+Top-5 accuracy: 61.28
+
+
+-------------------------
+For the model LST (small BERT) trained on MSCOCO 50 epochs (CLUSTER weight : mscoco)
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 22.10
+Top-5 accuracy: 49.90
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 21.30
+Top-5 accuracy: 46.70
+
+0 shot imageNet on the full set (1000 classes)
+Top-1 accuracy: 03.71
+Top-5 accuracy: 11.62
+0 shot imageNet on the big set (400 classes)
+Top-1 accuracy: 00.48
+Top-5 accuracy: 02.79
+0 shot imageNet on the medium set (100 classes)
+Top-1 accuracy: 03.61
+Top-5 accuracy: 13.76
+0 shot imageNet on the small set (25 classes)
+Top-1 accuracy: 08.60
+Top-5 accuracy: 34.06
+0 shot imageNet on the tiny set (13 classes)
+Top-1 accuracy: 20.26
+Top-5 accuracy: 60.38
