@@ -17,11 +17,11 @@ text_model_size = "small"
 configuration = "LST"
 testing = False
 
-#dataset = "flickr30k"
-dataset = "mscoco"
+dataset = "flickr30k"
+#dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "mscoco"
+training_run_number = "flickr"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -49,7 +49,7 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-weight_version = "mscoco"
+weight_version = "flickr"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
