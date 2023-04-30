@@ -122,6 +122,8 @@ def main(rank,world_size):
 
         if CFG.text_backbone_finetune:
             wandb.log({"Text Encoder lr" : lr_scheduler.get_last_lr()[0]},commit = False)
+        if CFG.image_backbone_finetune:
+            wandb.log({"Image Encoder lr" : lr_scheduler.get_last_lr()[1]},commit = False)
 
         wandb.log({"Text Projection lr" : lr_scheduler.get_last_lr()[-2], "Image Projection lr": lr_scheduler.get_last_lr()[-1]})
 
