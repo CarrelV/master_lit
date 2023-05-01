@@ -37,3 +37,15 @@ train LORA on Flickr/MSCOCO?
 
 Search SOTA/literature for task which require image and text together
 LST fusion?
+
+
+Working closely with LilT as reference:
+https://arxiv.org/pdf/2303.11866.pdf
+
+DONE Their second possibility is just adding a head on top of the last ladder -> equivalent to APE, but with Transformer instead of MLP -> equivalent to our "transformer_head" architecture. So we're doing it already 
+
+First possibility is LayerWise adapters -> to implement: before each layerNorm: add a downsampler, Gelu activation, upsampler and a residual connection accros it
+
+Unlock layerNorm param as well
+
+Implement I2T and T2I retrieval on COCO14
