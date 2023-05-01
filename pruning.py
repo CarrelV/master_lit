@@ -127,7 +127,6 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                 # the first layer
                 # will only select next prune idx
                 # and direct copy the same weights
-                print("Hello I'm here")
 
                 importance = importance_measure["text_encoder."+layer]
                 weights = state_dict[layer]
@@ -159,7 +158,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
 
 def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, importance_measure=None):
-       
+    
     dummy_image = np.zeros((256,256,3), np.uint8)
     image = feature_extractor(dummy_image,return_tensors="pt")
     
@@ -191,8 +190,8 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
 
     sub_model = "encoder"
     ordered_target_layers.append("embeddings.position_embeddings")
-    ordered_target_layers.append(["embeddings.patch_embeddings.projection.weight"])
-    ordered_target_layers.append(["embeddings.patch_embeddings.projection.bias"])
+    #ordered_target_layers.append(["embeddings.patch_embeddings.projection.weight"])
+    #ordered_target_layers.append(["embeddings.patch_embeddings.projection.bias"])
     for i in range(model.config.num_hidden_layers):
         ordered_target_layers.append(
             [f"{sub_model}.layer.{i}.attention.attention.{n}.weight" for n in ["query", "key", "value"]]
@@ -218,7 +217,7 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
     for prune_val in prune_vals:
         new_state_dict = {}
         for layer in ordered_target_layers:
-            
+
             if isinstance(layer, list):
                 is_layernorm_after =  all(["layernorm_after" in sub_layer for sub_layer in layer])
                 is_layernorm_before =  all(["layernorm_before" in sub_layer for sub_layer in layer])
@@ -257,7 +256,6 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
                     prod_imp = 0
                     for imp in importances:
                         prod_imp += torch.log(imp)
-
                     pruning_idxs = strategy(weights=prod_imp, amount=prune_val)
 
                     weights = [select_weights(w, pruning_idxs) for w in weights]
@@ -274,7 +272,6 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
                 # the first layer
                 # will only select next prune idx
                 # and direct copy the same weights
-                print("Hello I'm here")
                 importance = importance_measure["image_encoder."+layer]
                 weights = state_dict[layer]
                 pruning_idxs = strategy_for_others(weights=importance.T, amount=prune_val)
