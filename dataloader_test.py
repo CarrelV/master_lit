@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     # prepare the dataloader
     tokenizer = get_tokenizer(CFG.text_model_name)
-    feature_extractor = get_feature_extractor(CFG.vision_model_name)
+    feature_extractor = get_feature_extractor(CFG.image_model_name)
 
 
 

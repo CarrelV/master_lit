@@ -42,7 +42,7 @@ class TextEncoder(nn.Module):
 
 
 class ImageEncoder(nn.Module):
-    def __init__(self, model_name=CFG.vision_model_name, pretrained=CFG.image_backbone_pretrained, trainable=CFG.image_backbone_finetune):
+    def __init__(self, model_name=CFG.image_model_name, pretrained=CFG.image_backbone_pretrained, trainable=CFG.image_backbone_finetune):
         super().__init__()
         if pretrained:
             self.model = ViTModel.from_pretrained(model_name)
@@ -232,7 +232,7 @@ class CLIPMoco(nn.Module):
         if self.image_tower_config == "classic":
             self.image_encoder = ImageEncoder()
         elif self.image_tower_config == "LST":
-            self.image_encoder = ViTLSTModel.from_pretrained(CFG.vision_model_name)
+            self.image_encoder = ViTLSTModel.from_pretrained(CFG.image_model_name)
 
 
         if self.text_tower_config == "classic":

@@ -55,6 +55,8 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
     return model
 
 def resume_model(model):
+    
+    print(f"Config: {CFG.configuration}, text model size: {CFG.text_model_size}, image model size: {CFG.image_model_size}")
 
     trainable_params = sum(p.numel() for p in model.text_encoder.parameters() if p.requires_grad)
     total_params = sum(p.numel() for p in model.text_encoder.parameters())

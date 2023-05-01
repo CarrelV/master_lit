@@ -37,7 +37,7 @@ class TextEncoder(nn.Module):
 
 
 class ImageEncoder(nn.Module):
-    def __init__(self, model_name=CFG.vision_model_name, pretrained=CFG.image_backbone_pretrained, trainable=CFG.image_backbone_finetune):
+    def __init__(self, model_name=CFG.image_model_name, pretrained=CFG.image_backbone_pretrained, trainable=CFG.image_backbone_finetune):
         super().__init__()
         if pretrained:
             self.model = ViTModel.from_pretrained(model_name)

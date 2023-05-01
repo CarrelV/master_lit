@@ -33,7 +33,7 @@ def main():
 
     # prepare the dataloader
     tokenizer = get_tokenizer(CFG.text_model_name)
-    feature_extractor = get_feature_extractor(CFG.vision_model_name)
+    feature_extractor = get_feature_extractor(CFG.image_model_name)
 
     dataloader_train = get_local_dataloader(dataset=CFG.dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="train")
     dataloader_valid = get_local_dataloader(dataset=CFG.dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,batch_size=CFG.batch_size,shuffle=CFG.shuffle_train,split="val")
