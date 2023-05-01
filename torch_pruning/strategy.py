@@ -45,6 +45,7 @@ class LNStrategy(BaseStrategy):
         if n_to_prune == -1:
             if amount<=0: return []
             n = len(weights)
+
             l1_norm = torch.norm( weights.view(n, -1), p=self.p, dim=1 )
             n_to_prune = round(amount*n) if amount<1.0 else amount 
             n_to_prune = round_pruning_amount(n, n_to_prune, round_to)
