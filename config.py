@@ -21,15 +21,15 @@ dataset = "flickr30k"
 #dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "flickr_baseBERT"
+training_run_number = "flickr_baseBERT_redlad4"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 64 for BERT base uncased with LST
-batch_size = 64
+batch_size = 128
 
-test_batch_size = 64
+test_batch_size = 128
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
@@ -42,7 +42,7 @@ gpu_number = 2
 
 # reduction of number of ladder connection
 # default is 1, go to 2 or 4 if wanted
-ladder_reduction_factor = 1
+ladder_reduction_factor = 4
 
 # When using LST, can chose to add a final skip connection between the output of the frozen main model and 
 # the output of the upsampled side network output
@@ -53,7 +53,7 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-weight_version = "flickr_baseBERT"
+weight_version = "flickr_baseBERT_redlad4"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
