@@ -12,6 +12,7 @@
 ################################
 
 text_model_size = "medium"
+image_model_size = "medium"
 
 ## See at the end the different possibilities
 configuration = "LST"
@@ -90,12 +91,15 @@ elif text_model_size == "medium":
 
 
 
+if image_model_size == "small":
 
+    image_model_name = "facebook/dino-vits16"
+    image_embedding = 384
 
-vision_model_name = "facebook/dino-vits16"
-image_embedding = 384
+elif image_model_size == "medium":
 
-
+    image_model_name = "facebook/dino-vitb16"
+    image_embedding = 768
 
 ##############Pruning for LST
 # reduction of hidden dim size
@@ -111,6 +115,10 @@ gate_T = 0.1
 
 # for projection head; used for both image and text encoders
 projection_dim = 256 
+
+if image_model_size == "medium" and text_model_size == "medium":
+    projection_dim = 512
+
 dropout = 0.1
 
 temperature = 1.0
