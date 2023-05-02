@@ -30,7 +30,7 @@ IN PROCESS train image-lST on flickr with cut ladder
 train image-LST on MSCOCO with all ladder
 train image-LST on MSCOCO with cut ladder
 
-train LiT baseBART on MSCOCO  
+train LiT baseBART on MSCOCO (probably not possible)
 DONE train APE on MS COCO
 
 train LORA on Flickr/MSCOCO?
@@ -49,3 +49,20 @@ First possibility is LayerWise adapters -> to implement: before each layerNorm: 
 Unlock layerNorm param as well
 
 Implement I2T and T2I retrieval on COCO14
+
+TODO:
+- train without pruned weights to see importance of initialized side
+Initialize downsampler with PCA
+Initialize downsampler with identity from pruning
+Upsampler: get a linear mapping from output B11' to B11
+
+- Dense task: CLIP is good for dense task like semantic segmentation. If we can show that we have this nice thing but LiT and LilT not, that would be good. Linear probing
+
+I,T,+ LST training on MSCOCO
+On ADE20k and mscoco instance segmentation:
+I(frozen) + LST (frozen) + Decoder
+vs
+I(frozen) (LiT so ViT is frozen anyway) + Decoder
+Hopefully show that we're better
+
+- Multimodal:
