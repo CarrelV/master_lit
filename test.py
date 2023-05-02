@@ -52,7 +52,7 @@ def test():
     model.eval()
 
     print("-------------------------")
-    print(f"For the model {CFG.configuration_to_test}, weights: {CFG.weight_version}")
+    print(f"For the model {CFG.configuration_to_test}, weights: {CFG.weight_version}, text model size: {CFG.text_model_size}, image model size: {CFG.image_model_size}")
     print("-------------------------\n")
 
     print("0 Shot classification on ImageNetV2:")
