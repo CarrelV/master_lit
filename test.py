@@ -239,7 +239,7 @@ def i2t_t2i_retrieval(model,dataset,tokenizer,feature_extractor,device):
 
     with torch.no_grad():
 
-        top1_i2t, top5_i2t,top1_t2i,top5_t2i, n = 0., 0., 0. ,0. ,0.
+        top1_i2t, top5_i2t,top10_i2t,top1_t2i,top5_t2i,top10_t2i, n = 0., 0., 0. ,0. ,0. ,0. ,0.
         for batch in test_loader:
 
             image = batch["image"].to(device)
@@ -271,32 +271,37 @@ def i2t_t2i_retrieval(model,dataset,tokenizer,feature_extractor,device):
 
 
             # measure accuracy
-            acc1, acc5 = accuracy(sim_i2t, target, topk=(1, 5))
+            acc1, acc5, acc10 = accuracy(sim_i2t, target, topk=(1, 5, 10))
             top1_i2t += acc1
             top5_i2t += acc5
+            top10_i2t += acc10
 
-            acc1, acc5 = accuracy(sim_i2t.T, target, topk=(1, 5))
+            acc1, acc5, acc10 = accuracy(sim_i2t.T, target, topk=(1, 5, 10))
             top1_t2i += acc1
             top5_t2i += acc5
+            top10_t2i += acc10
 
             n += image.size(0)
 
     top1_i2t = (top1_i2t / n) * 100
     top5_i2t = (top5_i2t / n) * 100 
-
+    top10_i2t = (top10_i2t / n) * 100
     
 
 
     print(f"Image 2 Text Retrieval on {dataset}:")
     print(f"Top-1 accuracy: {top1_i2t:.2f}")
     print(f"Top-5 accuracy: {top5_i2t:.2f}")
+    print(f"Top-10 accuracy: {top10_i2t:.2f}")
 
     top1_t2i = (top1_t2i / n) * 100
     top5_t2i = (top5_t2i / n) * 100 
+    top10_t2i = (top10_t2i / n) * 100 
 
     print(f"Text 2 Image Retrieval on {dataset}:")
     print(f"Top-1 accuracy: {top1_t2i:.2f}")
     print(f"Top-5 accuracy: {top5_t2i:.2f}")
+    print(f"Top-10 accuracy: {top10_t2i:.2f}")
 
 
 ############################ ACCURACY #######################

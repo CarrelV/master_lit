@@ -11,31 +11,31 @@
 #             Training         #
 ################################
 
-text_model_size = "small"
-image_model_size = "small"
+text_model_size = "medium"
+image_model_size = "medium"
 
 ## See at the end the different possibilities
 configuration = "LST"
 testing = False
 
-dataset = "flickr30k"
-#dataset = "mscoco"
+#dataset = "flickr30k"
+dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "mscoco_redlad_4"
+training_run_number = "baseBERT_ViTb_mscoco_LilT"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 64 for BERT base uncased with LST
-batch_size = 128
+batch_size = 64
 
-test_batch_size = 128
+test_batch_size = 64
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
-warming_epochs = 20
-epochs = 300
+warming_epochs = 5
+epochs = 75
 
 # 1 at home, 2 on cluster
 gpu_number = 2
@@ -43,7 +43,7 @@ gpu_number = 2
 
 # reduction of number of ladder connection
 # default is 1, go to 2 or 4 if wanted
-ladder_reduction_factor = 4
+ladder_reduction_factor = 1
 
 # When using LST, can chose to add a final skip connection between the output of the frozen main model and 
 # the output of the upsampled side network output
@@ -54,7 +54,7 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-weight_version = "mscoco_redlad_4"
+weight_version = "baseBERT_ViTb_mscoco_LilT"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -116,8 +116,7 @@ gate_T = 0.1
 # for projection head; used for both image and text encoders
 projection_dim = 256 
 
-if image_model_size == "medium" and text_model_size == "medium":
-    projection_dim = 512
+
 
 dropout = 0.1
 

@@ -133,7 +133,7 @@ def main(rank,world_size):
 
         lr_scheduler.step()
 
-    
+    print("Finish training")
     cleanup()
 
 
