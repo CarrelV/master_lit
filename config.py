@@ -28,9 +28,9 @@ training_run_number = "baseBERT_ViTb_mscoco_LilT"
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 64 for BERT base uncased with LST
-batch_size = 64
+batch_size = 32
 
-test_batch_size = 64
+test_batch_size = 32
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
