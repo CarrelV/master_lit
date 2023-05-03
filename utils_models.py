@@ -24,7 +24,7 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
         
         print("Copying text params")
         side_state_dict_text,pruned_idx_text = pruning_BERT_without_residual(model.text_encoder,tokenizer,CFG.reduction_factor,importance_measure)
-    
+        
         for n,p in model.text_encoder.named_parameters():
          
             #Copy the side encoder weights

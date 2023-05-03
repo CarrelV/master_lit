@@ -31,7 +31,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
     # get a pruning plan by pruning from word embedding
 
-    
+    print("ici")
     strategy = tps.L1Strategy()
     
 
@@ -76,6 +76,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
     
     pruning_idxs_first_layer = None
 
+    print("là")
     for prune_val in prune_vals:
         new_state_dict = {}
         for layer in ordered_target_layers:
