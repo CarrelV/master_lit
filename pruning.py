@@ -168,7 +168,11 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
     
 
     state_dict = model.state_dict()
-    
+    print("state_dict")
+    print(state_dict.keys())
+
+    print("importance measure:")
+    print(importance_measure.keys())
     if importance_measure is None:
         importance_measure = copy.deepcopy(state_dict)
 
