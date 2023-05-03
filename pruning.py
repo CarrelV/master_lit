@@ -145,7 +145,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
             
         state_dict = new_state_dict
-
+    print("finish")
     return new_state_dict,pruning_idxs_history
 
 
