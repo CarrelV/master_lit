@@ -31,7 +31,6 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
     # get a pruning plan by pruning from word embedding
 
-    print("ici")
     strategy = tps.L1Strategy()
     
 
@@ -39,8 +38,6 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
     prune_vals = [1 - 1 / reduction_factor]
 
     state_dict = model.state_dict()
-    print("state dict")
-    print(state_dict)
     if importance_measure is None:
         importance_measure = copy.deepcopy(state_dict)
 
@@ -49,9 +46,9 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
     pruning_idxs_history =  {}
 
-    sub_model = "model.encoder"
-    ordered_target_layers.append("model.embeddings.position_embeddings.weight")
-    ordered_target_layers.append("model.embeddings.LayerNorm.weight")
+    sub_model = "encoder"
+    ordered_target_layers.append("embeddings.position_embeddings.weight")
+    ordered_target_layers.append("embeddings.LayerNorm.weight")
     for i in range(model.config.num_hidden_layers):
         ordered_target_layers.append(
             [f"{sub_model}.layer.{i}.attention.self.{n}.weight" for n in ["query", "key", "value"]]
@@ -77,12 +74,10 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
     
     pruning_idxs_first_layer = None
 
-    print("là")
     for prune_val in prune_vals:
         new_state_dict = {}
         for layer in ordered_target_layers:
             
-            print(f"For layer: {layer}")
             if isinstance(layer, list):
 
                 weights = [state_dict[sub_layer] for sub_layer in layer]
@@ -114,25 +109,18 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                 # the first layer
                 # will only select next prune idx
                 # and direct copy the same weights
-                print("1")
                 importance = importance_measure["text_encoder."+layer]
-                print("2")
                 weights = state_dict[layer]
-                print("3")
+             
                 pruning_idxs = strategy(weights=importance.T, amount=prune_val)
-                print("4")
 
 
                 weights = select_weights(weights.T, pruning_idxs).T
-                print("5")
                 importance = select_weights(importance.T, pruning_idxs).T
-                print("6")
 
 
                 new_state_dict[layer] = weights
-                print("7")
                 importance_measure["text_encoder."+layer] = importance
-                print("8")
             
             else:
                 # layerNorm layer.
@@ -154,7 +142,6 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
             
         state_dict = new_state_dict
-    print("finish")
     return new_state_dict,pruning_idxs_history
 
 
@@ -188,8 +175,8 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
     # construct ordered layers to process
     ordered_target_layers = []
 
-    sub_model = "model.encoder"
-    ordered_target_layers.append("model.embeddings.position_embeddings")
+    sub_model = "encoder"
+    ordered_target_layers.append("embeddings.position_embeddings")
     #ordered_target_layers.append(["embeddings.patch_embeddings.projection.weight"])
     #ordered_target_layers.append(["embeddings.patch_embeddings.projection.bias"])
     for i in range(model.config.num_hidden_layers):
