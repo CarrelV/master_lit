@@ -37,7 +37,6 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
     
     prune_vals = [1 - 1 / reduction_factor]
-    print(f"prune vals: {prune_vals}")
 
     state_dict = model.state_dict()
     
