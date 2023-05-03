@@ -210,7 +210,9 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
     for prune_val in prune_vals:
         new_state_dict = {}
         for layer in ordered_target_layers:
-
+            
+            print("layer:")
+            print(layer)
             if isinstance(layer, list):
                
                 weights = [state_dict[sub_layer] for sub_layer in layer]
