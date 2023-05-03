@@ -31,7 +31,10 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
             if "side_encoder" in n:
                 
                 infer_n = n.split(".")
+
+                print(f"copying for side encoder number: {infer_n[1]}")
                 infer_n[0] = "encoder.layer"
+
 
                 infer_n[1] = str(initial_gap + int(infer_n[1]) * step)
                 infer_n = ".".join(infer_n)            
@@ -45,6 +48,7 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
                 number = initial_gap + int(infer_n[1]) * step
                 list_of_index = pruned_idx_text[f"model.encoder.layer.{number}.output.LayerNorm.weight"]
 
+                print(f"copying for downsampler number: {infer_n[1]}")
                 new_weights = torch.zeros(p.shape)
 
                 for i,index in enumerate(list_of_index):
