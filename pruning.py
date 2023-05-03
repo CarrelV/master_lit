@@ -113,18 +113,25 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                 # the first layer
                 # will only select next prune idx
                 # and direct copy the same weights
-
+                print("1")
                 importance = importance_measure["text_encoder."+layer]
+                print("2")
                 weights = state_dict[layer]
+                print("3")
                 pruning_idxs = strategy(weights=importance.T, amount=prune_val)
+                print("4")
 
 
                 weights = select_weights(weights.T, pruning_idxs).T
+                print("5")
                 importance = select_weights(importance.T, pruning_idxs).T
+                print("6")
 
 
                 new_state_dict[layer] = weights
+                print("7")
                 importance_measure["text_encoder."+layer] = importance
+                print("8")
             
             else:
                 # layerNorm layer.
