@@ -41,6 +41,11 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
     if importance_measure is None:
         importance_measure = copy.deepcopy(state_dict)
 
+    print("state_dict")
+    print(state_dict.keys())
+
+    print("importance measure:")
+    print(importance_measure.keys())
     # construct ordered layers to process
     ordered_target_layers = []
 
@@ -77,7 +82,8 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
     for prune_val in prune_vals:
         new_state_dict = {}
         for layer in ordered_target_layers:
-            
+            print("layer")
+            print(layer)
             if isinstance(layer, list):
 
                 weights = [state_dict[sub_layer] for sub_layer in layer]
