@@ -39,7 +39,8 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
     prune_vals = [1 - 1 / reduction_factor]
 
     state_dict = model.state_dict()
-    
+    print("state dict")
+    print(state_dict)
     if importance_measure is None:
         importance_measure = copy.deepcopy(state_dict)
 
