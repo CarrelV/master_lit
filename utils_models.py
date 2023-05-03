@@ -22,7 +22,6 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
 
     if CFG.side_text_weights_copy:
         
-        print("Copying text params")
         side_state_dict_text,pruned_idx_text = pruning_BERT_without_residual(model.text_encoder,tokenizer,CFG.reduction_factor,importance_measure)
 
         for n,p in model.text_encoder.named_parameters():
@@ -57,7 +56,6 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
 
     if CFG.side_image_weights_copy:
 
-        print("Copying img params")
 
         side_state_dict_image,pruned_idx_img = pruning_ViT_without_residual(model.image_encoder,feature_extractor,CFG.reduction_factor,importance_measure)
     
