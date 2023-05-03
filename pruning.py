@@ -41,11 +41,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
     if importance_measure is None:
         importance_measure = copy.deepcopy(state_dict)
 
-    print("state_dict")
-    print(state_dict.keys())
-
-    print("importance measure:")
-    print(importance_measure.keys())
+    
     # construct ordered layers to process
     ordered_target_layers = []
 
@@ -82,12 +78,11 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
     for prune_val in prune_vals:
         new_state_dict = {}
         for layer in ordered_target_layers:
-            print("layer")
-            print(layer)
+     
             if isinstance(layer, list):
 
                 weights = [state_dict[sub_layer] for sub_layer in layer]
-                importances = [importance_measure["text_encoder."+sub_layer] for sub_layer in layer]
+                importances = [importance_measure["text_encoder.model."+sub_layer] for sub_layer in layer]
                 
                 # prune according to previous idx
                 weights = [select_weights(w.T, pruning_idxs).T for w in weights]
@@ -109,13 +104,13 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
                 # update importance measure
                 for l, imp in zip(layer, importances):
-                    importance_measure["text_encoder."+l] = imp
+                    importance_measure["text_encoder.model."+l] = imp
 
             elif "position_embeddings.weight" in layer:
                 # the first layer
                 # will only select next prune idx
                 # and direct copy the same weights
-                importance = importance_measure["text_encoder."+layer]
+                importance = importance_measure["text_encoder.model."+layer]
                 weights = state_dict[layer]
              
                 pruning_idxs = strategy(weights=importance.T, amount=prune_val)
@@ -126,7 +121,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
 
                 new_state_dict[layer] = weights
-                importance_measure["text_encoder."+layer] = importance
+                importance_measure["text_encoder.model."+layer] = importance
             
             else:
                 # layerNorm layer.
@@ -137,11 +132,11 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
                 weights = select_weights(weights, pruning_idxs)
 
-                importance = importance_measure["text_encoder."+layer]
+                importance = importance_measure["text_encoder.model."+layer]
                 importance = select_weights(importance, pruning_idxs)
                 
                 new_state_dict[layer] = weights
-                importance_measure["text_encoder."+layer] = importance
+                importance_measure["text_encoder.model."+layer] = importance
 
                 if ("attention" not in layer) and ("bias" not in layer) and ("embeddings" not in layer):
                     pruning_idxs_history[layer] = keep_idxs
@@ -174,11 +169,7 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
     
 
     state_dict = model.state_dict()
-    print("state_dict")
-    print(state_dict.keys())
 
-    print("importance measure:")
-    print(importance_measure.keys())
     if importance_measure is None:
         importance_measure = copy.deepcopy(state_dict)
 
@@ -217,12 +208,11 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
         new_state_dict = {}
         for layer in ordered_target_layers:
             
-            print("layer:")
-            print(layer)
+    
             if isinstance(layer, list):
                
                 weights = [state_dict[sub_layer] for sub_layer in layer]
-                importances = [importance_measure["image_encoder."+sub_layer] for sub_layer in layer]
+                importances = [importance_measure["image_encoder.model."+sub_layer] for sub_layer in layer]
 
                 # prune according to previous idx
                 weights = [select_weights(w.T, pruning_idxs).T for w in weights]
@@ -243,13 +233,13 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
 
                 # update importance measure
                 for l, imp in zip(layer, importances):
-                    importance_measure["image_encoder."+l] = imp
+                    importance_measure["image_encoder.model."+l] = imp
 
             elif "position_embeddings" in layer:
                 # the first layer
                 # will only select next prune idx
                 # and direct copy the same weights
-                importance = importance_measure["image_encoder."+layer]
+                importance = importance_measure["image_encoder.model."+layer]
                 weights = state_dict[layer]
                 pruning_idxs = strategy(weights=importance.T, amount=prune_val)
 
@@ -257,7 +247,7 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
                 importance = select_weights(importance.T, pruning_idxs).T
 
                 new_state_dict[layer] = weights
-                importance_measure["image_encoder."+layer] = importance
+                importance_measure["image_encoder.model."+layer] = importance
 
             
             else:
@@ -268,11 +258,11 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
 
                 weights = select_weights(weights, pruning_idxs)
 
-                importance = importance_measure["image_encoder."+layer]
+                importance = importance_measure["image_encoder.model."+layer]
                 importance = select_weights(importance.T, pruning_idxs).T
                 
                 new_state_dict[layer] = weights
-                importance_measure["image_encoder."+layer] = importance
+                importance_measure["image_encoder.model."+layer] = importance
 
                 if ("layernorm_after" in layer) and ("bias" not in layer):
                     pruning_idxs_history[layer] = keep_idxs

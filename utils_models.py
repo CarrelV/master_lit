@@ -44,7 +44,7 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
                 infer_n = n.split(".")
                 number = initial_gap + int(infer_n[1]) * step
                 
-                list_of_index = pruned_idx_text[f"model.encoder.layer.{number}.output.LayerNorm.weight"]
+                list_of_index = pruned_idx_text[f"encoder.layer.{number}.output.LayerNorm.weight"]
 
                 new_weights = torch.zeros(p.shape)
 
