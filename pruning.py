@@ -13,6 +13,11 @@ def select_weights(weights, idxs):
 
     return weights[keep_idxs]
 
+def get_saved_idx(weights,idxs):
+    num_features = len(weights)
+    keep_idxs = list(set(range(num_features)) - set(idxs))
+
+    return keep_idxs
 
 def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance_measure=None):
     inputs_dict = tokenizer(["I like dogs.", "I really like your cats."], padding=True, return_tensors="pt")
@@ -33,7 +38,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
     
     prune_vals = [1 - 1 / reduction_factor]
-    
+    print(f"prune vals: {prune_vals}")
 
     state_dict = model.state_dict()
     
@@ -43,10 +48,12 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
     # construct ordered layers to process
     ordered_target_layers = []
 
-    sub_model = "encoder"
-    ordered_target_layers.append("embeddings.position_embeddings.weight")
-    ordered_target_layers.append(["embeddings.LayerNorm.weight"])
-    ordered_target_layers.append(["embeddings.LayerNorm.bias"])
+    pruning_idxs_history =  {}
+
+    sub_model = "model.encoder"
+    ordered_target_layers.append("model.embeddings.position_embeddings.weight")
+    ordered_target_layers.append(["model.embeddings.LayerNorm.weight"])
+    ordered_target_layers.append(["model.embeddings.LayerNorm.bias"])
     for i in range(model.config.num_hidden_layers):
         ordered_target_layers.append(
             [f"{sub_model}.layer.{i}.attention.self.{n}.weight" for n in ["query", "key", "value"]]
@@ -79,6 +86,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                 is_bias = all(["bias" in sub_layer for sub_layer in layer])
 
                 if is_bias or is_layernorm:
+
                     # use previous idx to prune the weights
 
                     for sub_layer in layer:
@@ -88,8 +96,14 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                         importance = importance_measure["text_encoder."+sub_layer]
                         importance = select_weights(importance, pruning_idxs)
                         
+                        keep_idxs = get_saved_idx(weights,pruning_idxs)
+
                         new_state_dict[sub_layer] = weights
                         importance_measure["text_encoder."+sub_layer] = importance
+
+                        if is_layernorm:
+                            pruning_idxs_history[sub_layer] = keep_idxs
+
 
                 else:
                     # the most common case
@@ -110,11 +124,15 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                     prod_imp = 0
                     for imp in importances:
                         prod_imp += torch.log(imp)
+                    
+
 
                     pruning_idxs = strategy(weights=prod_imp, amount=prune_val)
 
                     weights = [select_weights(w, pruning_idxs) for w in weights]
                     importances = [select_weights(imp, pruning_idxs) for imp in importances]
+
+
 
                     for l, w in zip(layer, weights):
                         new_state_dict[l] = w
@@ -132,8 +150,10 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
                 weights = state_dict[layer]
                 pruning_idxs = strategy_for_others(weights=importance.T, amount=prune_val)
 
+
                 weights = select_weights(weights.T, pruning_idxs).T
                 importance = select_weights(importance.T, pruning_idxs).T
+
 
                 new_state_dict[layer] = weights
                 importance_measure["text_encoder."+layer] = importance
@@ -154,7 +174,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
         state_dict = new_state_dict
 
-    return new_state_dict
+    return new_state_dict,pruning_idxs_history
 
 
 def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, importance_measure=None):
@@ -166,7 +186,7 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
     
     # Build dependency graph
     DG = tpd.DependencyGraph()
-    DG.build_dependency(model, example_inputs = inputs_dict, pruning_dim = -1) 
+    DG.build_dependency(model, example_inputs = image["pixel_values"], pruning_dim = -1) 
     # Note to set pruning_dim to -1 to prune ViTModel on hidden_states.
 
     # get a pruning plan by pruning from word embedding
@@ -188,8 +208,8 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
     # construct ordered layers to process
     ordered_target_layers = []
 
-    sub_model = "encoder"
-    ordered_target_layers.append("embeddings.position_embeddings")
+    sub_model = "model.encoder"
+    ordered_target_layers.append("model.embeddings.position_embeddings")
     #ordered_target_layers.append(["embeddings.patch_embeddings.projection.weight"])
     #ordered_target_layers.append(["embeddings.patch_embeddings.projection.bias"])
     for i in range(model.config.num_hidden_layers):
@@ -213,6 +233,7 @@ def pruning_ViT_without_residual(model, feature_extractor, reduction_factor, imp
 
     
     pruning_idxs_first_layer = None
+
 
     for prune_val in prune_vals:
         new_state_dict = {}
