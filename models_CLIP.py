@@ -44,6 +44,7 @@ class TextEncoder(nn.Module):
 class ImageEncoder(nn.Module):
     def __init__(self, model_name=CFG.image_model_name, pretrained=CFG.image_backbone_pretrained, trainable=CFG.image_backbone_finetune):
         super().__init__()
+        self.config = ViTConfig.from_pretrained(model_name)
         if pretrained:
             self.model = ViTModel.from_pretrained(model_name)
         else:
@@ -395,6 +396,15 @@ class CLIPMoco(nn.Module):
         text_embeddings = self.encode_text(text)
 
         return {"image_embed": image_embeddings, "text_embed": text_embeddings}
+
+#To get quickly a classic model for computing fisher
+def get_classic_model():
+
+    return CLIPMoco(text_head_config = CFG.text_head_config,
+        text_tower_config = "classic",
+        image_tower_config = "classic",
+        finetune_image=True,
+        finetune_text=True)
 
 # utils
 @torch.no_grad()

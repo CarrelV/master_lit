@@ -2,7 +2,7 @@
 from pruning import pruning_BERT_without_residual,pruning_ViT_without_residual
 import config as CFG
 
-
+import torch
 
 
 
@@ -15,18 +15,17 @@ import config as CFG
 def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure):
 
     step = CFG.ladder_reduction_factor
-    if CFG.configuration == "reduced_LST_last":
-        initial_gap = CFG.ladder_reduction_factor - 1
-    else:
-        initial_gap = 0
-
+    
+    initial_gap = CFG.ladder_initial_gap
+    
 
 
     if CFG.side_text_weights_copy:
-        side_state_dict_text = pruning_BERT_without_residual(model.text_encoder,tokenizer,CFG.reduction_factor,importance_measure)
+        side_state_dict_text,pruned_idx_text = pruning_BERT_without_residual(model.text_encoder,tokenizer,CFG.reduction_factor,importance_measure)
     
         for n,p in model.text_encoder.named_parameters():
-
+         
+            #Copy the side encoder weights
             if "side_encoder" in n:
                 
                 infer_n = n.split(".")
@@ -37,11 +36,28 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
 
                 p.data.copy_(side_state_dict_text[infer_n])
 
+            #Init the downsampler as identity of pruned ladder
+            if ("downsampler" in n) and ("weight" in n):
+
+                infer_n = n.split(".")
+                number = infer_n[1]
+                list_of_index = pruned_idx_text[f"model.encoder.layer.{number}.output.LayerNorm.weight"]
+
+                new_weights = torch.zeros(p.shape)
+
+                for i,index in enumerate(list_of_index):
+                    new_weights[i,index] = 1
+
+                p.data.copy_(new_weights)
+
+            
+
     if CFG.side_image_weights_copy:
-        side_state_dict_image = pruning_ViT_without_residual(model.image_encoder,feature_extractor,CFG.reduction_factor,importance_measure)
+        side_state_dict_image,pruned_idx_img = pruning_ViT_without_residual(model.image_encoder,feature_extractor,CFG.reduction_factor,importance_measure)
     
         for n,p in model.image_encoder.named_parameters():
-
+            
+            #Copy the side encoder weights
             if "side_encoder" in n:
                 
                 infer_n = n.split(".")
@@ -51,6 +67,20 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
                 infer_n = ".".join(infer_n)            
 
                 p.data.copy_(side_state_dict_image[infer_n])
+
+            #Init the downsampler as identity of pruned ladder
+            if ("downsampler" in n) and ("weight" in n):
+
+                infer_n = n.split(".")
+                number = infer_n[1]
+                list_of_index = pruned_idx_img[f"model.encoder.layer.{number}.layernorm_after.weight"]
+
+                new_weights = torch.zeros(p.shape)
+
+                for i,index in enumerate(list_of_index):
+                    new_weights[i,index] = 1
+
+                p.data.copy_(new_weights)
 
     return model
 

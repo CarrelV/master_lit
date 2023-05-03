@@ -1,7 +1,7 @@
 import config as CFG
 from dataloader import get_dataloader
 from tokenizer import get_tokenizer,get_feature_extractor
-from models_CLIP import CLIPMoco
+from models_CLIP import CLIPMoco, get_classic_model
 from losses import CLIPMoCOLoss
 from training import train_one_epoch, valid_one_epoch,get_lr
 from utils import setup,cleanup
@@ -42,20 +42,29 @@ def main(rank,world_size):
 
     number_of_step_per_epoch = len(dataloader_train)
     
-    model = CLIPMoco()
+    
     loss_fn = CLIPMoCOLoss().to(rank)
     # copy the pruned weights of the main text to the side LST text network
     
     if CFG.side_text_weights_copy or CFG.side_image_weights_copy:
         print("Starting copying the weights to the pruned side network")
+        # Create a simple model without the ladder to computer the fisher, then write the new over
+        model = get_classic_model()
         importance_measure = compute_fisher(model, get_dataloader(dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=1,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train"), num_samples=CFG.samples_for_fisher)
         print("fisher importance measure computed")
+
+        model = CLIPMoco()
+
+        # Copy the pruned weights
         model = modify_model_after_init(model,tokenizer,feature_extractor,importance_measure)
         print("Finish copying the weights to the pruned side network")
+        importance_measure = None
 
-    importance_measure = None
+    else:
+        model = CLIPMoco()
     
-
+    
+   
     resume_model(model)
     model.to(rank)
     
@@ -69,13 +78,13 @@ def main(rank,world_size):
     #Parameter
     params = []
     if CFG.text_backbone_finetune:
-        params.append({"params" : [p for n,p in model.module.text_encoder.named_parameters() if "side_encoder" in n and p.requires_grad], "lr" : CFG.text_encoder_lr})
-        params.append({"params" : [p for n,p in model.module.text_encoder.named_parameters() if "side_encoder" not in n and p.requires_grad], "lr" : CFG.text_head_lr})
-
+        #params.append({"params" : [p for n,p in model.module.text_encoder.named_parameters() if "side_encoder" in n and p.requires_grad], "lr" : CFG.text_encoder_lr})
+        #params.append({"params" : [p for n,p in model.module.text_encoder.named_parameters() if "side_encoder" not in n and p.requires_grad], "lr" : CFG.text_head_lr})
+        params.append({"params" : model.module.text_encoder.parameters(), "lr" : CFG.text_encoder_lr})
     if CFG.image_backbone_finetune:
-        params.append({"params" : [p for n,p in model.module.image_encoder.named_parameters() if "side_encoder" in n and p.requires_grad], "lr" : CFG.image_encoder_lr})
-        params.append({"params" : [p for n,p in model.module.image_encoder.named_parameters() if "side_encoder" not in n and p.requires_grad], "lr" : CFG.image_head_lr})
-
+        #params.append({"params" : [p for n,p in model.module.image_encoder.named_parameters() if "side_encoder" in n and p.requires_grad], "lr" : CFG.image_encoder_lr})
+        #params.append({"params" : [p for n,p in model.module.image_encoder.named_parameters() if "side_encoder" not in n and p.requires_grad], "lr" : CFG.image_head_lr})
+        params.append({"params" : model.module.image_encoder.parameters(), "lr" : CFG.image_encoder_lr})
     params.append({"params" : model.module.text_projection.parameters(), "lr" : CFG.text_head_lr})
     params.append({"params" : model.module.image_projection.parameters(), "lr" : CFG.image_head_lr})
 
