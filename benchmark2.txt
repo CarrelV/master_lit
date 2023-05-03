@@ -163,3 +163,58 @@ Top-5 accuracy: 34.06
 0 shot imageNet on the tiny set (13 classes)
 Top-1 accuracy: 20.26
 Top-5 accuracy: 60.38
+
+
+-------------------------
+For the model LST cut ladder (small BERT) trained on MSCOCO 50 epochs (CLUSTER weight : mscoco_redlad_4)
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 19.40
+Top-5 accuracy: 47.30
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 20.80
+Top-5 accuracy: 46.70
+
+0 shot imageNet on the full set (1000 classes)
+Top-1 accuracy: 04.02
+Top-5 accuracy: 11.36
+0 shot imageNet on the big set (400 classes)
+Top-1 accuracy: 00.80
+Top-5 accuracy: 02.85
+0 shot imageNet on the medium set (100 classes)
+Top-1 accuracy: 03.99
+Top-5 accuracy: 12.89
+0 shot imageNet on the small set (25 classes)
+Top-1 accuracy: 08.90
+Top-5 accuracy: 33.69
+0 shot imageNet on the tiny set (13 classes)
+Top-1 accuracy: 21.15
+Top-5 accuracy: 56.41
+
+-------------------------
+For the model LST baseline (baseBERT and ViTb) trained on MSCOCO 75 epochs (CLUSTER weight : baseBERT_ViTb_mscoco_LilT)
+-------------------------
+
+Image 2 Text Retrieval on Flickr30k:
+Top-1 accuracy: 
+Top-5 accuracy: 
+Text 2 Image Retrieval on Flickr30k:
+Top-1 accuracy: 
+Top-5 accuracy: 
+
+0 shot imageNet on the full set (1000 classes)
+Top-1 accuracy: 
+Top-5 accuracy: 
+0 shot imageNet on the big set (400 classes)
+Top-1 accuracy: 
+Top-5 accuracy: 
+0 shot imageNet on the medium set (100 classes)
+Top-1 accuracy: 
+Top-5 accuracy: 
+0 shot imageNet on the small set (25 classes)
+Top-1 accuracy: 
+Top-5 accuracy: 
+0 shot imageNet on the tiny set (13 classes)
+Top-1 accuracy: 
+Top-5 accuracy: 

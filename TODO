@@ -24,9 +24,9 @@ DONE implement LST for ViT
 DONE train complete LST small on flickr
 DONE train cutted LST small on flickr
 DONE LST on MSCOCO with all ladder
-IN PROCESS train LST on MSCOCO with cut ladder 
-IN PROCESS train image-LST on flickr with all ladder
-IN PROCESS train image-lST on flickr with cut ladder
+DONE train LST on MSCOCO with cut ladder 
+NOT CONVERGE train image-LST on flickr with all ladder
+NOT CONVERGE train image-lST on flickr with cut ladder
 train image-LST on MSCOCO with all ladder
 train image-LST on MSCOCO with cut ladder
 
@@ -38,6 +38,7 @@ train LORA on Flickr/MSCOCO?
 Search SOTA/literature for task which require image and text together
 LST fusion?
 
+IN PROCESS train LilT equivalent model and compare
 
 Working closely with LilT as reference:
 https://arxiv.org/pdf/2303.11866.pdf
