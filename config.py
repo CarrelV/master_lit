@@ -22,15 +22,15 @@ testing = False
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "mscoco_randomInit"
+training_run_number = "mscoco_smartInit"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 64 for BERT base uncased with LST
-batch_size = 128
+batch_size = 256
 
-test_batch_size = 128
+test_batch_size = 256
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
@@ -54,7 +54,7 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-weight_version = "mscoco_randomInit"
+weight_version = "mscoco_smartInit"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #

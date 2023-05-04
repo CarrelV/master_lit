@@ -49,7 +49,7 @@ def main(rank,world_size):
     
     
     
-    '''if CFG.side_text_weights_copy or CFG.side_image_weights_copy:
+    if CFG.side_text_weights_copy or CFG.side_image_weights_copy:
         print("Starting copying the weights to the pruned side network")
         # Create a simple model without the ladder to computer the fisher, then write the new over
         importance_measure = compute_fisher(model, get_dataloader(dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=1,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train"), num_samples=CFG.samples_for_fisher)
@@ -58,7 +58,7 @@ def main(rank,world_size):
         # Copy the pruned weights
         model = modify_model_after_init(model,tokenizer,feature_extractor,importance_measure)
         print("Finish copying the weights to the pruned side network")
-        importance_measure = None'''
+        importance_measure = None
 
     
         
