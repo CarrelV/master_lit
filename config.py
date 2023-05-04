@@ -11,8 +11,8 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
-image_model_size = "medium"
+text_model_size = "small"
+image_model_size = "small"
 
 ## See at the end the different possibilities
 configuration = "LST"
@@ -22,20 +22,20 @@ testing = False
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "baseBERT_ViTb_mscoco_LilT_smartinit"
+training_run_number = "mscoco_randomInit"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 64 for BERT base uncased with LST
-batch_size = 64
+batch_size = 128
 
-test_batch_size = 64
+test_batch_size = 128
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
 warming_epochs = 5
-epochs = 75
+epochs = 50
 
 # 1 at home, 2 on cluster
 gpu_number = 2
@@ -54,7 +54,7 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-weight_version = "baseBERT_ViTb_mscoco_LilT_smartinit"
+weight_version = "mscoco_randomInit"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
