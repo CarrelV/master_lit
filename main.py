@@ -64,8 +64,8 @@ def main(rank,world_size):
         model = CLIPMoco().to(rank)
         
     
-    
     model = DDP(model,device_ids=[rank],output_device=rank,find_unused_parameters=CFG.find_unused_param)
+    
     resume_model(model)
     
     # wrap the model with DDP

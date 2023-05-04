@@ -90,36 +90,36 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
                 p.data.copy_(new_weights)
 
     print("Finish post init of model")
-    
+
     return model
 
 def resume_model(model):
     
     print(f"Config: {CFG.configuration}, text model size: {CFG.text_model_size}, image model size: {CFG.image_model_size}")
 
-    trainable_params = sum(p.numel() for p in model.text_encoder.parameters() if p.requires_grad)
-    total_params = sum(p.numel() for p in model.text_encoder.parameters())
+    trainable_params = sum(p.numel() for p in model.module.text_encoder.parameters() if p.requires_grad)
+    total_params = sum(p.numel() for p in model.module.text_encoder.parameters())
 
     print(f"For the Text encoder:")
     print(f"Trainable parameters: {trainable_params}")
     print(f"Total parameters: {total_params}")
 
-    trainable_params = sum(p.numel() for p in model.text_projection.parameters() if p.requires_grad)
-    total_params = sum(p.numel() for p in model.text_projection.parameters())
+    trainable_params = sum(p.numel() for p in model.module.text_projection.parameters() if p.requires_grad)
+    total_params = sum(p.numel() for p in model.module.text_projection.parameters())
 
     print(f"For the Text head:")
     print(f"Trainable parameters: {trainable_params}")
     print(f"Total parameters: {total_params}")
 
-    trainable_params = sum(p.numel() for p in model.image_encoder.parameters() if p.requires_grad)
-    total_params = sum(p.numel() for p in model.image_encoder.parameters())
+    trainable_params = sum(p.numel() for p in model.module.image_encoder.parameters() if p.requires_grad)
+    total_params = sum(p.numel() for p in model.module.image_encoder.parameters())
 
     print(f"For the Image encoder:")
     print(f"Trainable parameters: {trainable_params}")
     print(f"Total parameters: {total_params}")
 
-    trainable_params = sum(p.numel() for p in model.image_projection.parameters() if p.requires_grad)
-    total_params = sum(p.numel() for p in model.image_projection.parameters())
+    trainable_params = sum(p.numel() for p in model.module.image_projection.parameters() if p.requires_grad)
+    total_params = sum(p.numel() for p in model.module.image_projection.parameters())
 
     print(f"For the Image head:")
     print(f"Trainable parameters: {trainable_params}")
