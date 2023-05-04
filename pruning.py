@@ -33,12 +33,15 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
     strategy = tps.L1Strategy()
     
-    print("State dict: \n")
-    print(state_dict.keys())
+   
     
     prune_vals = [1 - 1 / reduction_factor]
 
     state_dict = model.state_dict()
+
+    print("State dict: \n")
+    print(state_dict.keys())
+
     if importance_measure is None:
         importance_measure = copy.deepcopy(state_dict)
 
