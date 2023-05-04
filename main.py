@@ -55,24 +55,26 @@ def main(rank,world_size):
 
         model = CLIPMoco().to(rank)
 
+        model = DDP(model,device_ids=[rank],output_device=rank,find_unused_parameters=CFG.find_unused_param)
+
         # Copy the pruned weights
         model = modify_model_after_init(model,tokenizer,feature_extractor,importance_measure)
         print("Finish copying the weights to the pruned side network")
         importance_measure = None
 
     else:
-        model = CLIPMoco()
+        model = CLIPMoco().to(rank)
+        model = DDP(model,device_ids=[rank],output_device=rank,find_unused_parameters=CFG.find_unused_param)
     
     
    
     resume_model(model)
-    model.to(rank)
     
     # wrap the model with DDP
     # device_ids tell DDP where is your model
     # output_device tells DDP where to output, in our case, it is rank
     # find_unused_parameters=True instructs DDP to find unused output of the forward() function of any module in the model
-    model = DDP(model,device_ids=[rank],output_device=rank,find_unused_parameters=CFG.find_unused_param)
+    
     
     
     #Parameter
