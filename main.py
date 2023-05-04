@@ -42,20 +42,18 @@ def main(rank,world_size):
 
     number_of_step_per_epoch = len(dataloader_train)
     
+    model = CLIPMoco().to(rank)
     
     loss_fn = CLIPMoCOLoss().to(rank)
     # copy the pruned weights of the main text to the side LST text network
     
+    
+    
     if CFG.side_text_weights_copy or CFG.side_image_weights_copy:
         print("Starting copying the weights to the pruned side network")
         # Create a simple model without the ladder to computer the fisher, then write the new over
-        model = get_classic_model()
         importance_measure = compute_fisher(model, get_dataloader(dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,rank=rank,world_size=world_size,batch_size=1,shuffle=CFG.shuffle_train,num_workers=CFG.num_workers,split="train"), num_samples=CFG.samples_for_fisher)
         print("fisher importance measure computed")
-
-        model = CLIPMoco().to(rank)
-
-        model = DDP(model,device_ids=[rank],output_device=rank,find_unused_parameters=CFG.find_unused_param)
 
         # Copy the pruned weights
         model = modify_model_after_init(model,tokenizer,feature_extractor,importance_measure)
@@ -64,10 +62,10 @@ def main(rank,world_size):
 
     else:
         model = CLIPMoco().to(rank)
-        model = DDP(model,device_ids=[rank],output_device=rank,find_unused_parameters=CFG.find_unused_param)
+        
     
     
-   
+    model = DDP(model,device_ids=[rank],output_device=rank,find_unused_parameters=CFG.find_unused_param)
     resume_model(model)
     
     # wrap the model with DDP
