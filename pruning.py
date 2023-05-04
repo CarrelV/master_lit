@@ -33,7 +33,8 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
 
     strategy = tps.L1Strategy()
     
-
+    print("State dict: \n")
+    print(state_dict.keys())
     
     prune_vals = [1 - 1 / reduction_factor]
 
@@ -41,6 +42,8 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
     if importance_measure is None:
         importance_measure = copy.deepcopy(state_dict)
 
+    print("\n Importance measure: \n")
+    print(importance_measure.keys())
     
     # construct ordered layers to process
     ordered_target_layers = []
@@ -78,7 +81,7 @@ def pruning_BERT_without_residual(model, tokenizer, reduction_factor, importance
     for prune_val in prune_vals:
         new_state_dict = {}
         for layer in ordered_target_layers:
-     
+            print(f"For layer: {layer}")
             if isinstance(layer, list):
 
                 weights = [state_dict[sub_layer] for sub_layer in layer]
