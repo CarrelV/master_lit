@@ -42,7 +42,7 @@ def main(rank,world_size):
 
     number_of_step_per_epoch = len(dataloader_train)
     
-    model = CLIPMoco().to(rank)
+    model = CLIPMoco()
     
     loss_fn = CLIPMoCOLoss().to(rank)
     # copy the pruned weights of the main text to the side LST text network
