@@ -80,7 +80,7 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
 
                 infer_n = n.split(".")
                 number = initial_gap + int(infer_n[1]) * step
-                list_of_index = pruned_idx_img[f"model.encoder.layer.{number}.layernorm_after.weight"]
+                list_of_index = pruned_idx_img[f"encoder.layer.{number}.layernorm_after.weight"]
 
                 new_weights = torch.zeros(p.shape)
 
@@ -89,6 +89,8 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
 
                 p.data.copy_(new_weights)
 
+    print("Finish post init of model")
+    
     return model
 
 def resume_model(model):
