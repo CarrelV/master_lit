@@ -38,6 +38,8 @@ def modify_model_after_init(model,tokenizer,feature_extractor,importance_measure
 
                 p.data.copy_(side_state_dict_text[infer_n])
 
+                print(f"copied data of the layer: {infer_n} to the layer: {n}")
+
             #Init the downsampler as identity of pruned ladder
             if ("downsampler" in n) and ("weight" in n):
 
