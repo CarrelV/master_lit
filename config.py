@@ -11,8 +11,8 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
-image_model_size = "medium"
+text_model_size = "small"
+image_model_size = "small"
 
 ## See at the end the different possibilities
 configuration = "LST"
@@ -22,7 +22,7 @@ testing = False
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "baseBERT_ViTB_mscoco_redlad2"
+training_run_number = "mscoco_smartInit_lowLR"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -35,7 +35,7 @@ test_batch_size = 128
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
 warming_epochs = 5
-epochs = 75
+epochs = 50
 
 # 1 at home, 2 on cluster
 gpu_number = 2
@@ -43,7 +43,7 @@ gpu_number = 2
 
 # reduction of number of ladder connection
 # default is 1, go to 2 or 4 if wanted
-ladder_reduction_factor = 2
+ladder_reduction_factor = 1
 
 # When using LST, can chose to add a final skip connection between the output of the frozen main model and 
 # the output of the upsampled side network output
@@ -54,7 +54,7 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-weight_version = "baseBERT_ViTB_mscoco_redlad2"
+weight_version = "mscoco_smartInit_lowLR"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -159,8 +159,8 @@ split = "train"
 
 # 
 
-image_encoder_lr = 1e-4
-text_encoder_lr = 1e-4
+image_encoder_lr = 5e-6
+text_encoder_lr = 5e-6
 image_head_lr = 1e-3
 text_head_lr = 1e-3
 
