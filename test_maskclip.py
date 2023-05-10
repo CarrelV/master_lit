@@ -48,7 +48,7 @@ if __name__ == "__main__":
     print("Prepare mask clip model")
     model = CLIPMask(text_categories=text_categories,text_channels=CFG.text_embedding)
 
-    model.image_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_enc_best_{CFG.weight_version}.pt",map_location=device))
+    model.image_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_enc_best_{CFG.weight_version}.pt",map_location=device))
     
     
     print("Loading the weights")
