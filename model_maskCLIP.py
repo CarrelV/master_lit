@@ -56,19 +56,35 @@ class MaskClipHead(nn.Module):
 
     
     def forward(self, inputs):
+
+        print(f"input shape: {inputs.shape}")
         x = inputs[-1]
+
+        print(f"x shape: {x.shape}")
+
         q, k, v, cls_token = None, None, None, None
         
         if isinstance(x, list) and len(x) == 4:
             x, q, k, v = x
+            print(f"x shape: {x.shape}")
+            print(f"v shape: {v.shape}")
         if isinstance(x, list) and len(x) == 2:
             x, cls_token = x
+            print(f"x shape: {x.shape}")
+            print(f"cls shape: {cls_token.shape}")
+
         if v is not None:
+            print("v is not None")
             feat = self.proj_1(v)
+            print(f"feat shape: {feat.shape}")
             feat = self.proj_2(feat)
+            print(f"feat final shape: {feat.shape}")
         else:
+            print("v is None")
             feat = self.proj_1(x)
+            print(f"feat shape: {feat.shape}")
             feat = self.proj_2(feat)
+            print(f"feat final shape: {feat.shape}")
         if cls_token is not None:
             cls_token = self.proj(cls_token[:, :, None, None])[:, :, 0, 0]
         
