@@ -386,6 +386,10 @@ class ADE20KDataset(Dataset):
         img_path = self.img_infos[idx]["filename"]
         seg_path = self.img_infos[idx]["ann"]
         
+        print(f"img path: {img_path}")
+         
+        print(f"seg path: {seg_path}")
+       
         image = Image.open(img_path).convert('RGB')   
         
         image = self.transform(image)
