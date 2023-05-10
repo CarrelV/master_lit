@@ -15,7 +15,7 @@ text_model_size = "small"
 image_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "LST"
+configuration = "LiTlast hi"
 testing = False
 
 #dataset = "flickr30k"

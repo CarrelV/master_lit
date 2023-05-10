@@ -52,9 +52,10 @@ Unlock layerNorm param as well
 Implement I2T and T2I retrieval on COCO14
 
 TODO:
-- train without pruned weights to see importance of initialized side
+- Initialization
+DONE train without pruned weights to see importance of initialized side
 Initialize downsampler with PCA
-Initialize downsampler with identity from pruning
+DONE Initialize downsampler with identity from pruning
 Upsampler: get a linear mapping from output B11' to B11
 
 - Dense task: CLIP is good for dense task like semantic segmentation. If we can show that we have this nice thing but LiT and LilT not, that would be good. Linear probing
@@ -67,3 +68,7 @@ I(frozen) (LiT so ViT is frozen anyway) + Decoder
 Hopefully show that we're better
 
 - Multimodal:
+
+
+
+
