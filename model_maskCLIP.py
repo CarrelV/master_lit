@@ -148,6 +148,7 @@ class ImageEncoder(nn.Module):
         output = self.model(image)
         last_hidden_state = output.last_hidden_state
 
+        print(f"last hidden state shape: {last_hidden_state.shape}")
         return last_hidden_state
 
 ###################### PROJECTION HEAD ####################################
