@@ -356,15 +356,15 @@ class ADE20KDataset(Dataset):
         """
 
         img_infos = []
-        with open(img_root) as f:
-            for line in f:
-                img_name = line.strip()
-                img_info = dict(filename=img_name + ".jpg")
-                
-                seg_map = img_name + ".png"
-                img_info['ann'] = dict(seg_map=seg_map)
-                
-                img_infos.append(img_info)
+        for file in os.listdir(img_root):
+            
+            img_name = os.path.splitext(file)[0]
+            img_info = dict(filename=img_name + ".jpg")
+            
+            seg_map = img_name + ".png"
+            img_info['ann'] = dict(seg_map=seg_map)
+            
+            img_infos.append(img_info)
         
         print(f'Loaded {len(img_infos)} images')
         return img_infos      
