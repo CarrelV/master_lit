@@ -71,4 +71,31 @@ Hopefully show that we're better
 
 
 
+Meeting 10.05:
+
+Make the training of CLIP more democratic:
+ - Show that we use less 
+ - Show it works for different dataset, at least on CC3m. LoRA, adapter, LST, 
+ - Reasonable memory, dataset, model size, and performance
+
+CLIP vs LiT vs LST (each memory requirement different)
+ 
+LST vs CLIP and LST vs LiT
+
+Priority:
+
+MAKE IT WORK ON LARGER BACKBONES
+
+Use same backbones as SLIP on CC3M to compare with SLIP and CLIP
+
+ViTB16
+BaseBERT
+
+- Text LST with larger ViT backbone, see if LR is tunable
+- step by step to see where the problem is. Get slowly bigger
+
+
+
+
+
 
