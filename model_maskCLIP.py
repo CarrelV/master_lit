@@ -144,11 +144,9 @@ class ImageEncoder(nn.Module):
             p.requires_grad = trainable
 
     def forward(self, image):
-        print(f"input image shape: {image.shape}")
         output = self.model(image)
         last_hidden_state = output.last_hidden_state
 
-        print(f"last hidden state shape: {last_hidden_state.shape}")
         return last_hidden_state
 
 ###################### PROJECTION HEAD ####################################
@@ -200,8 +198,10 @@ class CLIPMask(nn.Module):
     def encode_image(self,image):
 
         with torch.no_grad():
+            print(f"input image shape: {image.shape}")
 
             image_encoder_output = self.image_encoder(image)
+            print(f"last hidden state shape: {image_encoder_output.shape}")
 
         return image_encoder_output
 
