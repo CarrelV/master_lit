@@ -229,7 +229,7 @@ def get_dataset(dataset,tokenizer,feature_extractor,transform,split):
 
     elif dataset == "ade":
         ade_root = "data/ade/ADEChallengeData2016"
-        return mscoco(feature_extractor,transform,ade_root,split)
+        return ADE20KDataset(feature_extractor,transform,ade_root,split)
     
 
 
