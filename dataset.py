@@ -384,11 +384,11 @@ class ADE20KDataset(Dataset):
 
     def __getitem__(self, idx):
         img_path = self.img_infos[idx]["filename"]
-        seg_path = self.img_infos[idx]["ann"]
+        seg_path = self.img_infos[idx]["ann"]["seg_map"]
         
-        print(f"img path: {img_path}")
-         
-        print(f"seg path: {seg_path}")
+        img_path = os.path.join(self.image_root,img_path)
+        seg_path = os.path.join(self.ann_root,seg_path)
+
        
         image = Image.open(img_path).convert('RGB')   
         
