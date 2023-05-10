@@ -8,6 +8,7 @@ import numpy as np
 import torch
 from torch.utils.data import  Dataset
 from torchvision.datasets.utils import download_url
+from torchvision import transforms
 
 from utils import read_json
 import config as CFG
@@ -398,8 +399,9 @@ class ADE20KDataset(Dataset):
         
         seg_map = self.transform(seg_map)
 
+        seg_map_encoded = np.asarray(seg_map)
         
-        return {"image" :image_encoded["pixel_values"].squeeze(0),"seg_map":seg_map}
+        return {"image" :image_encoded["pixel_values"].squeeze(0),"seg_map":seg_map_encoded}
 
     def results2img(self, results, imgfile_prefix, to_label_id, indices=None):
         """Write the segmentation results to images.
