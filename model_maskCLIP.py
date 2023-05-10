@@ -165,7 +165,7 @@ class CLIPMask(nn.Module):
     def __init__(
         self,
         text_categories,
-        text_channels=CFG.text_embedding,
+        text_channels=CFG.projection_dim,
         image_tower_config = CFG.image_tower_config,
     ):
         super().__init__()
