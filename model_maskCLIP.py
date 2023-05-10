@@ -144,7 +144,7 @@ class ImageEncoder(nn.Module):
             p.requires_grad = trainable
 
     def forward(self, image):
-        
+        print(f"input image shape: {image.shape}")
         output = self.model(image)
         last_hidden_state = output.last_hidden_state
 
