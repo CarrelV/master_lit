@@ -12,17 +12,17 @@
 ################################
 
 text_model_size = "small"
-image_model_size = "small"
+image_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "LiTlast hi"
+configuration = "text_LST"
 testing = False
 
 #dataset = "flickr30k"
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "mscoco_smartInit_lowLR"
+training_run_number = "tLST_small_medium"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
