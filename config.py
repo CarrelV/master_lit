@@ -159,8 +159,8 @@ split = "train"
 
 # 
 
-image_encoder_lr = 5e-6
-text_encoder_lr = 5e-6
+image_encoder_lr = 5e-5
+text_encoder_lr = 5e-5
 image_head_lr = 1e-3
 text_head_lr = 1e-3
 

@@ -77,13 +77,13 @@ def main(rank,world_size):
     #Parameter
     params = []
     if CFG.text_backbone_finetune:
-        params.append({"params" : [p for n,p in model.module.text_encoder.named_parameters() if (("side_encoder" in n) or ("downsampler" in n)) and (p.requires_grad)], "lr" : CFG.text_encoder_lr})
-        params.append({"params" : [p for n,p in model.module.text_encoder.named_parameters() if ("side_encoder" not in n) and ("downsampler" not in n) and (p.requires_grad)], "lr" : CFG.text_head_lr})
-        #params.append({"params" : model.module.text_encoder.parameters(), "lr" : CFG.text_encoder_lr})
+        #params.append({"params" : [p for n,p in model.module.text_encoder.named_parameters() if (("side_encoder" in n) or ("downsampler" in n)) and (p.requires_grad)], "lr" : CFG.text_encoder_lr})
+        #params.append({"params" : [p for n,p in model.module.text_encoder.named_parameters() if ("side_encoder" not in n) and ("downsampler" not in n) and (p.requires_grad)], "lr" : CFG.text_head_lr})
+        params.append({"params" : model.module.text_encoder.parameters(), "lr" : CFG.text_encoder_lr})
     if CFG.image_backbone_finetune:
-        params.append({"params" : [p for n,p in model.module.image_encoder.named_parameters() if (("side_encoder" in n) or ("downsampler" in n)) and (p.requires_grad)], "lr" : CFG.image_encoder_lr})
-        params.append({"params" : [p for n,p in model.module.image_encoder.named_parameters() if ("side_encoder" not in n) and ("downsampler" not in n) and (p.requires_grad)], "lr" : CFG.image_head_lr})
-        #params.append({"params" : model.module.image_encoder.parameters(), "lr" : CFG.image_encoder_lr})
+        #params.append({"params" : [p for n,p in model.module.image_encoder.named_parameters() if (("side_encoder" in n) or ("downsampler" in n)) and (p.requires_grad)], "lr" : CFG.image_encoder_lr})
+        #params.append({"params" : [p for n,p in model.module.image_encoder.named_parameters() if ("side_encoder" not in n) and ("downsampler" not in n) and (p.requires_grad)], "lr" : CFG.image_head_lr})
+        params.append({"params" : model.module.image_encoder.parameters(), "lr" : CFG.image_encoder_lr})
     params.append({"params" : model.module.text_projection.parameters(), "lr" : CFG.text_head_lr})
     params.append({"params" : model.module.image_projection.parameters(), "lr" : CFG.image_head_lr})
 
