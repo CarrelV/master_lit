@@ -12,17 +12,17 @@
 ################################
 
 text_model_size = "medium"
-image_model_size = "medium"
+image_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "text_LST"
+configuration = "LST"
 testing = False
 
 #dataset = "flickr30k"
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "tLST_Tmedium_Imedium"
+training_run_number = "LST_Ismall_Tmedium"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -54,7 +54,7 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-weight_version = "mscoco_smartInit_lowLR"
+weight_version = "LST_Ismall_Tmedium"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
