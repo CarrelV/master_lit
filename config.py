@@ -22,7 +22,7 @@ testing = False
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "LST_Imedium5_Tmedium3"
+training_run_number = "LST_Imedium_Tsmall_lr5"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -54,7 +54,7 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-weight_version = "LST_Imedium5_Tmedium3"
+weight_version = "LST_Imedium_Tsmall_lr5"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #

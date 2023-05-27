@@ -201,7 +201,7 @@ def imagenet_0shot(model,tokenizer,feature_extractor,dataset,device):
     print(f"Top-1 accuracy: {top1:.2f}")
     print(f"Top-5 accuracy: {top5:.2f}\n")
 
-    
+    return top1,top5
 
 
 
@@ -302,6 +302,8 @@ def i2t_t2i_retrieval(model,dataset,tokenizer,feature_extractor,device):
     print(f"Top-1 accuracy: {top1_t2i:.2f}")
     print(f"Top-5 accuracy: {top5_t2i:.2f}")
     print(f"Top-10 accuracy: {top10_t2i:.2f}")
+
+    return top1_i2t,top5_i2t,top1_t2i,top5_t2i
 
 
 ############################ ACCURACY #######################
