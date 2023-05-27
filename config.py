@@ -11,8 +11,8 @@
 #             Training         #
 ################################
 
-text_model_size = "small"
-image_model_size = "medium"
+text_model_size = "medium"
+image_model_size = "small"
 
 ## See at the end the different possibilities
 configuration = "LST"
@@ -22,7 +22,7 @@ testing = False
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "LST_Imedium_Tsmall_lr5"
+training_run_number = "LST_Ismall_Tmedium_lr3"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -54,7 +54,7 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-weight_version = "LST_Imedium_Tsmall_lr5"
+weight_version = "LST_Ismall_Tmedium_lr3"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
