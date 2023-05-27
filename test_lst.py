@@ -14,7 +14,39 @@ from pruning import pruning_BERT_without_residual
 from fisher import compute_fisher
 from dataloader import get_local_dataloader
 
-from utils_models import modify_model_after_init,resume_model
+from utils_models import modify_model_after_init
+
+def resume_model(model):
+    
+    print(f"Config: {CFG.configuration}, text model size: {CFG.text_model_size}, image model size: {CFG.image_model_size}")
+
+    trainable_params = sum(p.numel() for p in model.text_encoder.parameters() if p.requires_grad)
+    total_params = sum(p.numel() for p in model.text_encoder.parameters())
+
+    print(f"For the Text encoder:")
+    print(f"Trainable parameters: {trainable_params}")
+    print(f"Total parameters: {total_params}")
+
+    trainable_params = sum(p.numel() for p in model.text_projection.parameters() if p.requires_grad)
+    total_params = sum(p.numel() for p in model.text_projection.parameters())
+
+    print(f"For the Text head:")
+    print(f"Trainable parameters: {trainable_params}")
+    print(f"Total parameters: {total_params}")
+
+    trainable_params = sum(p.numel() for p in model.image_encoder.parameters() if p.requires_grad)
+    total_params = sum(p.numel() for p in model.image_encoder.parameters())
+
+    print(f"For the Image encoder:")
+    print(f"Trainable parameters: {trainable_params}")
+    print(f"Total parameters: {total_params}")
+
+    trainable_params = sum(p.numel() for p in model.image_projection.parameters() if p.requires_grad)
+    total_params = sum(p.numel() for p in model.image_projection.parameters())
+
+    print(f"For the Image head:")
+    print(f"Trainable parameters: {trainable_params}")
+    print(f"Total parameters: {total_params}")
 
 if __name__ == "__main__":
     
@@ -57,7 +89,7 @@ if __name__ == "__main__":
             print(n)'''
 
     #Parameter
-    params = []
+    '''params = []
     if CFG.text_backbone_finetune:
         params.append({"params" : model.text_encoder.side_encoder.parameters(), "lr" : 1e-5})
     if CFG.image_backbone_finetune:
@@ -65,7 +97,7 @@ if __name__ == "__main__":
 
         params.append({"params" : [p for n,p in model.image_encoder.named_parameters()if "side_encoder" not in n], "lr" : CFG.image_encoder_lr})
     params.append({"params" : model.text_projection.parameters(), "lr" : CFG.text_head_lr})
-    params.append({"params" : model.image_projection.parameters(), "lr" : CFG.image_head_lr})
+    params.append({"params" : model.image_projection.parameters(), "lr" : CFG.image_head_lr})'''
     
     '''print("Side encoder")
     for n,p in model.image_encoder.named_parameters():
@@ -84,4 +116,5 @@ if __name__ == "__main__":
 
     #print(outputs)
     #print(outputs)
-#   
+#  
+

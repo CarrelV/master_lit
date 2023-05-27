@@ -12,17 +12,17 @@
 ################################
 
 text_model_size = "medium"
-image_model_size = "small"
+image_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "LST"
+configuration = "lora"
 testing = False
 
 #dataset = "flickr30k"
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "LST_Ismall_Tmedium_lr3"
+training_run_number = "lora_Imedium_Tmedium"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -52,9 +52,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "LST"
+configuration_to_test = "lora"
 
-weight_version = "LST_Ismall_Tmedium_lr3"
+weight_version = "lora_Imedium_Tmedium"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
