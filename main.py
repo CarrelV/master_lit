@@ -17,9 +17,8 @@ from transformers import logging
 
 from fisher import compute_fisher
 
+from metric import imagenet_0shot,i2t_t2i_retrieval
 
-
-## Seems to be working when testing locally with GPU = 1. Maybe hacky/wrong fix? Will test tomorrow on the cluster
 def main(rank,world_size):
     logging.set_verbosity_error()
     wandb.init(project="Master Thesis Project",
@@ -96,6 +95,10 @@ def main(rank,world_size):
     
     best_loss = float('inf')
 
+    best_i2t = float("inf")
+    best_t2i = float("inf")
+    best_in0 = float("inf")
+
     for epoch in range(CFG.epochs):
        
         print(f"Epoch: {epoch + 1}")
@@ -136,6 +139,66 @@ def main(rank,world_size):
             wandb.log({"Text Encoder lr" : lr_scheduler.get_last_lr()[0]},commit = False)
         if CFG.image_backbone_finetune:
             wandb.log({"Image Encoder lr" : lr_scheduler.get_last_lr()[1]},commit = False)
+
+
+
+        if rank == 0:
+            
+            top1,top5 = imagenet_0shot(model,tokenizer,"big",rank,False)
+            wandb.log({"ImageNet Big top 1" : top1,"ImageNet Big top 5": top5},commit = False)
+            top1,top5 = imagenet_0shot(model,tokenizer,"medium",rank,False)
+            wandb.log({"ImageNet Medium top 1" : top1,"ImageNet Medium top 5": top5},commit = False)
+            top1,top5 = imagenet_0shot(model,tokenizer,"small",rank,False)
+            wandb.log({"ImageNet Small top 1" : top1,"ImageNet Small top 5": top5},commit = False)
+            top1,top5 = imagenet_0shot(model,tokenizer,"tiny",rank,False)
+            wandb.log({"ImageNet Tiny top 1" : top1,"ImageNet Tiny top 5": top5},commit = False)
+            top1,top5 = imagenet_0shot(model,tokenizer,"all",rank,False)
+            wandb.log({"ImageNet All top 1" : top1,"ImageNet All top 5": top5},commit = False)
+
+            top1_i2t,top5_i2t,top1_t2i,top5_t2i = i2t_t2i_retrieval(model,"flickr30k",tokenizer,feature_extractor,rank,False)
+            wandb.log({"Image 2 Text top 1" : top1_i2t,"Image 2 Text top 5": top5_i2t},commit = False)
+            wandb.log({"Text 2 Image top 1" : top1_t2i,"Text 2 Image top 5": top5_t2i},commit = False)
+
+            if top1 < best_in0:
+
+                best_in0 = top1
+
+                # Save the backbone
+                if CFG.text_backbone_finetune:
+                    torch.save(model.module.text_encoder.state_dict(), f"weights/{CFG.configuration}_text_enc_im0_{CFG.training_run_number}.pt")
+                if CFG.image_backbone_finetune:
+                    torch.save(model.module.image_encoder.state_dict(), f"weights/{CFG.configuration}_img_enc_im0_{CFG.training_run_number}.pt")
+                # Save the two heads
+                torch.save(model.module.text_projection.state_dict(), f"weights/{CFG.configuration}_text_proj_im0_{CFG.training_run_number}.pt")
+                torch.save(model.module.image_projection.state_dict(), f"weights/{CFG.configuration}_img_proj_im0_{CFG.training_run_number}.pt")
+
+            if top1_i2t < best_i2t:
+
+                best_i2t = top1_i2t
+
+                # Save the backbone
+                if CFG.text_backbone_finetune:
+                    torch.save(model.module.text_encoder.state_dict(), f"weights/{CFG.configuration}_text_enc_i2t_{CFG.training_run_number}.pt")
+                if CFG.image_backbone_finetune:
+                    torch.save(model.module.image_encoder.state_dict(), f"weights/{CFG.configuration}_img_enc_i2t_{CFG.training_run_number}.pt")
+                # Save the two heads
+                torch.save(model.module.text_projection.state_dict(), f"weights/{CFG.configuration}_text_proj_i2t_{CFG.training_run_number}.pt")
+                torch.save(model.module.image_projection.state_dict(), f"weights/{CFG.configuration}_img_proj_i2t_{CFG.training_run_number}.pt")
+
+            if top1_t2i < best_t2i:
+
+                best_t2i = top1_t2i
+
+                # Save the backbone
+                if CFG.text_backbone_finetune:
+                    torch.save(model.module.text_encoder.state_dict(), f"weights/{CFG.configuration}_text_enc_t2i_{CFG.training_run_number}.pt")
+                if CFG.image_backbone_finetune:
+                    torch.save(model.module.image_encoder.state_dict(), f"weights/{CFG.configuration}_img_enc_t2i_{CFG.training_run_number}.pt")
+                # Save the two heads
+                torch.save(model.module.text_projection.state_dict(), f"weights/{CFG.configuration}_text_proj_t2i_{CFG.training_run_number}.pt")
+                torch.save(model.module.image_projection.state_dict(), f"weights/{CFG.configuration}_img_proj_t2i_{CFG.training_run_number}.pt")
+
+
 
         wandb.log({"Text Projection lr" : lr_scheduler.get_last_lr()[-2], "Image Projection lr": lr_scheduler.get_last_lr()[-1]})
 

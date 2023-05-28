@@ -15,28 +15,28 @@ text_model_size = "medium"
 image_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "lora"
+configuration = "LST"
 testing = False
 
 #dataset = "flickr30k"
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "lora_Imedium_Tmedium"
+training_run_number = "LST_Imedium_Tmedium_complete"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 64 for BERT base uncased with LST
 # 32 for LoRA with BERT base and ViTB16
-batch_size = 32
+batch_size = 64
 
-test_batch_size = 32
+test_batch_size = 64
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
 warming_epochs = 5
-epochs = 50
+epochs = 75
 
 # 1 at home, 2 on cluster
 gpu_number = 2
@@ -53,9 +53,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "lora"
+configuration_to_test = "LST"
 
-weight_version = "lora_Imedium_Tmedium"
+weight_version = "LST_Imedium_Tmedium_complete"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
