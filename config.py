@@ -11,8 +11,8 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
-image_model_size = "medium"
+text_model_size = "small"
+image_model_size = "small"
 
 ## See at the end the different possibilities
 configuration = "LST"

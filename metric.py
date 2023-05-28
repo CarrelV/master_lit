@@ -126,6 +126,7 @@ def imagenet_0shot(model,tokenizer,dataset,device,printing=True):
         print("\n")
 
     print("compute text weight")
+    test_fct()
     text_zeroshot_weight = compute_text_weight_zeroshot(model=model,tokenizer=tokenizer,device=device,classnames=imagenet_classes,template=imagenet_prompt)
 
     print("done compute text weight")
@@ -164,6 +165,8 @@ def imagenet_0shot(model,tokenizer,dataset,device,printing=True):
     return top1,top5
 
 
+def test_fct():
+    print("I got into text")
 
 def compute_text_weight_zeroshot(model,tokenizer,device,classnames, templates):
     print("1")
