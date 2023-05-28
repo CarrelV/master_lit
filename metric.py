@@ -173,8 +173,10 @@ def compute_text_weight_zeroshot(model,tokenizer,device,classnames, templates):
             texts_encoded = tokenizer(texts,padding="max_length",max_length=CFG.max_length) #tokenize
 
             batch_text = {"input_ids": torch.as_tensor(texts_encoded["input_ids"]).to(device), "attention_mask": torch.as_tensor(texts_encoded["attention_mask"]).to(device)}
-            
+            print("about to encode text")
             class_embeddings = model.encode_text(batch_text) #embed with text encoder
+            print("did encode text")
+
             class_embeddings /= class_embeddings.norm(dim=-1, keepdim=True)
             class_embedding = class_embeddings.mean(dim=0)
             class_embedding /= class_embedding.norm()
