@@ -125,8 +125,10 @@ def imagenet_0shot(model,tokenizer,dataset,device,printing=True):
 
         print("\n")
 
+    print("compute text weight")
     text_zeroshot_weight = compute_text_weight_zeroshot(model=model,tokenizer=tokenizer,device=device,classnames=imagenet_classes,template=imagenet_prompt)
 
+    print("done compute text weight")
     counter = 0
     with torch.no_grad():
         top1, top5, n = 0., 0., 0.
@@ -164,14 +166,17 @@ def imagenet_0shot(model,tokenizer,dataset,device,printing=True):
 
 
 def compute_text_weight_zeroshot(model,tokenizer,device,classnames, templates):
+    print("1")
     with torch.no_grad():
         zeroshot_weights = []
+        print("2")
         for classname in classnames:
+            print("3")
             texts = [template.format(classname) for template in templates]  #format with class
 
-        
+            print("4")
             texts_encoded = tokenizer(texts,padding="max_length",max_length=CFG.max_length) #tokenize
-
+            print("5")
             batch_text = {"input_ids": torch.as_tensor(texts_encoded["input_ids"]).to(device), "attention_mask": torch.as_tensor(texts_encoded["attention_mask"]).to(device)}
             print("about to encode text")
             class_embeddings = model.encode_text(batch_text) #embed with text encoder
