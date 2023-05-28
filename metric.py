@@ -182,7 +182,7 @@ def compute_text_weight_zeroshot(model,tokenizer,device,classnames, templates):
             print("5")
             batch_text = {"input_ids": torch.as_tensor(texts_encoded["input_ids"]).to(device), "attention_mask": torch.as_tensor(texts_encoded["attention_mask"]).to(device)}
             print("about to encode text")
-            class_embeddings = model.encode_text(batch_text) #embed with text encoder
+            class_embeddings = model.module.encode_text(batch_text) #embed with text encoder
             print("did encode text")
 
             class_embeddings /= class_embeddings.norm(dim=-1, keepdim=True)
@@ -213,13 +213,13 @@ def i2t_t2i_retrieval(model,dataset,tokenizer,feature_extractor,device,printing=
             #print(text["input_ids"].shape)
             #print(text["attention_mask"].shape)
             # compute image_features
-            image_features = model.encode_image(image)
+            image_features = model.module.encode_image(image)
             # For CLIP only
             #image_features = model.get_image_features(image)
             image_features /= image_features.norm(dim=-1, keepdim=True)
 
             # compute text features
-            text_features = model.encode_text(text)
+            text_features = model.module.encode_text(text)
             # For CLIP only
             #text_features = model.get_text_features(**text)
             
