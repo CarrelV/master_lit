@@ -127,8 +127,7 @@ def imagenet_0shot(model,tokenizer,dataset,device,printing=True):
 
     print("compute text weight")
     test_fct()
-    #text_zeroshot_weight = compute_text_weight_zeroshot(model=model,tokenizer=tokenizer,device=device,classnames=imagenet_classes,template=imagenet_prompt)
-    text_zeroshot_weight = compute_text_weight_zeroshot(classnames=imagenet_classes,template=imagenet_prompt)
+    text_zeroshot_weight = compute_text_weight_zeroshot(model=model,tokenizer=tokenizer,device=device,classnames=imagenet_classes,templates=imagenet_prompt)
 
     print("done compute text weight")
     counter = 0
@@ -169,9 +168,7 @@ def imagenet_0shot(model,tokenizer,dataset,device,printing=True):
 def test_fct():
     print("I got into text")
 
-#def compute_text_weight_zeroshot(model,tokenizer,device,classnames, templates):
-
-def compute_text_weight_zeroshot(classnames,templates):
+def compute_text_weight_zeroshot(model,tokenizer,device,classnames, templates):
     print("1")
     with torch.no_grad():
         zeroshot_weights = []
