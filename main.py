@@ -144,18 +144,18 @@ def main(rank,world_size):
         with torch.no_grad():
             
                 
-            top1,top5 = imagenet_0shot(model,tokenizer,"big",rank,True)
+            top1,top5 = imagenet_0shot(model.module,tokenizer,"big",rank,True)
             wandb.log({"ImageNet Big top 1" : top1,"ImageNet Big top 5": top5},commit = True)
-            top1,top5 = imagenet_0shot(model,tokenizer,"medium",rank,False)
+            top1,top5 = imagenet_0shot(model.module,tokenizer,"medium",rank,False)
             wandb.log({"ImageNet Medium top 1" : top1,"ImageNet Medium top 5": top5},commit = True)
-            top1,top5 = imagenet_0shot(model,tokenizer,"small",rank,False)
+            top1,top5 = imagenet_0shot(model.module,tokenizer,"small",rank,False)
             wandb.log({"ImageNet Small top 1" : top1,"ImageNet Small top 5": top5},commit = True)
-            top1,top5 = imagenet_0shot(model,tokenizer,"tiny",rank,False)
+            top1,top5 = imagenet_0shot(model.module,tokenizer,"tiny",rank,False)
             wandb.log({"ImageNet Tiny top 1" : top1,"ImageNet Tiny top 5": top5},commit = True)
-            top1,top5 = imagenet_0shot(model,tokenizer,"all",rank,False)
+            top1,top5 = imagenet_0shot(model.module,tokenizer,"all",rank,False)
             wandb.log({"ImageNet All top 1" : top1,"ImageNet All top 5": top5},commit = True)
 
-            top1_i2t,top5_i2t,top1_t2i,top5_t2i = i2t_t2i_retrieval(model,"flickr30k",tokenizer,feature_extractor,rank,False)
+            top1_i2t,top5_i2t,top1_t2i,top5_t2i = i2t_t2i_retrieval(model.module,"flickr30k",tokenizer,feature_extractor,rank,False)
             wandb.log({"Image 2 Text top 1" : top1_i2t,"Image 2 Text top 5": top5_i2t},commit = True)
             wandb.log({"Text 2 Image top 1" : top1_t2i,"Text 2 Image top 5": top5_t2i},commit = True)
 
