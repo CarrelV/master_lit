@@ -145,7 +145,7 @@ def imagenet_0shot(model,tokenizer,dataset,device,printing=True):
             target = target.to(device)
             
             # predict
-            image_features = model.encode_image(images)
+            image_features = model.module.encode_image(images)
             image_features /= image_features.norm(dim=-1, keepdim=True)
             logits = 100. * image_features @ text_zeroshot_weight
 
