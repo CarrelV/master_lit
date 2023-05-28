@@ -16,13 +16,13 @@ from dataloader import get_dataloader
 def imagenet_0shot(model,tokenizer,dataset,device,printing=True):
 
     imagenet_prompt =[
-        'a photo of a {}.',
-        'a bad photo of the {}.',
-        'a origami {}.',
-        'a photo of the large {}.',
-        '{} in a video game.',
-        'art of the {}.',
-        'a photo of the small {}.',
+        "a photo of a {}.",
+        "a bad photo of the {}.",
+        "a origami {}.",
+        "a photo of the large {}.",
+        "{} in a video game.",
+        "art of the {}.",
+        "a photo of the small {}."
     ]
 
 
