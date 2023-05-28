@@ -111,7 +111,7 @@ def main(rank,world_size):
         dataloader_valid.sampler.set_epoch(epoch)
 
 
-        #train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,rank)
+        train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,rank)
             
         ## VALIDATION
         model.eval()
@@ -133,7 +133,7 @@ def main(rank,world_size):
             torch.save(model.module.text_projection.state_dict(), f"weights/{CFG.configuration}_text_proj_best_{CFG.training_run_number}.pt")
             torch.save(model.module.image_projection.state_dict(), f"weights/{CFG.configuration}_img_proj_best_{CFG.training_run_number}.pt")
         
-        #wandb.log({"Training loss": train_loss.avg_loss, "Validation loss" : valid_loss.avg_loss}, commit = False )
+        wandb.log({"Training loss": train_loss.avg_loss, "Validation loss" : valid_loss.avg_loss}, commit = False )
 
         if CFG.text_backbone_finetune:
             wandb.log({"Text Encoder lr" : lr_scheduler.get_last_lr()[0]},commit = False)
@@ -155,7 +155,7 @@ def main(rank,world_size):
             top1,top5 = imagenet_0shot(model,tokenizer,"all",rank,True)
             wandb.log({"ImageNet All top 1" : top1,"ImageNet All top 5": top5},commit = False)
 
-            top1_i2t,top5_i2t,top1_t2i,top5_t2i = i2t_t2i_retrieval(model.module,"flickr30k",tokenizer,feature_extractor,rank,True)
+            top1_i2t,top5_i2t,top1_t2i,top5_t2i = i2t_t2i_retrieval(model,"flickr30k",tokenizer,feature_extractor,rank,True)
             wandb.log({"Image 2 Text top 1" : top1_i2t,"Image 2 Text top 5": top5_i2t},commit = False)
             wandb.log({"Text 2 Image top 1" : top1_t2i,"Text 2 Image top 5": top5_t2i},commit = False)
 

@@ -240,7 +240,7 @@ def i2t_t2i_retrieval(model,dataset,tokenizer,feature_extractor,device):
     with torch.no_grad():
 
         top1_i2t, top5_i2t,top10_i2t,top1_t2i,top5_t2i,top10_t2i, n = 0., 0., 0. ,0. ,0. ,0. ,0.
-        for batch in test_loader:
+        for batch in tqdm(test_loader):
 
             image = batch["image"].to(device)
             text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}

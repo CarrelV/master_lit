@@ -7,6 +7,7 @@ from robustness.tools.imagenet_helpers import common_superclass_wnid,ImageNetHie
 from utils import read_imagenet_class
 from robustness import datasets
 from dataloader import get_dataloader
+from tqdm import tqdm
 
 
 
@@ -125,15 +126,12 @@ def imagenet_0shot(model,tokenizer,dataset,device,printing=True):
 
         print("\n")
 
-    print("compute text weight")
-    test_fct()
     text_zeroshot_weight = compute_text_weight_zeroshot(model=model,tokenizer=tokenizer,device=device,classnames=imagenet_classes,templates=imagenet_prompt)
 
-    print("done compute text weight")
     counter = 0
     with torch.no_grad():
         top1, top5, n = 0., 0., 0.
-        for images, target in test_loader:
+        for images, target in tqdm(test_loader):
             
           
             
@@ -165,25 +163,16 @@ def imagenet_0shot(model,tokenizer,dataset,device,printing=True):
     return top1,top5
 
 
-def test_fct():
-    print("I got into text")
 
 def compute_text_weight_zeroshot(model,tokenizer,device,classnames, templates):
-    print("1")
     with torch.no_grad():
         zeroshot_weights = []
-        print("2")
         for classname in classnames:
-            print("3")
             texts = [template.format(classname) for template in templates]  #format with class
 
-            print("4")
             texts_encoded = tokenizer(texts,padding="max_length",max_length=CFG.max_length) #tokenize
-            print("5")
             batch_text = {"input_ids": torch.as_tensor(texts_encoded["input_ids"]).to(device), "attention_mask": torch.as_tensor(texts_encoded["attention_mask"]).to(device)}
-            print("about to encode text")
             class_embeddings = model.module.encode_text(batch_text) #embed with text encoder
-            print("did encode text")
 
             class_embeddings /= class_embeddings.norm(dim=-1, keepdim=True)
             class_embedding = class_embeddings.mean(dim=0)
@@ -205,7 +194,7 @@ def i2t_t2i_retrieval(model,dataset,tokenizer,feature_extractor,device,printing=
     with torch.no_grad():
 
         top1_i2t, top5_i2t,top10_i2t,top1_t2i,top5_t2i,top10_t2i, n = 0., 0., 0. ,0. ,0. ,0. ,0.
-        for batch in test_loader:
+        for batch in tqdm(test_loader):
 
             image = batch["image"].to(device)
             text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
