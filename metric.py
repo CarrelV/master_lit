@@ -186,10 +186,10 @@ def compute_text_weight_zeroshot(model,tokenizer,device,classnames, templates):
 #########################  FLICKR I2T and T2I RETRIEVAL ########################
 
 
-def i2t_t2i_retrieval(model,dataset,tokenizer,feature_extractor,device,printing=True):
+def i2t_t2i_retrieval(model,dataset,tokenizer,feature_extractor,world_size,device,printing=True):
 
 
-    test_loader = get_dataloader(dataset=dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,rank=0,world_size=1,batch_size=CFG.test_batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
+    test_loader = get_dataloader(dataset=dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,rank=device,world_size=world_size,batch_size=CFG.test_batch_size,shuffle=False,num_workers=CFG.num_workers,split="test")
 
     with torch.no_grad():
 
