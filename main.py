@@ -140,7 +140,8 @@ def main(rank,world_size):
         if CFG.image_backbone_finetune:
             wandb.log({"Image Encoder lr" : lr_scheduler.get_last_lr()[1]},commit = False)
 
-
+        ### INTERMEDIATE testing ###
+        '''
         with torch.no_grad():
             
             top1,top5 = imagenet_0shot(model,tokenizer,"tiny",rank,True)
@@ -197,7 +198,7 @@ def main(rank,world_size):
                 # Save the two heads
                 torch.save(model.module.text_projection.state_dict(), f"weights/{CFG.configuration}_text_proj_t2i_{CFG.training_run_number}.pt")
                 torch.save(model.module.image_projection.state_dict(), f"weights/{CFG.configuration}_img_proj_t2i_{CFG.training_run_number}.pt")
-
+        '''
 
 
         wandb.log({"Text Projection lr" : lr_scheduler.get_last_lr()[-2], "Image Projection lr": lr_scheduler.get_last_lr()[-1]})

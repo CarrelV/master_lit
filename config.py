@@ -15,14 +15,14 @@ text_model_size = "medium"
 image_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "LST"
+configuration = "lora"
 testing = False
 
 #dataset = "flickr30k"
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "LST_Imedium_Tmedium_complete"
+training_run_number = "lora_Imedium_Tmedium_lr4"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -36,7 +36,7 @@ test_batch_size = 32
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
 warming_epochs = 5
-epochs = 75
+epochs = 50
 
 # 1 at home, 2 on cluster
 gpu_number = 2
@@ -53,9 +53,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "LST"
+configuration_to_test = "lora"
 
-weight_version = "LST_Imedium_Tmedium_complete"
+weight_version = "lora_Imedium_Tmedium_lr4"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -160,8 +160,8 @@ split = "train"
 
 # 
 
-image_encoder_lr = 1e-5
-text_encoder_lr = 1e-3
+image_encoder_lr = 1e-4
+text_encoder_lr = 1e-4
 image_head_lr = 1e-3
 text_head_lr = 1e-3
 
