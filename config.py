@@ -22,7 +22,7 @@ testing = False
 dataset = "mscoco"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "lora_I5medium_T5medium"
+training_run_number = "lora_I6medium_T4medium"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -160,8 +160,8 @@ split = "train"
 
 # 
 
-image_encoder_lr = 1e-5
-text_encoder_lr = 1e-5
+image_encoder_lr = 1e-6
+text_encoder_lr = 1e-4
 image_head_lr = 1e-3
 text_head_lr = 1e-3
 
