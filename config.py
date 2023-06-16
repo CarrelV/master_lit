@@ -15,23 +15,24 @@ text_model_size = "medium"
 image_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "lora"
+configuration = "LST"
 testing = False
 
 #dataset = "flickr30k"
-dataset = "mscoco"
+#dataset = "mscoco"
+dataset = "cc3m"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "lora_I6medium_T4medium"
+training_run_number = "LST_cc3m"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 64 for BERT base uncased with LST
 # 32 for LoRA with BERT base and ViTB16
-batch_size = 32
+batch_size = 64
 
-test_batch_size = 32
+test_batch_size = 64
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
@@ -160,8 +161,8 @@ split = "train"
 
 # 
 
-image_encoder_lr = 1e-6
-text_encoder_lr = 1e-4
+image_encoder_lr = 1e-5
+text_encoder_lr = 1e-3
 image_head_lr = 1e-3
 text_head_lr = 1e-3
 
