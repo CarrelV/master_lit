@@ -263,7 +263,7 @@ class cc3mDataset(wds.WebDataset):
 ########################################################################################
 
 
-def get_dataset(dataset,tokenizer,feature_extractor,transform,split):
+def get_dataset(dataset,tokenizer,feature_extractor,transform,split,rank):
     
     if dataset == "flickr30k":
         image_root=""
@@ -276,9 +276,15 @@ def get_dataset(dataset,tokenizer,feature_extractor,transform,split):
     elif dataset == "cc3m":
         assert split in ("train","val")
         if split == "train":
-            url = "data/cc3m/train/{00000..00331}.tar"
+            if rank == 0:
+                url = "data/cc3m/train/{00000..00165}.tar"
+            else:
+                url = "data/cc3m/train/{00166..00331}.tar"
         elif split == "val":
-            url = "data/cc3m/val/{00000..00001}.tar"
+            if rank == 0:
+                url = "data/cc3m/val/00000.tar"
+            else:
+                url = "data/cc3m/val/00001.tar"
         return cc3mDataset(tokenizer,feature_extractor,url)
     elif dataset == "ade":
         ade_root = "data/ade/ADEChallengeData2016"
