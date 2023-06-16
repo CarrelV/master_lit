@@ -278,6 +278,7 @@ def get_dataset(dataset,tokenizer,feature_extractor,transform,split,rank):
         if split == "train":
             if rank == 0:
                 url = "data/cc3m/train/{00000..00165}.tar"
+                #url = "data/cc3m/train/{00000..00001}.tar"
             else:
                 url = "data/cc3m/train/{00166..00331}.tar"
         elif split == "val":
