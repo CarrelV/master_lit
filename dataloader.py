@@ -29,7 +29,6 @@ transform_test = transforms.Compose([
 
 def get_dataloader(dataset,tokenizer,feature_extractor,rank,world_size,batch_size,shuffle,num_workers,split,pin_memory=False):
     
-    print("dataset")
     if split == "train":
         
         dataset = get_dataset(dataset,tokenizer=tokenizer,feature_extractor=feature_extractor,transform=transform_train,split="train")
@@ -42,12 +41,10 @@ def get_dataloader(dataset,tokenizer,feature_extractor,rank,world_size,batch_siz
     else:
         print("Wrong split")
 
-    print("sampler")
     sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=shuffle, drop_last=True)
 
 
     if dataset == "cc3m":
-        print("loader")
         dataloader = wds.WebLoader(dataset,batch_size=batch_size,num_workers=num_workers,shuffle=False,sampler=sampler)
         return DataLoader(dataloader,batch_size=None)
 

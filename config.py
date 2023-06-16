@@ -152,7 +152,7 @@ add_final_skip_connection = False
 samples_for_fisher = 128
 
 
-num_workers = 0
+num_workers = 8
 shuffle_train = True
 shuffle_test = False
 split = "train"
