@@ -109,8 +109,8 @@ def main(rank,world_size):
         model.train()
         
         # if we are using DistributedSampler, we have to tell it which epoch this is
-        dataloader_train.sampler.set_epoch(epoch)
-        dataloader_valid.sampler.set_epoch(epoch)
+        #dataloader_train.sampler.set_epoch(epoch)
+        #dataloader_valid.sampler.set_epoch(epoch)
 
 
         train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,rank)
