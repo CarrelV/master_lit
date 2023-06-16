@@ -13,6 +13,7 @@ from torchvision import transforms
 from utils import read_json
 import config as CFG
 
+import webdataset as wds
 
 #############################################################################
 #                                                                           #
@@ -207,12 +208,57 @@ class mscoco(Dataset):
         #for CLIP
         #image_encoded = self.feature_extractor(text=None,images=image,return_tensors="pt")
         # For our
+        
         image_encoded = self.feature_extractor(image,return_tensors="pt")
 
         caption_encoded = self.tokenizer(caption,padding="max_length",max_length=self.max_words)
 
         return {"image" :image_encoded["pixel_values"].squeeze(0), "input_ids": torch.as_tensor(caption_encoded["input_ids"]), "attention_mask": torch.as_tensor(caption_encoded["attention_mask"])}
 
+
+#############################################################################
+#                                                                           #
+#                                  cc3m                                     #
+#                                                                           #
+#############################################################################
+
+class cc3mDataset(wds.WebDataset):
+    def __init__(self, tokenizer,feature_extractor,url):
+        #super().__init__(url)
+        self.dataset = wds.WebDataset(url).shuffle(1000).decode("rgb")
+        
+        self.tokenizer = tokenizer
+        self.feature_extractor = feature_extractor
+        self.transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.RandomResizedCrop(224),
+            transforms.RandomHorizontalFlip(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+            ])
+
+
+    def __iter__(self):
+        
+        for item in self.dataset:
+            yield self.process_item(item)
+        
+
+    def process_item(self, item):
+
+        caption_encoded = self.tokenize_caption(item["txt"])
+        image_encoded = self.extract_features(item["jpg"])
+        
+        return {"image" :image_encoded["pixel_values"].squeeze(0), "input_ids": torch.as_tensor(caption_encoded["input_ids"]), "attention_mask": torch.as_tensor(caption_encoded["attention_mask"])}
+
+    def tokenize_caption(self, caption):
+        caption_encoded = self.tokenizer(caption,padding="max_length",max_length=CFG.max_length)
+        return caption_encoded
+
+    def extract_features(self, image):
+        image_tensor = self.transform(image)
+        image_tensor = image_tensor  # Add batch dimension
+        image_features = self.feature_extractor(image_tensor,return_tensors="pt")
+        return image_features
 
 ########################################################################################
 
@@ -227,7 +273,13 @@ def get_dataset(dataset,tokenizer,feature_extractor,transform,split):
         image_root = "data/mscoco"
         ann_root="data/mscoco/annotations"
         return mscoco(tokenizer,feature_extractor,transform,image_root,ann_root,split)
-
+    elif dataset == "cc3m":
+        assert split in ("train","val")
+        if split == "train":
+            url = "data/cc3m/train/{00000..00331}.tar"
+        elif split == "val":
+            url = "data/cc3m/val/{00000..00001}.tar"
+        return cc3mDataset(tokenizer,feature_extractor,url)
     elif dataset == "ade":
         ade_root = "data/ade/ADEChallengeData2016"
         return ADE20KDataset(feature_extractor,transform,ade_root,split)
