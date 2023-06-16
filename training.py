@@ -32,10 +32,13 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
     loss_meter = AvgMeter()
 
     #tqdm_object = tqdm(train_loader, total=len(train_loader))
-   
+    counter = 0
     
     #for batch in tqdm_object:
     for batch in train_loader:
+        counter += 1
+        print(f"Minibatch: {counter}", end="\r", flush=True)
+
         image = batch["image"].to(device)
         text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
         
