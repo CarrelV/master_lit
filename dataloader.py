@@ -42,12 +42,10 @@ def get_dataloader(dataset,tokenizer,feature_extractor,rank,world_size,batch_siz
         print("Wrong split")
 
 
-    print("okay 1")
 
     if dataset == "cc3m":
         dataloader = wds.WebLoader(ds,batch_size=batch_size,num_workers=num_workers)
 
-        print("okay 2")
         return DataLoader(dataloader,batch_size=None)
 
     else:   

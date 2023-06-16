@@ -31,11 +31,11 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
     
     loss_meter = AvgMeter()
 
-    tqdm_object = tqdm(train_loader, total=len(train_loader))
+    #tqdm_object = tqdm(train_loader, total=len(train_loader))
    
     
-    for batch in tqdm_object:
-
+    #for batch in tqdm_object:
+    for batch in train_loader:
         image = batch["image"].to(device)
         text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
         
@@ -83,7 +83,7 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
         loss_meter.update(loss, count)
 
         wandb.log({"step Training loss": loss_meter.avg_loss, "step Learning Rate" : get_lr(optimizer)  } )
-        tqdm_object.set_postfix(train_loss=loss_meter.avg_loss.item())
+        #tqdm_object.set_postfix(train_loss=loss_meter.avg_loss.item())
         
         
     return loss_meter
@@ -98,10 +98,10 @@ def valid_one_epoch(model,loss_fn,valid_loader,device):
 
     loss_meter = AvgMeter()
 
-    tqdm_object = tqdm(valid_loader, total=len(valid_loader))
+    #tqdm_object = tqdm(valid_loader, total=len(valid_loader))
     
-    for batch in tqdm_object:
-
+    #for batch in tqdm_object:
+    for batch in valid_loader:
         image = batch["image"].to(device)
         text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
 
@@ -130,7 +130,7 @@ def valid_one_epoch(model,loss_fn,valid_loader,device):
         loss_meter.update(loss, count)
 
         wandb.log({"step Validation loss": loss_meter.avg_loss} )
-        tqdm_object.set_postfix(valid_loss=loss_meter.avg_loss.item())
+        #tqdm_object.set_postfix(valid_loss=loss_meter.avg_loss.item())
 
     return loss_meter
 
