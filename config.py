@@ -36,8 +36,8 @@ test_batch_size = 64
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
-warming_epochs = 5
-epochs = 50
+warming_epochs = 4
+epochs = 30
 
 # 1 at home, 2 on cluster
 gpu_number = 2

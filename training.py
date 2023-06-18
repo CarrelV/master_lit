@@ -30,13 +30,15 @@ def get_lr(optimizer):
 def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
     
     loss_meter = AvgMeter()
-
+    # For cc3m, using local dataloader with hardcoded fixes for now
     #tqdm_object = tqdm(train_loader, total=len(train_loader))
     counter = 0
     
     #for batch in tqdm_object:
     for batch in train_loader:
         counter += 1
+        if counter >= 20992:
+            break
         print(f"Minibatch: {counter}", end="\r", flush=True)
 
         image = batch["image"].to(device)
@@ -102,9 +104,14 @@ def valid_one_epoch(model,loss_fn,valid_loader,device):
     loss_meter = AvgMeter()
 
     #tqdm_object = tqdm(valid_loader, total=len(valid_loader))
-    
+    counter = 0
+
     #for batch in tqdm_object:
     for batch in valid_loader:
+        counter += 1
+        if counter >= 20992:
+            break
+        print(f"Val Minibatch: {counter}", end="\r", flush=True)
         image = batch["image"].to(device)
         text = {"input_ids": batch["input_ids"].to(device), "attention_mask": batch["attention_mask"].to(device)}
 

@@ -9,7 +9,7 @@ from utils_models import modify_model_after_init,resume_model
 
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
-
+import torch.distributed as dist
 import wandb
 import torch
 from transformers.optimization import get_cosine_schedule_with_warmup
@@ -114,14 +114,14 @@ def main(rank,world_size):
 
 
         train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,rank)
-            
+        dist.barrier()  
         ## VALIDATION
         model.eval()
 
         with torch.no_grad():
             valid_loss = valid_one_epoch(model,loss_fn,dataloader_valid,rank)
         
-        
+        dist.barrier()
 
         if valid_loss.avg_loss < best_loss:
             best_loss = valid_loss.avg_loss
@@ -203,8 +203,8 @@ def main(rank,world_size):
         
         
         ### END INTERMEDIATE TESTING ###
-
-
+        DDP.bar
+        dist.barrier()
         wandb.log({"Text Projection lr" : lr_scheduler.get_last_lr()[-2], "Image Projection lr": lr_scheduler.get_last_lr()[-1]})
 
         lr_scheduler.step()

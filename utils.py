@@ -4,11 +4,12 @@ import torch
 from pathlib import Path
 import json
 from collections import OrderedDict
+import datetime
 
 def setup(rank, world_size):
     os.environ['MASTER_ADDR'] = 'localhost'
     os.environ['MASTER_PORT'] = '12355'
-    dist.init_process_group("nccl", rank=rank, world_size=world_size)
+    dist.init_process_group("nccl", rank=rank, world_size=world_size,timeout=datetime.timedelta(seconds=72000))
     torch.cuda.set_device(rank)
 
 
