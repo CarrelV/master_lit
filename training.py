@@ -109,7 +109,7 @@ def valid_one_epoch(model,loss_fn,valid_loader,device):
     #for batch in tqdm_object:
     for batch in valid_loader:
         counter += 1
-        if counter >= 100:
+        if counter >= 70:
             break
         print(f"Val Minibatch: {counter}", end="\r", flush=True)
         image = batch["image"].to(device)
