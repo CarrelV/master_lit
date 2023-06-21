@@ -203,7 +203,6 @@ def main(rank,world_size):
         
         
         ### END INTERMEDIATE TESTING ###
-        DDP.bar
         dist.barrier()
         wandb.log({"Text Projection lr" : lr_scheduler.get_last_lr()[-2], "Image Projection lr": lr_scheduler.get_last_lr()[-1]})
 
