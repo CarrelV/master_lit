@@ -23,7 +23,7 @@ testing = False
 dataset = "cc3m"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "LST_cc3m_I5_T3"
+training_run_number = "LST_cc3m_I6_T4"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -161,8 +161,8 @@ split = "train"
 
 # 
 
-image_encoder_lr = 1e-5
-text_encoder_lr = 1e-3
+image_encoder_lr = 1e-6
+text_encoder_lr = 1e-4
 image_head_lr = 1e-3
 text_head_lr = 1e-3
 
