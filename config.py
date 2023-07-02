@@ -23,7 +23,7 @@ testing = False
 dataset = "cc3m"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "LST_cc3m"
+training_run_number = "LST_cc3m_I5_T3"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -36,8 +36,8 @@ test_batch_size = 64
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
-warming_epochs = 4
-epochs = 30
+warming_epochs = 5
+epochs = 40
 
 # 1 at home, 2 on cluster
 gpu_number = 2

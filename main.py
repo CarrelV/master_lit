@@ -92,7 +92,7 @@ def main(rank,world_size):
     #Optimizer
     optimizer = torch.optim.AdamW(params, weight_decay=0.)
     #Learning rate
-    lr_scheduler = get_cosine_schedule_with_warmup(optimizer,num_warmup_steps=CFG.warming_epochs,num_training_steps=CFG.epochs)
+    lr_scheduler = get_cosine_schedule_with_warmup(optimizer,num_warmup_steps=CFG.warming_epochs*20000,num_training_steps=CFG.epochs*20000)
 
     
     best_loss = float('inf')
@@ -113,7 +113,7 @@ def main(rank,world_size):
         #dataloader_valid.sampler.set_epoch(epoch)
 
 
-        train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,rank)
+        train_loss = train_one_epoch(model, loss_fn, dataloader_train, optimizer,lr_scheduler,rank)
         dist.barrier()  
         ## VALIDATION
         model.eval()
@@ -206,7 +206,7 @@ def main(rank,world_size):
         dist.barrier()
         wandb.log({"Text Projection lr" : lr_scheduler.get_last_lr()[-2], "Image Projection lr": lr_scheduler.get_last_lr()[-1]})
 
-        lr_scheduler.step()
+        #lr_scheduler.step()
 
     print("Finish training")
     cleanup()

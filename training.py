@@ -27,7 +27,7 @@ def get_lr(optimizer):
 
 
 
-def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
+def train_one_epoch(model, loss_fn, train_loader, optimizer,lr_scheduler,device):
     
     loss_meter = AvgMeter()
     # For cc3m, using local dataloader with hardcoded fixes for now
@@ -77,7 +77,8 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,device):
 
         # Adjust learning weights
         optimizer.step()
-
+        lr_scheduler.step()  # Update learning rate
+        
         # Dequeue and enqueue the new keys
         with torch.no_grad():
             
