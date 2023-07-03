@@ -37,7 +37,7 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,lr_scheduler,device)
     #for batch in tqdm_object:
     for batch in train_loader:
         counter += 1
-        if counter >= 20000:
+        if counter >= 40000:
             break
         print(f"Minibatch: {counter}", end="\r", flush=True)
 
@@ -110,7 +110,7 @@ def valid_one_epoch(model,loss_fn,valid_loader,device):
     #for batch in tqdm_object:
     for batch in valid_loader:
         counter += 1
-        if counter >= 70:
+        if counter >= 140:
             break
         print(f"Val Minibatch: {counter}", end="\r", flush=True)
         image = batch["image"].to(device)

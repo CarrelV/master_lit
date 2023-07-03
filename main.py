@@ -92,7 +92,7 @@ def main(rank,world_size):
     #Optimizer
     optimizer = torch.optim.AdamW(params, weight_decay=0.)
     #Learning rate
-    lr_scheduler = get_cosine_schedule_with_warmup(optimizer,num_warmup_steps=CFG.warming_epochs*20000,num_training_steps=CFG.epochs*20000)
+    lr_scheduler = get_cosine_schedule_with_warmup(optimizer,num_warmup_steps=CFG.warming_epochs*40000,num_training_steps=CFG.epochs*20000)
 
     
     best_loss = float('inf')
