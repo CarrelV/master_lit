@@ -54,11 +54,11 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "LST"
+configuration_to_test = "lora"
 
 # best or im0 or i2t or t2i
-weight_information = "t2i"
-weight_version = "LST_cc3m_I5_T3"
+weight_information = "best"
+weight_version = "lora_cc3m_I6_T4"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
