@@ -15,7 +15,7 @@ text_model_size = "medium"
 image_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "lora"
+configuration = "LST"
 testing = True
 
 #dataset = "flickr30k"
@@ -54,9 +54,11 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "lora"
+configuration_to_test = "LST"
 
-weight_version = "lora_I6medium_T4medium"
+# best or im0 or i2t or t2i
+weight_information = "best"
+weight_version = "LST_cc3m_I6_T4"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -181,9 +183,11 @@ weight_decay = 1e-3
 
 
 ########################## Different CONFIGURATION #########################################
+version_add_information = "best"
 
 if testing:
     configuration = configuration_to_test
+    version_add_information = weight_information
 
 if configuration == "lora_text":
     #Model weight init
