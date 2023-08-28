@@ -16,7 +16,7 @@ image_model_size = "medium"
 
 ## See at the end the different possibilities
 configuration = "lora"
-testing = False
+testing = True
 
 #dataset = "flickr30k"
 #dataset = "mscoco"
@@ -56,7 +56,7 @@ sum_last_outputs = True
 
 configuration_to_test = "lora"
 
-weight_version = "lora_I5medium_T4medium"
+weight_version = "lora_I6medium_T4medium"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
