@@ -57,8 +57,8 @@ sum_last_outputs = True
 configuration_to_test = "LST"
 
 # best or im0 or i2t or t2i
-weight_information = "i2t"
-weight_version = "LST_cc3m_I6_T4"
+weight_information = "best"
+weight_version = "LST_cc3m_I5_T3"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
