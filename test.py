@@ -32,12 +32,12 @@ def test():
 
     # Load the weights for the backbone
     if CFG.text_backbone_finetune:
-        model.text_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_enc_best_{CFG.weight_version}.pt",map_location=device))
+        model.text_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_enc_{CFG.version_add_information}_{CFG.weight_version}.pt",map_location=device))
     if CFG.image_backbone_finetune:
-        model.image_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_enc_best_{CFG.weight_version}.pt",map_location=device))
+        model.image_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_enc_{CFG.version_add_information}_{CFG.weight_version}.pt",map_location=device))
     # Load the heads
-    model.text_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_proj_best_{CFG.weight_version}.pt",map_location=device))
-    model.image_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_proj_best_{CFG.weight_version}.pt",map_location=device))
+    model.text_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_proj_{CFG.version_add_information}_{CFG.weight_version}.pt",map_location=device))
+    model.image_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_proj_{CFG.version_add_information}_{CFG.weight_version}.pt",map_location=device))
     '''
     #testing with a pretrained clip
     model_id = "openai/clip-vit-base-patch32"
@@ -52,7 +52,7 @@ def test():
     model.eval()
 
     print("-------------------------")
-    print(f"For the model {CFG.configuration_to_test}, weights: {CFG.weight_version}, text model size: {CFG.text_model_size}, image model size: {CFG.image_model_size}")
+    print(f"For the model {CFG.configuration_to_test}, weights: {CFG.configuration_to_test}_{CFG.version_add_information}_{CFG.weight_version}, text model size: {CFG.text_model_size}, image model size: {CFG.image_model_size}")
     print("-------------------------\n")
 
     print("0 Shot classification on ImageNetV2:")
