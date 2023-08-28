@@ -15,7 +15,7 @@ text_model_size = "medium"
 image_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "LST"
+configuration = "lora"
 testing = False
 
 #dataset = "flickr30k"
