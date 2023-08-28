@@ -16,14 +16,14 @@ image_model_size = "medium"
 
 ## See at the end the different possibilities
 configuration = "LST"
-testing = True
+testing = False
 
 #dataset = "flickr30k"
-#dataset = "mscoco"
-dataset = "cc3m"
+dataset = "mscoco"
+#dataset = "cc3m"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "lora_cc3m_I5_T3"
+training_run_number = "bin_memory"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -40,7 +40,7 @@ warming_epochs = 5
 epochs = 40
 
 # 1 at home, 2 on cluster
-gpu_number = 2
+gpu_number = 1
 
 
 # reduction of number of ladder connection

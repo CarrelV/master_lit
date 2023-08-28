@@ -33,7 +33,11 @@ def main(rank,world_size):
     setup(rank, world_size)
     
     # prepare the dataloader
+    
     print("prepare the dataloader")
+
+    print(f"Beginning memory: {torch.cuda.memory_allocated(rank)}")
+
     tokenizer = get_tokenizer(CFG.text_model_name)
     feature_extractor = get_feature_extractor(CFG.image_model_name)
 
@@ -47,7 +51,6 @@ def main(rank,world_size):
     
     loss_fn = CLIPMoCOLoss().to(rank)
     # copy the pruned weights of the main text to the side LST text network
-    
     
     
     if CFG.side_text_weights_copy or CFG.side_image_weights_copy:
@@ -72,7 +75,8 @@ def main(rank,world_size):
     # device_ids tell DDP where is your model
     # output_device tells DDP where to output, in our case, it is rank
     # find_unused_parameters=True instructs DDP to find unused output of the forward() function of any module in the model
-    
+    print(f"1 - after model to device: {torch.cuda.memory_allocated(rank)}")
+
     
     
     #Parameter
@@ -100,11 +104,11 @@ def main(rank,world_size):
     best_i2t = float("inf")
     best_t2i = float("inf")
     best_in0 = float("inf")
-
-    for epoch in range(CFG.epochs):
+    
+    for epoch in range(1):
+    #for epoch in range(CFG.epochs):
        
         print(f"Epoch: {epoch + 1}")
-
         ## TRAINING
         model.train()
         
@@ -162,7 +166,7 @@ def main(rank,world_size):
             wandb.log({"Image 2 Text top 1" : top1_i2t,"Image 2 Text top 5": top5_i2t},commit = False)
             wandb.log({"Text 2 Image top 1" : top1_t2i,"Text 2 Image top 5": top5_t2i},commit = False)
 
-            if top1 < best_in0:
+            if top1 > best_in0:
 
                 best_in0 = top1
 
@@ -175,7 +179,7 @@ def main(rank,world_size):
                 torch.save(model.module.text_projection.state_dict(), f"weights/{CFG.configuration}_text_proj_im0_{CFG.training_run_number}.pt")
                 torch.save(model.module.image_projection.state_dict(), f"weights/{CFG.configuration}_img_proj_im0_{CFG.training_run_number}.pt")
 
-            if top1_i2t < best_i2t:
+            if top1_i2t > best_i2t:
 
                 best_i2t = top1_i2t
 
@@ -188,7 +192,7 @@ def main(rank,world_size):
                 torch.save(model.module.text_projection.state_dict(), f"weights/{CFG.configuration}_text_proj_i2t_{CFG.training_run_number}.pt")
                 torch.save(model.module.image_projection.state_dict(), f"weights/{CFG.configuration}_img_proj_i2t_{CFG.training_run_number}.pt")
 
-            if top1_t2i < best_t2i:
+            if top1_t2i > best_t2i:
 
                 best_t2i = top1_t2i
 

@@ -34,11 +34,12 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,lr_scheduler,device)
     #tqdm_object = tqdm(train_loader, total=len(train_loader))
     counter = 0
     
+    only_three_batch_memory_test = 0
     #for batch in tqdm_object:
     for batch in train_loader:
-        counter += 1
-        if counter >= 40000:
-            break
+
+        a = torch.cuda.memory_allocated(device)
+
         print(f"Minibatch: {counter}", end="\r", flush=True)
 
         image = batch["image"].to(device)
@@ -70,13 +71,24 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,lr_scheduler,device)
         #compute prediction for the batch
         output = model(image,text)
         
-        
+        b = torch.cuda.memory_allocated(device)
+
+        print(f"2 - After forward pass: {b}")
+        print(f"2 - Memory consumed by forward pass: {b-a}")
         #compute loss and its gradients
         loss = loss_fn(output,keys_for_this_batch)
+
+        c = torch.cuda.memory_allocated(device)
+        print(f"3 - After computing loss and its gradient pass: {c}")
         loss.backward()
 
+        d = torch.cuda.memory_allocated(device)
+        print(f"4 - After loss backward pass: {d}")
         # Adjust learning weights
         optimizer.step()
+
+        e = torch.cuda.memory_allocated(device)
+        print(f"5 - After optimizer pass: {e}")
         lr_scheduler.step()  # Update learning rate
         
         # Dequeue and enqueue the new keys
@@ -90,6 +102,10 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,lr_scheduler,device)
 
         wandb.log({"step Training loss": loss_meter.avg_loss, "step Learning Rate" : get_lr(optimizer)  } )
         #tqdm_object.set_postfix(train_loss=loss_meter.avg_loss.item())
+
+        only_three_batch_memory_test += 1
+        if only_three_batch_memory_test > 3:
+            break
         
         
     return loss_meter
