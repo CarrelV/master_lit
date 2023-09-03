@@ -11,7 +11,7 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
+text_model_size = "small"
 image_model_size = "medium"
 
 ## See at the end the different possibilities
@@ -23,7 +23,7 @@ dataset = "mscoco"
 #dataset = "cc3m"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "bin_memory"
+training_run_number = "lora_mscoco_Ismall6_Tmedium4"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)
@@ -37,10 +37,10 @@ test_batch_size = 32
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
 warming_epochs = 5
-epochs = 40
+epochs = 50
 
 # 1 at home, 2 on cluster
-gpu_number = 1
+gpu_number = 2
 
 
 # reduction of number of ladder connection
@@ -163,8 +163,8 @@ split = "train"
 
 # 
 
-image_encoder_lr = 1e-5
-text_encoder_lr = 1e-3
+image_encoder_lr = 1e-6
+text_encoder_lr = 1e-4
 image_head_lr = 1e-3
 text_head_lr = 1e-3
 
