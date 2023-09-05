@@ -23,7 +23,7 @@ dataset = "mscoco"
 #dataset = "cc3m"
 
 # Increment if retraining the same configuration one more time
-training_run_number = "lora_mscoco_real_Ismall6_Tmedium4"
+training_run_number = "lora_mscoco_Ismall6_Tmedium4"
 
 # 1024 when both backbone are frozen (baseline,good_baseline,APE)
 # 64 when both backbone are finetuned (bad_baseline)

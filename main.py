@@ -105,8 +105,7 @@ def main(rank,world_size):
     best_t2i = float("inf")
     best_in0 = float("inf")
     
-    for epoch in range(1):
-    #for epoch in range(CFG.epochs):
+    for epoch in range(CFG.epochs):
        
         print(f"Epoch: {epoch + 1}")
         ## TRAINING
