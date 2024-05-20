@@ -96,6 +96,11 @@ def test():
     print("-------------------------")
     print(f"For the model {CFG.configuration_to_test}, weights: {CFG.configuration_to_test}_{CFG.version_add_information}_{CFG.weight_version}, text model size: {CFG.text_model_size}, image model size: {CFG.image_model_size}")
     print("-------------------------\n")
+    
+
+    # to stop, only when testing the loading in local
+
+    
 
     print("0 Shot classification on ImageNetV2:")
 
