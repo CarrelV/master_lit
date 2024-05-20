@@ -15,7 +15,7 @@ text_model_size = "small"
 image_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "bad_baseline"
+configuration = "baseline"
 testing = True
 
 #dataset = "flickr30k"
@@ -54,9 +54,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "bad_baseline"
+configuration_to_test = "baseline"
 
-run_info = "baseline bad baseline"
+run_info = "baseline: baseline"
 training_dataset = "unknown (flickr?)"
 # best or im0 or i2t or t2i
 weight_information = "best"
