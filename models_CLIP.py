@@ -46,6 +46,7 @@ class ImageEncoder(nn.Module):
         super().__init__()
         self.config = ViTConfig.from_pretrained(model_name)
         if pretrained:
+            print(f"model_name:{model_name}")
             self.model = ViTModel.from_pretrained(model_name)
         else:
             self.model = ViTModel(config=ViTConfig.from_pretrained(model_name))
