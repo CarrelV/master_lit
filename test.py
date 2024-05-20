@@ -16,20 +16,24 @@ import config as CFG
 from tokenizer import get_tokenizer,get_feature_extractor
 from dataloader import get_dataloader
 from utils import read_imagenet_class
-
+import os
 data_to_save = []
 
 def test():
-
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
     print("Start testing")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logging.set_verbosity_error()
 
     warnings.simplefilter(action='ignore', category=FutureWarning)
-
+    print("test 1")
+    print(CFG.image_model_name)
     feature_extractor = get_feature_extractor(CFG.image_model_name)
+    print("test 2")
+    print(CFG.text_model_name)
     tokenizer = get_tokenizer(CFG.text_model_name)
 
+    print("Hallo")
     model = CLIPMoco().to(device)
 
     data_to_save.append(CFG.run_info)
@@ -40,6 +44,8 @@ def test():
     data_to_save.append(CFG.image_head_name)
 
     # Load the weights for the backbone
+
+    print("Loading the saved weights")
     if CFG.text_backbone_finetune:
         model.text_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_enc_{CFG.version_add_information}_{CFG.weight_version}.pt",map_location=device))
         data_to_save.append(f"{CFG.configuration_to_test}_text_enc_{CFG.version_add_information}_{CFG.weight_version}.pt")
@@ -97,10 +103,10 @@ def test():
     print(f"For the model {CFG.configuration_to_test}, weights: {CFG.configuration_to_test}_{CFG.version_add_information}_{CFG.weight_version}, text model size: {CFG.text_model_size}, image model size: {CFG.image_model_size}")
     print("-------------------------\n")
     
-    
+
 
     # to stop, only when testing the loading in local
-    return
+    
     
 
     print("0 Shot classification on ImageNetV2:")
@@ -136,6 +142,9 @@ def test():
     with open("results.csv", 'a', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(data_to_save)
+
+
+
 ######################## IMAGENET 0 SHOT ###############
 def imagenet_0shot(model,tokenizer,feature_extractor,dataset,device):
 

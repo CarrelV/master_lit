@@ -17,7 +17,7 @@ class TextEncoder(nn.Module):
         self.config = BertConfig.from_pretrained(model_name) 
         
         if pretrained:
-            
+            print(f"model_name:{model_name}")
             self.model = BertModel.from_pretrained(model_name)
         else:
 
@@ -231,11 +231,13 @@ class CLIPMoco(nn.Module):
         self.text_tower_config = text_tower_config
         self.image_tower_config = image_tower_config
 
+        print("Building image tower")
         if self.image_tower_config == "classic":
             self.image_encoder = ImageEncoder()
         elif self.image_tower_config == "LST":
             self.image_encoder = ViTLSTModel.from_pretrained(CFG.image_model_name)
 
+        print("Building text tower")
 
         if self.text_tower_config == "classic":
             self.text_encoder = TextEncoder()

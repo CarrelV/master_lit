@@ -15,7 +15,7 @@ text_model_size = "small"
 image_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "baseline"
+configuration = "APE"
 testing = True
 
 #dataset = "flickr30k"
@@ -54,13 +54,13 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "baseline"
+configuration_to_test = "APE"
 
-run_info = "baseline: baseline"
-training_dataset = "unknown (flickr?)"
+run_info = "APE trained on mscoco"
+training_dataset = "mscoco"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "1"
+weight_version = "mscoco_1"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
