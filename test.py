@@ -10,11 +10,14 @@ from robustness import datasets
 from models_CLIP import CLIPMoco
 #from models import CLIPMoco
 import warnings
+import csv 
 
 import config as CFG
 from tokenizer import get_tokenizer,get_feature_extractor
 from dataloader import get_dataloader
 from utils import read_imagenet_class
+
+data_to_save = []
 
 def test():
 
@@ -29,15 +32,33 @@ def test():
 
     model = CLIPMoco().to(device)
 
+    data_to_save.append(CFG.run_info)
+    data_to_save.append(CFG.training_dataset)
+    data_to_save.append(CFG.text_tower_name)
+    data_to_save.append(CFG.text_head_name)
+    data_to_save.append(CFG.image_tower_name)
+    data_to_save.append(CFG.image_head_name)
 
     # Load the weights for the backbone
     if CFG.text_backbone_finetune:
         model.text_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_enc_{CFG.version_add_information}_{CFG.weight_version}.pt",map_location=device))
+        data_to_save.append(f"{CFG.configuration_to_test}_text_enc_{CFG.version_add_information}_{CFG.weight_version}.pt")
+    else:
+        data_to_save.append(CFG.text_model_name)    
+
+    data_to_save.append(f"{CFG.configuration_to_test}_text_proj_{CFG.version_add_information}_{CFG.weight_version}.pt")
+
     if CFG.image_backbone_finetune:
         model.image_encoder.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_enc_{CFG.version_add_information}_{CFG.weight_version}.pt",map_location=device))
+        data_to_save.append(f"{CFG.configuration_to_test}_img_enc_{CFG.version_add_information}_{CFG.weight_version}.pt")
+    else:
+        data_to_save.append(CFG.image_model_name)
+        
+
     # Load the heads
     model.text_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_text_proj_{CFG.version_add_information}_{CFG.weight_version}.pt",map_location=device))
     model.image_projection.load_state_dict(torch.load(f"weights/{CFG.configuration_to_test}_img_proj_{CFG.version_add_information}_{CFG.weight_version}.pt",map_location=device))
+    data_to_save.append(f"{CFG.configuration_to_test}_img_proj_{CFG.version_add_information}_{CFG.weight_version}.pt")
     '''
     #testing with a pretrained clip
     model_id = "openai/clip-vit-base-patch32"
@@ -48,6 +69,27 @@ def test():
     '''
     print("Model loaded")
     
+    ## Number of params
+
+    text_tower_trainable_params = sum(p.numel() for p in model.module.text_encoder.parameters() if p.requires_grad)
+    text_tower_total_params = sum(p.numel() for p in model.module.text_encoder.parameters())
+    text_head_trainable_params = sum(p.numel() for p in model.module.text_projection.parameters() if p.requires_grad)
+    text_head_total_params = sum(p.numel() for p in model.module.text_projection.parameters())
+    image_tower_trainable_params = sum(p.numel() for p in model.module.image_encoder.parameters() if p.requires_grad)
+    image_tower_total_params = sum(p.numel() for p in model.module.image_encoder.parameters())
+    image_head_trainable_params = sum(p.numel() for p in model.module.image_projection.parameters() if p.requires_grad)
+    image_head_total_params = sum(p.numel() for p in model.module.image_projection.parameters())
+
+    data_to_save.append(text_tower_total_params)
+    data_to_save.append(text_head_total_params)
+    data_to_save.append(image_tower_total_params)
+    data_to_save.append(image_head_total_params)
+    data_to_save.append(text_tower_trainable_params)
+    data_to_save.append(text_head_trainable_params)
+    data_to_save.append(image_tower_trainable_params)
+    data_to_save.append(image_head_trainable_params)
+    ## End Number of params
+
 
     model.eval()
 
@@ -57,18 +99,37 @@ def test():
 
     print("0 Shot classification on ImageNetV2:")
 
-    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "all",device=device)
-    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "big",device=device)
-    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "medium",device=device)
-    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "small",device=device)
-    imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "tiny",device=device)
-    
+    top_1,top_5 = imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "all",device=device)
+    data_to_save.append(top_1)
+    data_to_save.append(top_5)
+    top_1,top_5 = imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "big",device=device)
+    data_to_save.append(top_1)
+    data_to_save.append(top_5)
+    top_1,top_5 = imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "medium",device=device)
+    data_to_save.append(top_1)
+    data_to_save.append(top_5)
+    top_1,top_5 = imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "small",device=device)
+    data_to_save.append(top_1)
+    data_to_save.append(top_5)
+    top_1,top_5 = imagenet_0shot(model=model,tokenizer=tokenizer,feature_extractor=feature_extractor,dataset = "tiny",device=device)
+    data_to_save.append(top_1)
+    data_to_save.append(top_5)
+
     print("T2I and I2T retrieval on Flickr30k test set:")
 
-    i2t_t2i_retrieval(model=model,dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
+    top1_i2t,top5_i2t,top10_i2t,top1_t2i,top5_t2i,top10_t2i = i2t_t2i_retrieval(model=model,dataset="flickr30k",tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
+    data_to_save.append(top1_i2t)
+    data_to_save.append(top5_i2t)
+    data_to_save.append(top10_i2t)
+    data_to_save.append(top1_t2i)
+    data_to_save.append(top5_t2i)
+    data_to_save.append(top10_t2i)
     #No test set for mscoco
     #i2t_t2i_retrieval(model=model,dataset="mscoco",tokenizer=tokenizer,feature_extractor=feature_extractor,device=device)
 
+    with open("results.csv", 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(data_to_save)
 ######################## IMAGENET 0 SHOT ###############
 def imagenet_0shot(model,tokenizer,feature_extractor,dataset,device):
 
@@ -303,7 +364,7 @@ def i2t_t2i_retrieval(model,dataset,tokenizer,feature_extractor,device):
     print(f"Top-5 accuracy: {top5_t2i:.2f}")
     print(f"Top-10 accuracy: {top10_t2i:.2f}")
 
-    return top1_i2t,top5_i2t,top1_t2i,top5_t2i
+    return top1_i2t,top5_i2t,top10_i2t,top1_t2i,top5_t2i,top10_t2i
 
 
 ############################ ACCURACY #######################

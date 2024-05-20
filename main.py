@@ -98,8 +98,9 @@ def main(rank,world_size):
     #Learning rate
     lr_scheduler = get_cosine_schedule_with_warmup(optimizer,num_warmup_steps=CFG.warming_epochs*number_of_step_per_epoch,num_training_steps=CFG.epochs*number_of_step_per_epoch)
 
-    
-    best_loss = float('inf')
+
+
+    best_loss = float("inf")
 
     best_i2t = float("inf")
     best_t2i = float("inf")
@@ -110,7 +111,7 @@ def main(rank,world_size):
         print(f"Epoch: {epoch + 1}")
         ## TRAINING
         model.train()
-        
+    
         # if we are using DistributedSampler, we have to tell it which epoch this is
         #dataloader_train.sampler.set_epoch(epoch)
         #dataloader_valid.sampler.set_epoch(epoch)
@@ -144,7 +145,7 @@ def main(rank,world_size):
             wandb.log({"Text Encoder lr" : lr_scheduler.get_last_lr()[0]},commit = False)
         if CFG.image_backbone_finetune:
             wandb.log({"Image Encoder lr" : lr_scheduler.get_last_lr()[1]},commit = False)
-
+            
         ### INTERMEDIATE testing ###
         
         with torch.no_grad():

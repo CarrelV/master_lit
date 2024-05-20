@@ -12,11 +12,11 @@
 ################################
 
 text_model_size = "small"
-image_model_size = "medium"
+image_model_size = "small"
 
 ## See at the end the different possibilities
 configuration = "lora"
-testing = False
+testing = True
 
 #dataset = "flickr30k"
 dataset = "mscoco"
@@ -54,11 +54,13 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "lora"
+configuration_to_test = "APE_LiT"
 
+run_info = "baseline APE_LiT"
+training_dataset = "flickr"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "lora_cc3m_I6_T4"
+weight_version = "1"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -87,12 +89,14 @@ if text_model_size == "small":
 
     text_model_name = "prajjwal1/bert-medium"
     text_embedding = 512
+    text_tower_name = "BERT medium (42M)"
 
 elif text_model_size == "medium":
 
     text_model_name = "bert-base-uncased"
     text_embedding = 768
 
+    text_tower_name = "BERT base (108M)"
 
 
 if image_model_size == "small":
@@ -100,11 +104,17 @@ if image_model_size == "small":
     image_model_name = "facebook/dino-vits16"
     image_embedding = 384
 
+    image_tower_name = "ViT small (22M)"
+
 elif image_model_size == "medium":
 
     image_model_name = "facebook/dino-vitb16"
     image_embedding = 768
 
+    image_tower_name = "ViT base (86M)"
+
+
+image_head_name = "Projection Head"
 ##############Pruning for LST
 # reduction of hidden dim size
 reduction_factor = 8
@@ -199,6 +209,7 @@ if configuration == "lora_text":
     image_backbone_finetune = False
 
     text_head_config = "simple_proj"
+    text_head_name = "Projection Head"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = False
@@ -216,6 +227,7 @@ elif configuration == "lora_image":
     image_backbone_finetune = True
 
     text_head_config = "simple_proj"
+    text_head_name = "Projection Head"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = False
@@ -233,6 +245,7 @@ elif configuration == "lora":
     image_backbone_finetune = True
 
     text_head_config = "simple_proj"
+    text_head_name = "Projection Head"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = False
@@ -252,6 +265,7 @@ elif configuration == "text_LST":
     image_backbone_finetune = False
     
     text_head_config = "simple_proj"
+    text_head_name = "Projection Head"
     text_tower_config = "LST"
     image_tower_config = "classic"
     find_unused_param = False
@@ -271,6 +285,7 @@ elif configuration == "image_LST":
     image_backbone_finetune = True
     
     text_head_config = "simple_proj"
+    text_head_name = "Projection Head"
     text_tower_config = "classic"
     image_tower_config = "LST"
     find_unused_param = False
@@ -289,6 +304,7 @@ elif configuration == "LST":
     image_backbone_finetune = True
     
     text_head_config = "simple_proj"
+    text_head_name = "Projection Head"
     text_tower_config = "LST"
     image_tower_config = "LST"
     find_unused_param = False
@@ -308,6 +324,7 @@ elif configuration == "reduced_LST_first":
     image_backbone_finetune = False
     
     text_head_config = "simple_proj"
+    text_head_name = "Projection Head"
     text_tower_config = "LST"
     image_tower_config = "classic"
     find_unused_param = False
@@ -328,6 +345,7 @@ elif configuration == "reduced_LST_last":
     image_backbone_finetune = False
     
     text_head_config = "simple_proj"
+    text_head_name = "Projection Head"
     text_tower_config = "LST"
     image_tower_config = "classic"
     find_unused_param = False
@@ -349,6 +367,7 @@ elif configuration == "baseline_transformer":
     image_backbone_finetune = False
 
     text_head_config = "transformer_head"
+    text_head_name = "Transformer Head"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = False
@@ -364,6 +383,7 @@ elif configuration == "bad_baseline":
     image_backbone_finetune = True
     
     text_head_config = "simple_proj"
+    text_head_name = "Projection Head"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = False
@@ -379,6 +399,7 @@ elif configuration == "baseline":
     image_backbone_finetune = False
 
     text_head_config = "simple_proj"
+    text_head_name = "Projection Head"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = False
@@ -395,6 +416,7 @@ elif configuration == "good_baseline":
     image_backbone_finetune = False
 
     text_head_config = "small_mlp"
+    text_head_name = "Small MLP Head"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = False
@@ -410,6 +432,7 @@ elif configuration == "classic_LiT":
     image_backbone_finetune = False
 
     text_head_config = "simple_proj"
+    text_head_name = "Projection Head"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = False
@@ -425,6 +448,7 @@ elif configuration == "LiT":
     image_backbone_finetune = False
 
     text_head_config = "small_mlp"
+    text_head_name = "Small MLP Head"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = False
@@ -440,6 +464,7 @@ elif configuration == "APE":
     image_backbone_finetune = False
 
     text_head_config = "large_mlp"
+    text_head_name = "Medium MLP Head"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = False
@@ -456,6 +481,7 @@ elif configuration == "APE_LiT":
     image_backbone_finetune = False
 
     text_head_config = "large_mlp"
+    text_head_name = "Medium MLP Head"
     text_tower_config = "classic"
     image_tower_config = "classic"
     find_unused_param = False
