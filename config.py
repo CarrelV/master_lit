@@ -12,10 +12,10 @@
 ################################
 
 text_model_size = "small"
-image_model_size = "medium"
+image_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "APE_LiT"
+configuration = "bad_baseline"
 testing = True
 
 #dataset = "flickr30k"
@@ -54,10 +54,10 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "APE_LiT"
+configuration_to_test = "bad_baseline"
 
-run_info = "baseline APE_LiT"
-training_dataset = "flickr"
+run_info = "baseline bad baseline"
+training_dataset = "unknown (flickr?)"
 # best or im0 or i2t or t2i
 weight_information = "best"
 weight_version = "1"
