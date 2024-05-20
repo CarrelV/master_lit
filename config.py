@@ -12,7 +12,7 @@
 ################################
 
 text_model_size = "small"
-image_model_size = "small"
+image_model_size = "medium"
 
 ## See at the end the different possibilities
 configuration = "APE_LiT"
