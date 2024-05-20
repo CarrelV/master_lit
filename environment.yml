@@ -208,7 +208,6 @@ dependencies:
     - cymem==2.0.6
     - datasets==2.5.1
     - dill==0.3.5.1
-    - fastai==2.7.9
     - fastcore==1.5.27
     - fastdownload==0.0.7
     - fastprogress==1.0.3
