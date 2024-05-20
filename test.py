@@ -71,14 +71,14 @@ def test():
     
     ## Number of params
 
-    text_tower_trainable_params = sum(p.numel() for p in model.module.text_encoder.parameters() if p.requires_grad)
-    text_tower_total_params = sum(p.numel() for p in model.module.text_encoder.parameters())
-    text_head_trainable_params = sum(p.numel() for p in model.module.text_projection.parameters() if p.requires_grad)
-    text_head_total_params = sum(p.numel() for p in model.module.text_projection.parameters())
-    image_tower_trainable_params = sum(p.numel() for p in model.module.image_encoder.parameters() if p.requires_grad)
-    image_tower_total_params = sum(p.numel() for p in model.module.image_encoder.parameters())
-    image_head_trainable_params = sum(p.numel() for p in model.module.image_projection.parameters() if p.requires_grad)
-    image_head_total_params = sum(p.numel() for p in model.module.image_projection.parameters())
+    text_tower_trainable_params = sum(p.numel() for p in model.text_encoder.parameters() if p.requires_grad)
+    text_tower_total_params = sum(p.numel() for p in model.text_encoder.parameters())
+    text_head_trainable_params = sum(p.numel() for p in model.text_projection.parameters() if p.requires_grad)
+    text_head_total_params = sum(p.numel() for p in model.text_projection.parameters())
+    image_tower_trainable_params = sum(p.numel() for p in model.image_encoder.parameters() if p.requires_grad)
+    image_tower_total_params = sum(p.numel() for p in model.image_encoder.parameters())
+    image_head_trainable_params = sum(p.numel() for p in model.image_projection.parameters() if p.requires_grad)
+    image_head_total_params = sum(p.numel() for p in model.image_projection.parameters())
 
     data_to_save.append(text_tower_total_params)
     data_to_save.append(text_head_total_params)
