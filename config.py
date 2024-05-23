@@ -56,11 +56,11 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-run_info = "LST (I=small/T=small)"
+run_info = "LST (I=small/T=small), random init"
 training_dataset = "MSCOCO"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "mscoco"
+weight_version = "mscoco_randomInit"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
