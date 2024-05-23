@@ -166,10 +166,4 @@ def main():
 if __name__ == "__main__":
 
     
-    # world_size is the number of GPU available
-    world_size = CFG.gpu_number   
-    mp.spawn(
-        main,
-        args=(world_size,),
-        nprocs=world_size
-    )
+    main()
