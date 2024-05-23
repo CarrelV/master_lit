@@ -15,7 +15,7 @@ text_model_size = "small"
 image_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "LST"
+configuration = "APE"
 testing = True
 
 #dataset = "flickr30k"
@@ -54,13 +54,13 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "LST"
+configuration_to_test = "APE"
 
-run_info = "LST (I=small/T=small), smart init, low LR"
+run_info = "APE (I=small/T=small),baseline"
 training_dataset = "MSCOCO"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "mscoco_smartInit_lowLR"
+weight_version = "mscoco_1"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
