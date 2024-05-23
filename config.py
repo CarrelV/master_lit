@@ -11,8 +11,8 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
-image_model_size = "medium"
+text_model_size = "small"
+image_model_size = "small"
 
 ## See at the end the different possibilities
 configuration = "LST"
@@ -56,11 +56,11 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-run_info = "LST (I=medium/T=medium), lrI5,lrT3"
-training_dataset = "cc3m"
+run_info = "LST (I=small/T=small)"
+training_dataset = "flickr"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "LST_cc3m_I5_T3"
+weight_version = "flickr"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
