@@ -11,11 +11,11 @@
 #             Training         #
 ################################
 
-text_model_size = "small"
-image_model_size = "small"
+text_model_size = "medium"
+image_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "LiT"
+configuration = "lora"
 testing = True
 
 #dataset = "flickr30k"
@@ -54,13 +54,13 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "LiT"
+configuration_to_test = "lora"
 
-run_info = "benchmark LiT second run(small mlp instead of lin proj) (I=small/T=small)"
-training_dataset = "flickr?"
+run_info = "LoRA (I=medium/T=medium)"
+training_dataset = "unknown (MSCOCO?)"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "2"
+weight_version = "lora_I6medium_T4medium"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
