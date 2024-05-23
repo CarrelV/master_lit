@@ -11,8 +11,8 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
-image_model_size = "small"
+text_model_size = "small"
+image_model_size = "medium"
 
 ## See at the end the different possibilities
 configuration = "APE"
@@ -56,7 +56,7 @@ sum_last_outputs = True
 
 configuration_to_test = "lora"
 
-run_info = "APE (I=small/T=medium)"
+run_info = "APE (I=medium/T=small)"
 training_dataset = "mscoco"
 # best or im0 or i2t or t2i
 weight_information = "best"
