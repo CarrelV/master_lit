@@ -15,8 +15,8 @@ text_model_size = "small"
 image_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "classic_LiT"
-testing = False
+configuration = "LiT"
+testing = True
 
 #dataset = "flickr30k"
 dataset = "mscoco"
@@ -54,9 +54,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "costly_baseline"
+configuration_to_test = "LiT"
 
-run_info = "benchmark classic LiT (costly version of weight) (I=small/T=small)"
+run_info = "benchmark LiT (small mlp instead of lin proj) (I=small/T=small)"
 training_dataset = "flickr?"
 # best or im0 or i2t or t2i
 weight_information = "best"
