@@ -11,12 +11,12 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
+text_model_size = "small"
 image_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "APE"
-testing = True
+configuration = "classic_LiT"
+testing = False
 
 #dataset = "flickr30k"
 dataset = "mscoco"
@@ -54,13 +54,13 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "APE"
+configuration_to_test = "classic_LiT"
 
-run_info = "APE (I=small/T=medium),baseline"
-training_dataset = "MSCOCO"
+run_info = "benchmark classic LiT (I=small/T=medium)"
+training_dataset = "flickr?"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "baseBERT_mscoco"
+weight_version = "1"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
