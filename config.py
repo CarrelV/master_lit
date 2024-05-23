@@ -15,7 +15,7 @@ text_model_size = "small"
 image_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "LST"
+configuration = "APE"
 testing = False
 
 dataset = "flickr30k"
@@ -56,7 +56,7 @@ sum_last_outputs = True
 
 configuration_to_test = "lora"
 
-run_info = "LST (I=small/T=small)"
+run_info = "APE (I=small/T=small)"
 training_dataset = "mscoco"
 # best or im0 or i2t or t2i
 weight_information = "best"
