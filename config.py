@@ -15,7 +15,7 @@ text_model_size = "medium"
 image_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "lora"
+configuration = "LST"
 testing = False
 
 dataset = "flickr30k"
@@ -56,7 +56,7 @@ sum_last_outputs = True
 
 configuration_to_test = "lora"
 
-run_info = "LoRA (I=medium/T=medium)"
+run_info = "LST (I=medium/T=medium)"
 training_dataset = "mscoco"
 # best or im0 or i2t or t2i
 weight_information = "best"
