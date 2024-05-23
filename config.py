@@ -56,11 +56,11 @@ sum_last_outputs = True
 
 configuration_to_test = "LST"
 
-run_info = "LST (medium/medium), random init"
+run_info = "LST (medium/medium), smart init"
 training_dataset = "MSCOCO"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "baseBERT_ViTb_mscoco_LilT"
+weight_version = "baseBERT_ViTb_mscoco_LilT_smartinit"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
