@@ -56,11 +56,11 @@ sum_last_outputs = True
 
 configuration_to_test = "lora"
 
-run_info = "LoRA (I=medium/T=medium)"
-training_dataset = "unknown (MSCOCO?)"
+run_info = "LoRA cc3m (I=medium/T=medium)"
+training_dataset = "cc3m"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "lora_I6medium_T4medium"
+weight_version = "lora_cc3m_I6_T4"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
