@@ -56,11 +56,11 @@ sum_last_outputs = True
 
 configuration_to_test = "LiT"
 
-run_info = "benchmark LiT (small mlp instead of lin proj) (I=small/T=small)"
+run_info = "benchmark LiT second run(small mlp instead of lin proj) (I=small/T=small)"
 training_dataset = "flickr?"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "1"
+weight_version = "2"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
