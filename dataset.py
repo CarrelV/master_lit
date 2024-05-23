@@ -263,7 +263,7 @@ class cc3mDataset(wds.WebDataset):
 ########################################################################################
 
 
-def get_dataset(dataset,tokenizer,feature_extractor,transform,split,rank):
+def get_dataset(dataset,tokenizer,feature_extractor,transform,split,rank=0):
     
     if dataset == "flickr30k":
         image_root=""
