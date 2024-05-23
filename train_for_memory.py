@@ -158,7 +158,7 @@ def main():
         writer = csv.writer(csvfile)
         writer.writerow(data_to_save)
     print("Finish training")
-    cleanup()
+    
 
 
 
