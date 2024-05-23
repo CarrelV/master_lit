@@ -54,9 +54,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "classic_LiT"
+configuration_to_test = "costly_baseline"
 
-run_info = "benchmark classic LiT (I=small/T=medium)"
+run_info = "benchmark classic LiT (costly version of weight) (I=small/T=small)"
 training_dataset = "flickr?"
 # best or im0 or i2t or t2i
 weight_information = "best"
