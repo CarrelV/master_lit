@@ -1,6 +1,5 @@
 from tqdm import tqdm
 import config as CFG
-import wandb
 import torch
 
 class AvgMeter:
@@ -154,7 +153,6 @@ def valid_one_epoch(model,loss_fn,valid_loader,device):
         count = batch["image"].size(0)
         loss_meter.update(loss, count)
 
-        wandb.log({"step Validation loss": loss_meter.avg_loss} )
         #tqdm_object.set_postfix(valid_loss=loss_meter.avg_loss.item())
 
     return loss_meter

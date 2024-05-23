@@ -10,7 +10,6 @@ from utils_models import modify_model_after_init,resume_model
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
 import torch.distributed as dist
-import wandb
 import torch
 from transformers.optimization import get_cosine_schedule_with_warmup
 from transformers import logging
