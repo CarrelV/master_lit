@@ -57,10 +57,10 @@ sum_last_outputs = True
 configuration_to_test = "LST"
 
 run_info = "LST (I=medium/T=small)"
-training_dataset = "unknown (MSCOCO?)"
+training_dataset = "unknown (MSCOCO?), special lr5"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "LST_Imedium_Tsmall"
+weight_version = "LST_Imedium_Tsmall_lr5"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
