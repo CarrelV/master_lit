@@ -75,8 +75,7 @@ def main(rank,world_size):
     # device_ids tell DDP where is your model
     # output_device tells DDP where to output, in our case, it is rank
     # find_unused_parameters=True instructs DDP to find unused output of the forward() function of any module in the model
-    print(f"1 - after model to device: {torch.cuda.memory_allocated(rank)}")
-
+    print(f"1 - after model to device: {torch.cuda.memory_allocated(rank)}.")
     
     
     #Parameter

@@ -18,7 +18,7 @@ class TextEncoder(nn.Module):
         
         if pretrained:
             print(f"model_name:{model_name}")
-            self.model = BertModel.from_pretrained(model_name)
+            self.model = BertModel.from_pretrained(model_name,force_download=True)
         else:
 
             self.model = BertModel(self.config)
@@ -47,7 +47,7 @@ class ImageEncoder(nn.Module):
         self.config = ViTConfig.from_pretrained(model_name)
         if pretrained:
             print(f"model_name:{model_name}")
-            self.model = ViTModel.from_pretrained(model_name)
+            self.model = ViTModel.from_pretrained(model_name,force_download=True)
         else:
             self.model = ViTModel(config=ViTConfig.from_pretrained(model_name))
             

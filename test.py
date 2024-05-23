@@ -16,20 +16,17 @@ import config as CFG
 from tokenizer import get_tokenizer,get_feature_extractor
 from dataloader import get_dataloader
 from utils import read_imagenet_class
-import os
+
 data_to_save = []
 
 def test():
-    os.environ["TOKENIZERS_PARALLELISM"] = "false"
     print("Start testing")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logging.set_verbosity_error()
 
     warnings.simplefilter(action='ignore', category=FutureWarning)
-    print("test 1")
     print(CFG.image_model_name)
     feature_extractor = get_feature_extractor(CFG.image_model_name)
-    print("test 2")
     print(CFG.text_model_name)
     tokenizer = get_tokenizer(CFG.text_model_name)
 
