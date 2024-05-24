@@ -34,7 +34,7 @@ batch_size = 32
 
 #testing batch 8 to max
 
-test_batch_size = 8
+test_batch_size = 16
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
