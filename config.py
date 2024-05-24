@@ -30,11 +30,12 @@ training_run_number = "bin_memory"
 # 128 when only the text backbone is finetuned (costly_baseline,LiT,APE_LiT)
 # 64 for BERT base uncased with LST
 # 32 for LoRA with BERT base and ViTB16
-batch_size = 32
 
-#testing batch 8 to max
+#testing batch from 4 to max
+batch_size = 4
 
-test_batch_size = 16
+
+test_batch_size = 32
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
