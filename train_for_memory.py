@@ -29,11 +29,11 @@ def main():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    data_to_save.append(CFG.run_info)
-    data_to_save.append(CFG.text_tower_name)
-    data_to_save.append(CFG.text_head_name)
-    data_to_save.append(CFG.image_tower_name)
-    data_to_save.append(CFG.image_head_name)
+    #data_to_save.append(CFG.run_info)
+    #data_to_save.append(CFG.text_tower_name)
+    #data_to_save.append(CFG.text_head_name)
+    #data_to_save.append(CFG.image_tower_name)
+    #data_to_save.append(CFG.image_head_name)
     # prepare the dataloader
     
     print("prepare the dataloader")
@@ -82,23 +82,24 @@ def main():
     image_head_trainable_params = sum(p.numel() for p in model.image_projection.parameters() if p.requires_grad)
     image_head_total_params = sum(p.numel() for p in model.image_projection.parameters())
 
-    data_to_save.append(text_tower_total_params)
-    data_to_save.append(text_head_total_params)
-    data_to_save.append(image_tower_total_params)
-    data_to_save.append(image_head_total_params)
-    data_to_save.append(text_tower_trainable_params)
-    data_to_save.append(text_head_trainable_params)
-    data_to_save.append(image_tower_trainable_params)
-    data_to_save.append(image_head_trainable_params)
-    
+    #data_to_save.append(text_tower_total_params)
+    #data_to_save.append(text_head_total_params)
+    #data_to_save.append(image_tower_total_params)
+    #data_to_save.append(image_head_total_params)
+    #data_to_save.append(text_tower_trainable_params)
+    #data_to_save.append(text_head_trainable_params)
+    #data_to_save.append(image_tower_trainable_params)
+    #data_to_save.append(image_head_trainable_params)
+    data_to_save.append(CFG.configuration)
+    data_to_save.append(CFG.batch_size)
     # wrap the model with DDP
     # device_ids tell DDP where is your model
     # output_device tells DDP where to output, in our case, it is rank
     # find_unused_parameters=True instructs DDP to find unused output of the forward() function of any module in the model
-    data_to_save.append(mem_before_model)
+    #data_to_save.append(mem_before_model)
 
     memory_after_model = torch.cuda.memory_allocated() 
-    data_to_save.append(memory_after_model)
+    #data_to_save.append(memory_after_model)
     
     #Parameter
     params = []
@@ -137,9 +138,10 @@ def main():
         ## VALIDATION
         model.eval()
 
+        data_to_save.append(data_returned)
 
-        for item in data_returned:
-            data_to_save.append(item)
+        #for item in data_returned:
+            #data_to_save.append(item)
         #with torch.no_grad():
         #    valid_loss = valid_one_epoch(model,loss_fn,dataloader_valid,device)
 
@@ -154,7 +156,7 @@ def main():
        
         #lr_scheduler.step()
 
-    with open("memory.csv", 'a', newline='') as csvfile:
+    with open("memory_scale.csv", 'a', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(data_to_save)
     print("Finish training")

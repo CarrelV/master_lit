@@ -1,6 +1,7 @@
 from tqdm import tqdm
 import config as CFG
 import torch
+import numpy as np
 
 class AvgMeter:
     def __init__(self, name="Metric"):
@@ -105,7 +106,7 @@ def train_one_epoch(model, loss_fn, train_loader, optimizer,lr_scheduler,device)
         break
         
         
-    return loss_meter,data_to_return
+    return loss_meter,np.max(data_to_return)
 
 
 

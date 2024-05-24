@@ -11,11 +11,11 @@
 #             Training         #
 ################################
 
-text_model_size = "small"
-image_model_size = "small"
+text_model_size = "medium"
+image_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "bad_baseline"
+configuration = "LiT"
 testing = False
 
 dataset = "flickr30k"
@@ -32,7 +32,9 @@ training_run_number = "bin_memory"
 # 32 for LoRA with BERT base and ViTB16
 batch_size = 32
 
-test_batch_size = 32
+#testing batch 8 to max
+
+test_batch_size = 4
 
 # 20 / 300 on flickr
 # 5 / 50 on MSCOCO
