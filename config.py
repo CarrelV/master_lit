@@ -32,7 +32,7 @@ training_run_number = "bin_memory"
 # 32 for LoRA with BERT base and ViTB16
 
 #testing batch from 4 to max
-batch_size = 32
+batch_size = 64
 
 
 test_batch_size = 32
