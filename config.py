@@ -15,7 +15,7 @@ text_model_size = "medium"
 image_model_size = "medium"
 
 ## See at the end the different possibilities
-configuration = "LST"
+configuration = "text_LST"
 testing = False
 
 dataset = "flickr30k"
@@ -32,7 +32,7 @@ training_run_number = "bin_memory"
 # 32 for LoRA with BERT base and ViTB16
 
 #testing batch from 4 to max
-batch_size = 128
+batch_size = 4
 
 
 test_batch_size = 32
