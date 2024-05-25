@@ -59,11 +59,11 @@ sum_last_outputs = True
 
 configuration_to_test = "text_LST"
 
-run_info = "text LST REDUCE FACTOR 4 instead of 8!! (I=small/T=small) 300 epochs"
+run_info = "text LST (I=small/T=small) 50 epochs"
 training_dataset = "MSCOCO"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "2"
+weight_version = "3"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
@@ -120,8 +120,9 @@ elif image_model_size == "medium":
 image_head_name = "Projection Head"
 ##############Pruning for LST
 # reduction of hidden dim size
-#reduction_factor = 8
-reduction_factor = 4
+reduction_factor = 8
+#LST text weight 2
+#reduction_factor = 4
 
 
 ladder_initial_gap = 0
