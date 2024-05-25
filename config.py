@@ -63,7 +63,7 @@ run_info = "text LST (I=small/T=medium)"
 training_dataset = "MSCOCO"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "bert_base"
+weight_version = "tLST_small_medium"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
