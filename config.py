@@ -15,7 +15,7 @@ text_model_size = "small"
 image_model_size = "small"
 
 ## See at the end the different possibilities
-configuration = "reduced_LST_first"
+configuration = "reduced_LST_last"
 testing = True
 
 dataset = "flickr30k"
@@ -57,9 +57,9 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "reduced_LST_first"
+configuration_to_test = "reduced_LST_last"
 
-run_info = "reduced LST first  (0, 4, ... kept) (I=small/T=small)"
+run_info = "reduced LST last  (3, 7,..., N kept) (I=small/T=small)"
 training_dataset = "MSCOCO"
 # best or im0 or i2t or t2i
 weight_information = "best"
