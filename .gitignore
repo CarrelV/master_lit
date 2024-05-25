@@ -8,6 +8,7 @@ data/
 ImageNet/
 test_cc3m.py
 src/
+graph.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

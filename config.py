@@ -11,12 +11,12 @@
 #             Training         #
 ################################
 
-text_model_size = "medium"
-image_model_size = "medium"
+text_model_size = "small"
+image_model_size = "small"
 
 ## See at the end the different possibilities
 configuration = "text_LST"
-testing = False
+testing = True
 
 dataset = "flickr30k"
 #dataset = "mscoco"
@@ -32,7 +32,7 @@ training_run_number = "bin_memory"
 # 32 for LoRA with BERT base and ViTB16
 
 #testing batch from 4 to max
-batch_size = 512
+batch_size = 32
 
 
 test_batch_size = 32
@@ -57,13 +57,13 @@ sum_last_outputs = True
 #             Testing          #
 ################################
 
-configuration_to_test = "lora"
+configuration_to_test = "text_LST"
 
-run_info = "bad baseline (I=small/T=small)"
-training_dataset = "mscoco"
+run_info = "text LST (I=small/T=small)"
+training_dataset = "flickr"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "lora_mscoco_Imedium6_Tsmall4"
+weight_version = "1"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #

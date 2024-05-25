@@ -1,6 +1,4 @@
-configuration,batch_size,peak_memoryLiT,32,4898460672
-LiT,32,4898460672
-LiT,32,4898460672
+configuration,batch_size,peak_memory
 LiT,4,3055982080
 LiT,8,3077027328
 LiT,16,3293946880
