@@ -277,7 +277,7 @@ elif configuration == "text_LST":
 
     side_text_weights_copy = True
     
-    add_final_skip_connection = True
+    add_final_skip_connection = False
 
 
 elif configuration == "image_LST":
