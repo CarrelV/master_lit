@@ -1,0 +1,14 @@
+model,image_size,text_size,memory_peak,precision_flickr,precision_Imagenet
+LiT,small,small,1914.493164,73.790323,61.538462	
+LiT,small,medium,4127.229492,74.798387,62.692308	
+
+LoRA,small,medium,5074.453125,78.881048,59.615385
+LoRA,medium,medium,7181.267090,81.602823,71.153846
+
+LST,small,small,1816.624512,72.832661,61.153846	
+LST,small,medium,3017.301270,74.294355,62.820513
+LST,medium,medium,4239.141602,77.217742,68.974359
+
+LST_text,small,small,,72.530242,53.333333	
+LST_text,small,medium,,72.328629,62.820513
+LST_text,medium,medium,,73.790323,64.230769	
