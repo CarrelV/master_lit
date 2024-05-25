@@ -59,11 +59,11 @@ sum_last_outputs = True
 
 configuration_to_test = "text_LST"
 
-run_info = "text LST (I=small/T=small)"
-training_dataset = "flickr"
+run_info = "text LST (I=small/T=small) 300 epochs"
+training_dataset = "MSCOCO"
 # best or im0 or i2t or t2i
 weight_information = "best"
-weight_version = "1"
+weight_version = "2"
 #############################################################################
 #                                                                           #
 #                            END MODIFICATION                               #
